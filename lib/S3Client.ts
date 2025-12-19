@@ -3,37 +3,46 @@ import { S3Client, ListBucketsCommand } from "@aws-sdk/client-s3";
 
 const env = process.env;
 
-if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY) {
-    throw new Error('AWS credentials are not properly configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.');
+function createS3Client() {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY) {
+        // Return a mock client during build time
+        return new Proxy({} as S3Client, {
+            get() {
+                throw new Error('AWS credentials are not properly configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.');
+            }
+        });
+    }
+
+    const s3Config = {
+        region: env.AWS_REGION || "auto",
+        endpoint: env.AWS_ENDPOINT_URL_S3,
+        forcePathStyle: true, // Required for S3-compatible storage
+        maxAttempts: 3,
+        retryMode: "standard" as const,
+        credentials: {
+            accessKeyId: env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+        },
+        // S3 specific settings
+        s3ForcePathStyle: true,
+        signatureVersion: 'v4',
+        // Request handler configuration
+        requestHandler: {
+            requestTimeout: 60000, // 60 seconds for uploads
+        },
+        // Custom user agent
+        customUserAgent: `mastrji-app/${env.NODE_ENV || 'development'}`,
+        // CORS settings
+        ...(env.NODE_ENV === 'development' && {
+            sslEnabled: false,
+        }),
+    };
+
+    return new S3Client(s3Config);
 }
 
-const s3Config = {
-    region: env.AWS_REGION || "auto",
-    endpoint: env.AWS_ENDPOINT_URL_S3,
-    forcePathStyle: true, // Required for S3-compatible storage
-    maxAttempts: 3,
-    retryMode: "standard" as const,
-    credentials: {
-        accessKeyId: env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
-    },
-    // S3 specific settings
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4',
-    // Request handler configuration
-    requestHandler: {
-        requestTimeout: 60000, // 60 seconds for uploads
-    },
-    // Custom user agent
-    customUserAgent: `mastrji-app/${env.NODE_ENV || 'development'}`,
-    // CORS settings
-    ...(env.NODE_ENV === 'development' && {
-        sslEnabled: false,
-    }),
-};
-
 // Enhanced S3 client configuration for both development and production
-export const S3 = new S3Client(s3Config);
+export const S3 = createS3Client();
 
 // Add a function to check S3 connectivity
 export async function checkS3Connection() {
