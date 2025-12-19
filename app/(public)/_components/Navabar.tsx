@@ -120,7 +120,7 @@ export function Navbar() {
                                 Login
                             </Link>
                             <Link href="/register" className={buttonVariants()}>
-                                Get Started
+                                Register
                             </Link>
                         </SignedOut>
                     </div>
