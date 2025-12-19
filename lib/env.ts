@@ -6,6 +6,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url().optional(),
     APP_URL: z.string().url().optional(),
     CLERK_SECRET_KEY: z.string().min(1).optional(),
+    CLERK_WEBHOOK_SECRET: z.string().min(1).optional(),
+    ADMIN_EMAILS: z.string().optional(),
     ARCJET_KEY: z.string().min(1).optional(),
     AWS_ACCESS_KEY_ID: z.string().min(1).optional(),
     AWS_SECRET_ACCESS_KEY: z.string().min(1).optional(),

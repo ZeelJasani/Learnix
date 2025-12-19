@@ -23,6 +23,11 @@ export default clerkMiddleware(async (auth: ClerkMiddlewareAuth, request: NextRe
     return NextResponse.next();
   }
 
+  // Allow external webhooks (Stripe, Clerk, etc.)
+  if (pathname.startsWith("/api/webhook/")) {
+    return NextResponse.next();
+  }
+
   // Protect app pages
   if (isProtectedRoute(request)) {
     await auth.protect({ unauthenticatedUrl: "/login" });

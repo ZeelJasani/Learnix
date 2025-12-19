@@ -1,6 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import type { User } from "@/lib/generated/prisma";
 
 export type ClerkUserLike = {
@@ -17,6 +18,12 @@ export async function getOrCreateDbUserFromClerkUser(clerkUser: ClerkUserLike): 
     throw new Error("Clerk user has no email address");
   }
 
+  const adminEmails = (env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const shouldBeAdmin = adminEmails.includes(email.toLowerCase());
+
   const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || email.split("@")[0];
 
   const existing = await prisma.user.findUnique({ where: { id: clerkUser.id } });
@@ -25,8 +32,10 @@ export async function getOrCreateDbUserFromClerkUser(clerkUser: ClerkUserLike): 
       where: { id: existing.id },
       data: {
         name,
+        email,
         image: clerkUser.imageUrl,
         emailVerified: true,
+        role: shouldBeAdmin ? "admin" : existing.role,
         updatedAt: new Date(),
       },
     });
@@ -40,6 +49,7 @@ export async function getOrCreateDbUserFromClerkUser(clerkUser: ClerkUserLike): 
         name,
         image: clerkUser.imageUrl,
         emailVerified: true,
+        role: shouldBeAdmin ? "admin" : existingByEmail.role,
         updatedAt: new Date(),
       },
     });
@@ -52,6 +62,7 @@ export async function getOrCreateDbUserFromClerkUser(clerkUser: ClerkUserLike): 
       email,
       emailVerified: true,
       image: clerkUser.imageUrl,
+      role: shouldBeAdmin ? "admin" : null,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
