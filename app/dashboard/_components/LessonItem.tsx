@@ -57,9 +57,9 @@ export function LessonItem({ lesson, slug, isActive, completed }: iAppProps) {
                 </div>
 
 
-                <div>
+                <div className="flex-1 min-w-0">
                     <p className={cn(
-                        "text-xs font-medium truncate overflow-hidden", completed ? "text-green-800 dark:text-green-200 overflow-hidden" : isActive ? "text-primary font-semibold overflow-hidden" : "text-foreground overflow-hidden"
+                        "text-xs font-medium w-full min-w-0 truncate", completed ? "text-green-800 dark:text-green-200" : isActive ? "text-primary font-semibold" : "text-foreground"
                     )}>{lesson.position}. {lesson.title}</p>
                     {completed && (
                         <p className="text-[10px] text-green-700 dark:text-green-300 font-medium">Completed</p>
