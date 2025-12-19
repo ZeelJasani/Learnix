@@ -109,7 +109,7 @@ export function RichTextEditor({ field }: { field: any }) {
         // Fixed: Added proper error handling and default content
         content: (() => {
             if (!field?.value) {
-                return { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello world 🍭' }] }] };
+                return { type: "doc", content: [{ type: "paragraph" }] };
             }
             
             try {
@@ -127,7 +127,7 @@ export function RichTextEditor({ field }: { field: any }) {
                 return field.value;
             } catch (error) {
                 console.warn('Error parsing editor content:', error);
-                return { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello world 🍭' }] }] };
+                return { type: "doc", content: [{ type: "paragraph" }] };
             }
         })()
     });
