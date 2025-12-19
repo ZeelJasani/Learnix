@@ -7,6 +7,7 @@ import { requireUser } from "@/app/data/user/require-user";
 import { User } from "@/lib/types/user";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { headers } from "next/headers";
 
 // Types
 type ApiResponse = {
@@ -34,6 +35,25 @@ const aj = arcjet.withRule(rateLimit);
 // Constants
 const MINIMUM_PRICE_INR = 50; // Stripe's minimum is 50 cents, which is ~₹50
 const TRANSACTION_TIMEOUT = 30000; // 30 seconds
+
+function getBaseUrl(): string {
+  const fromEnv = env.APP_URL;
+  if (fromEnv) {
+    try {
+      return new URL(fromEnv).origin;
+    } catch {
+      // fall through
+    }
+  }
+
+  const h = headers();
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (!host) {
+    throw new Error("APP_URL is not set and host header is missing");
+  }
+  return `${proto}://${host}`;
+}
 
 export async function enrollInCourseAction(courseId: string): Promise<ApiResponse> {
   try {
@@ -118,12 +138,13 @@ async function processEnrollmentTransaction(userId: string, courseId: string): P
     const enrollment = await handleEnrollment(tx, userId, courseId, course.price);
 
     // 5. Create Checkout Session
+    const baseUrl = getBaseUrl();
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: course.stripePriceId!, quantity: 1 }],
       mode: 'payment',
-      success_url: `${env.APP_URL}/payment/success`,
-      cancel_url: `${env.APP_URL}/payment/cancel`,
+      success_url: `${baseUrl}/payment/success`,
+      cancel_url: `${baseUrl}/payment/cancel`,
       metadata: {
         userId,
         courseId,
