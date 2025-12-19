@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "node build-with-prisma.js",
+    "build": "next build",
     "build:windows": "node build-windows.js",
     "build:minimal": "node build-minimal-fixed.js",
     "build:bypass": "node build-bypass-fixed.js",
