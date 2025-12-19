@@ -1,8 +1,7 @@
 // "server-only";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { requireUser } from "@/app/data/user/require-user";
 
 class UnauthorizedError extends Error {
   constructor(message = 'Unauthorized') {
@@ -13,9 +12,7 @@ class UnauthorizedError extends Error {
 
 export async function requireAdmin(returnJson = false) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const user = await requireUser();
 
     // Debug log for production
     // if (process.env.NODE_ENV === 'production') {
@@ -25,18 +22,18 @@ export async function requireAdmin(returnJson = false) {
     //   }
     // }
 
-    if (!session?.user) {
+    if (!user) {
       if (returnJson) throw new UnauthorizedError('Authentication required');
       redirect('/login');
     }
 
-    const userRole = (session.user.role || '').toString().toLowerCase();
+    const userRole = (user.role || '').toString().toLowerCase();
     if (userRole !== 'admin') {
       if (returnJson) throw new UnauthorizedError('Insufficient permissions');
       redirect('/not-admin');
     }
 
-    return session;
+    return { user };
   } catch (error) {
     if (process.env.NODE_ENV === 'production') {
       console.error('Error in requireAdmin:', error);

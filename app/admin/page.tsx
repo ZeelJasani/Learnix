@@ -1,5 +1,3 @@
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive"
 import { SectionCards } from "@/components/sidebar/section-cards"
 import { adminGetEnrollmentStats } from "../data/admin/admin-get-enrollment-state"
@@ -9,29 +7,13 @@ import { EmptyState } from "@/components/general/EmptyState"
 import { adminGetRecentCourses } from "../data/admin/admin-get-recent-courses"
 import { AdminCourseCard, AdminCourseCardSkeleton } from "./courses/_components/AdminCourseCard"
 import { Suspense } from "react"
-import { headers } from "next/headers"
 import { requireAdmin } from "@/app/data/admin/require-admin";
 
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
-
-    await requireAdmin();
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-  
-  // Redirect to login if not authenticated
-  if (!session) {
-    redirect('/login?callbackUrl=/admin')
-  }
-  
-  // Check if user is admin
-  const userRole = (session.user.role || '').toString().toLowerCase()
-  if (userRole !== 'admin') {
-    redirect('/not-admin')
-  }
+  await requireAdmin();
 
   const enrollmentData = await adminGetEnrollmentStats()
   

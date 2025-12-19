@@ -122,8 +122,8 @@ async function processEnrollmentTransaction(userId: string, courseId: string): P
       customer: customerId,
       line_items: [{ price: course.stripePriceId!, quantity: 1 }],
       mode: 'payment',
-      success_url: `${env.BETTER_AUTH_URL}/payment/success`,
-      cancel_url: `${env.BETTER_AUTH_URL}/payment/cancel`,
+      success_url: `${env.APP_URL}/payment/success`,
+      cancel_url: `${env.APP_URL}/payment/cancel`,
       metadata: {
         userId,
         courseId,

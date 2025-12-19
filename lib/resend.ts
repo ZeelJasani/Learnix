@@ -2,6 +2,10 @@
 
 
 
-import { Resend } from "resend";
-import { env } from "./env";
-export const resend = new Resend(env.RESEND_API_KEY);
+export const resend = {
+  emails: {
+    send: async () => {
+      throw new Error("Resend email auth has been removed.");
+    },
+  },
+};

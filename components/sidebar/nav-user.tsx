@@ -29,20 +29,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
 import { HomeIcon, Tv2 } from "lucide-react"
 import { useSignOut } from "@/hooks/use-signout"
+import { useUser } from "@clerk/nextjs"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { data: session, isPending } = authClient.useSession();
+  const { user, isLoaded, isSignedIn } = useUser();
   const handlerSignout = useSignOut();
 
 
-  if (isPending) {
+  if (!isLoaded) {
     return null;
   }
+
+  if (!isSignedIn || !user) {
+    return null;
+  }
+
+  const email = user.primaryEmailAddress?.emailAddress ?? "";
+  const name = user.fullName || email.split("@")[0] || "User";
+  const image = user.imageUrl || `https://avatar.vercel.sh/${email}`;
 
   return (
     <SidebarMenu>
@@ -55,24 +63,18 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage
-                  src={session?.user.image ??
-                    `https://avatar.vercel.sh/${session?.user.email}`
-                  }
-                  alt={session?.user.name} />
+                  src={image}
+                  alt={name} />
                 <AvatarFallback className="rounded-lg">
-                  {session?.user.name && session.user.name.length > 0
-                    ? session.user.name.charAt(0).toUpperCase()
-                    : session?.user.email.charAt(0).toUpperCase()}
+                  {name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {session?.user.name && session.user.name.length > 0
-                    ? session.user.name
-                    : session?.user.email.split("@")[0]}
+                  {name}
                 </span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {session?.user.email}
+                  {email}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -87,24 +89,18 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={session?.user.image ??
-                    `https://avatar.vercel.sh/${session?.user.email}`
-                  }
-                    alt={session?.user.name}
+                  <AvatarImage src={image}
+                    alt={name}
                   />
                   <AvatarFallback className="rounded-lg">
-                    {session?.user.name && session.user.name.length > 0
-                      ? session.user.name.charAt(0).toUpperCase()
-                      : session?.user.email.charAt(0).toUpperCase()}
+                    {name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {session?.user.name && session.user.name.length > 0
-                      ? session.user.name
-                      : session?.user.email.split("@")[0]}</span>
+                    {name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {session?.user.email}
+                    {email}
                   </span>
                 </div>
               </div>

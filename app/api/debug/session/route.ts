@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@clerk/nextjs/server';
 
 export async function GET(request: NextRequest) {
   const cookies = request.headers.get('cookie') || '';
@@ -16,17 +16,17 @@ export async function GET(request: NextRequest) {
       })
   );
 
-  const candidates = ['session', 'better-auth.session', 'better-auth.session_token'];
+  const candidates = ['session', 'better-auth.session', 'better-auth.session_token', '__session', '__clerk_db_jwt'];
   for (const key of candidates) {
     const token = cookieMap.get(key);
     if (!token) continue;
     result[key] = { present: true };
   }
 
-  // Ask server auth for the session instead of decoding cookie
+  // Ask Clerk for auth state
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
-    result.session = session ?? null;
+    const { userId, sessionId } = await auth();
+    result.clerk = { userId: userId ?? null, sessionId: sessionId ?? null };
   } catch (e) {
     result.session_error = e instanceof Error ? e.message : 'unknown';
   }
