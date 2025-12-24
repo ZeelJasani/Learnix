@@ -1,15 +1,10 @@
 "use client";
 
-import { SignIn } from "@clerk/nextjs";
+import { SignInForm } from "./SignInForm";
 
+/**
+ * @deprecated Use SignInForm directly instead
+ */
 export function LoginForm() {
-  return (
-    <SignIn
-      routing="path"
-      path="/login"
-      signUpUrl="/register"
-      afterSignInUrl="/"
-      afterSignUpUrl="/"
-    />
-  );
+  return <SignInForm />;
 }

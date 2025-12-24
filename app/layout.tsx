@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Masterji",
+  title: "Learnix",
   description: "Learn from the best",
 };
 

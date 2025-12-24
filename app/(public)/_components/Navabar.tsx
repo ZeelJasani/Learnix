@@ -76,10 +76,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-// import heart from "@/public/newog.png";
 import { ThemeToggle } from "@/components/ui/themeToggle";
 import { buttonVariants } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { UserDropdown } from "./UserDropdown";
 
 const navigationItems = [
     { name: 'Home', href: "/" },
@@ -112,7 +112,7 @@ export function Navbar() {
                         <ThemeToggle />
 
                         <SignedIn>
-                            <UserButton afterSignOutUrl="/" />
+                            <UserDropdown />
                         </SignedIn>
 
                         <SignedOut>
