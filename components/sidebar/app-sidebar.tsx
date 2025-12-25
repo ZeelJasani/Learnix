@@ -49,6 +49,11 @@ const data = {
       url: "/admin/courses",
       icon: IconListDetails,
     },
+    {
+      title: "Activities",
+      url: "/admin/activities",
+      icon: IconFileDescription,
+    },
     // {
     //   title: "Analytics",
     //   url: "#",
@@ -115,20 +120,20 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: "Profile",
+      url: "/admin/profile",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
+      title: "Settings",
+      url: "/admin/settings",
+      icon: IconSettings,
     },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
+    // {
+    //   title: "Get Help",
+    //   url: "#",
+    //   icon: IconHelp,
+    // },
   ],
 }
 

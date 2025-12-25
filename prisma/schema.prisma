@@ -27,6 +27,7 @@ model User {
   Course        Course[]
   enrollment    Enrollment[]
   lessonProgress LessonProgress[]
+  activityCompletions ActivityCompletion[]
 
   stripeCustomerId String? @unique
 
@@ -34,6 +35,8 @@ model User {
   banned     Boolean?
   banReason  String?
   banExpires DateTime?
+
+  clerkUserId String? @unique
 
   @@unique([email])
   @@map("user")
@@ -109,6 +112,7 @@ model Course {
 
   chapter    Chapter[]
   enrollment Enrollment[]
+  activities Activity[]
 }
 
 enum CourseLevel {
@@ -194,4 +198,43 @@ model LessonProgress {
   lessonId String
 
   @@unique([userId, lessonId])
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  type        ActivityType @default(ASSIGNMENT)
+  startDate   DateTime?
+  dueDate     DateTime?
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  completions ActivityCompletion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ActivityType {
+  ASSIGNMENT
+  QUIZ
+  PROJECT
+  READING
+  VIDEO
+}
+
+model ActivityCompletion {
+  id String @id @default(uuid())
+
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  completedAt DateTime @default(now())
+
+  @@unique([userId, activityId])
 }

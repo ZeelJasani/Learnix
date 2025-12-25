@@ -11,7 +11,7 @@ import { adminGetDashboardStats } from "@/app/data/admin/admin-get-dashboard-sta
 
 
 export async function SectionCards() {
-  const {totalCourses, totalCustomers, totalLessons, totalSignups} = await adminGetDashboardStats()
+  const { totalCourses, totalCustomers, totalLessons, totalSignups } = await adminGetDashboardStats()
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
@@ -38,7 +38,7 @@ export async function SectionCards() {
               {totalCustomers}
             </CardTitle>
           </div>
-        <IconShoppingCart className="size-6 text-muted-foreground" />
+          <IconShoppingCart className="size-6 text-muted-foreground" />
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <p className="text-muted-foreground">Users who have enrolled in courses</p>
@@ -79,12 +79,5 @@ export async function SectionCards() {
         </CardFooter>
       </Card>
     </div>
-
-
-
-
-
-
-
   )
 }

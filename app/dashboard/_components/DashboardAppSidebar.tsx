@@ -2,13 +2,16 @@
 
 import * as React from "react"
 import {
+  IconBook,
   IconCamera,
   IconDashboard,
   IconFileAi,
   IconFileDescription,
   IconHelp,
+  IconHome,
   IconSearch,
   IconSettings,
+  IconUser,
 } from "@tabler/icons-react"
 
 // import { NavDocuments } from "@/components/nav-documents"
@@ -32,9 +35,19 @@ import masterji from '@/public/masterji.png'
 const data = {
   navMain: [
     {
+      title: "Home",
+      url: "/",
+      icon: IconHome,
+    },
+    {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+    },
+    {
+      title: "Courses",
+      url: "/courses",
+      icon: IconBook,
     }
   ],
   navClouds: [
@@ -87,20 +100,20 @@ const data = {
   ],
   navSecondary: [
     {
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: IconUser,
+    },
+    {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: IconSettings,
     },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
+    // {
+    //   title: "Get Help",
+    //   url: "#",
+    //   icon: IconHelp,
+    // },
   ],
 }
 
@@ -115,7 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5">
               <Link href="/">
                 <Image src={masterji} alt="ogmasterji" className="size-5" />
-                <span className="text-base font-semibold">masterji</span>
+                <span className="text-base font-semibold">Learnix</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

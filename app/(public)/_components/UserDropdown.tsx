@@ -12,13 +12,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User, Settings, LayoutDashboard } from "lucide-react";
+import { LogOut, User, Settings, LayoutDashboard, Shield } from "lucide-react";
 import Link from "next/link";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function UserDropdown() {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
+  const { isAdmin } = useUserRole();
 
   if (!isLoaded || !user) {
     return null;
@@ -66,6 +68,14 @@ export function UserDropdown() {
               Dashboard
             </Link>
           </DropdownMenuItem>
+          {isAdmin && (
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                <Shield className="mr-2 h-4 w-4" />
+                Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link href="/profile" className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />

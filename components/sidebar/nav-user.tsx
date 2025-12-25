@@ -1,12 +1,8 @@
 "use client"
 
 import {
-  IconCreditCard,
-  IconDashboard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
-  IconUserCircle,
 } from "@tabler/icons-react"
 
 import {
@@ -30,14 +26,16 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { HomeIcon, Tv2 } from "lucide-react"
+import { HomeIcon, Tv2, Shield, LayoutDashboard } from "lucide-react"
 import { useSignOut } from "@/hooks/use-signout"
 import { useUser } from "@clerk/nextjs"
+import { useUserRole } from "@/hooks/use-user-role"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user, isLoaded, isSignedIn } = useUser();
   const handlerSignout = useSignOut();
+  const { isAdmin } = useUserRole();
 
 
   if (!isLoaded) {
@@ -114,17 +112,27 @@ export function NavUser() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/admin">
-                  <IconDashboard />
+                <Link href="/dashboard">
+                  <LayoutDashboard />
                   Dashboard
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/coruses">
-                  <Tv2 />
-                  Courses
-                </Link>
-              </DropdownMenuItem>
+              {isAdmin && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Shield />
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/courses">
+                      <Tv2 />
+                      Manage Courses
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handlerSignout}>
