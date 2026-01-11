@@ -34,8 +34,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import Image from "next/image"
-// import ogmasterji from '@/public/newog.png'
-import masterji from '@/public/masterji.png'
+import learnix from '@/public/learnix.png'
 
 const data = {
   navMain: [
@@ -147,8 +146,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5">
               <Link href="/">
-                <Image src={masterji} alt="ogmasterji" className="size-5" />
-                <span className="text-base font-semibold">masterji</span>
+                <Image src={learnix} alt="Learnix" className="size-5" />
+                <span className="text-base font-semibold">Learnix</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

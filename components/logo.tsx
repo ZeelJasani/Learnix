@@ -5,7 +5,7 @@ export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center gap-2', className)}>
             <Image
-                src="/masterji.png"
+                src="/learnix.png"
                 alt="Learnix Logo"
                 width={32}
                 height={32}
@@ -19,7 +19,7 @@ export const Logo = ({ className }: { className?: string }) => {
 export const LogoIcon = ({ className }: { className?: string }) => {
     return (
         <Image
-            src="/masterji.png"
+            src="/learnix.png"
             alt="Learnix Logo"
             width={20}
             height={20}
@@ -31,7 +31,7 @@ export const LogoIcon = ({ className }: { className?: string }) => {
 export const LogoStroke = ({ className }: { className?: string }) => {
     return (
         <Image
-            src="/masterji.png"
+            src="/learnix.png"
             alt="Learnix Logo"
             width={28}
             height={28}
