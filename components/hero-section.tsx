@@ -26,6 +26,8 @@ const transitionVariants = {
     },
 }
 
+
+
 export default function HeroSection() {
     return (
         <>
@@ -119,6 +121,8 @@ export default function HeroSection() {
                                         </Link>
                                     </Button>
                                 </AnimatedGroup>
+
+
                             </div>
                         </div>
                         <AnimatedGroup
