@@ -8,23 +8,7 @@ export const dynamic = 'force-dynamic';
 export default function PublicCoursesRoute() {
     return (
         <div className="min-h-screen bg-background">
-            {/* Compact Hero Section */}
-            <div className="border-b border-border py-4">
-                <div className="px-6">
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium mb-2">
-                        <TrendingUp className="size-3" />
-                        Start Your Learning Journey
-                    </div>
-                    <div className="flex items-center gap-4 flex-wrap">
-                        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
-                            Explore Our <span className="text-primary">Courses</span>
-                        </h1>
-                        <p className="text-xs text-muted-foreground pt-1">
-                            Discover expertly crafted courses designed to help you master new skills.
-                        </p>
-                    </div>
-                </div>
-            </div>
+
 
             {/* 
                 Courses Section 

@@ -355,12 +355,9 @@
   --shadow-2xl: var(--shadow-2xl);
 }
 
-
-
 body {
   letter-spacing: var(--tracking-normal);
 } */
-
 
 :root {
   --background: oklch(1.0000 0 0);
@@ -533,16 +530,6 @@ body {
 body {
   letter-spacing: var(--tracking-normal);
 }
-
-
-
-
-
-
-
-
-
-
 
 @layer base {
   * {

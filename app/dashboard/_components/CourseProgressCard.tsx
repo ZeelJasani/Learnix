@@ -21,43 +21,48 @@ export function CourseProgressCard({ data }: iAppProps) {
     const { totalLesson, completedLessons, progressPercentage } =
         useCourseProgress({ courseData: data.Course as unknown as getCourseSidebarDataType['course'] });
     return (
-        <Card className="group relative py-0 gap-0">
-            <Badge className="absolute top-2 right-2 z-10">{data.Course.level}</Badge>
+        <Card className="group relative overflow-hidden py-0 gap-0 h-full flex flex-col border-border/50 hover:border-border transition-colors">
 
-            <Image
-                width={600}
-                height={400}
-                className="w-full rounded-t-xl aspect-video h-full object-cover"
-                src={thumbnailUrl}
-                alt="Thumbnail Image of Course"
-            />
+            <Badge className="absolute top-3 right-3 z-10 font-bold shadow-md">{data.Course.level}</Badge>
+
+            <div className="relative aspect-video overflow-hidden border-b border-border/50">
+                <Image
+                    width={600}
+                    height={400}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    src={thumbnailUrl}
+                    alt="Thumbnail Image of Course"
+                />
+            </div>
 
 
-            <CardContent className="p-5 border-t border-gray-100">
-                <Link href={`/dashboard/${data.Course.slug}`} className="font-semibold text-lg line-clamp-2 hover:text-primary transition-colors block mb-3">
-                    {data.Course.title}
-                </Link>
-                <p className="line-clamp-2 text-sm text-gray-600 leading-relaxed mb-4">
-                    {data.Course.smallDescription}
-                </p>
-
-                <div className="space-y-4 mt-5">
-                    <div className="flex justify-between mb-1 text-sm">
-                        <p>Progress:</p>
-                        <p className="font-medium">{progressPercentage}%</p>
-                    </div>
-                    <Progress value={progressPercentage} className="h-1.5" />
-                    <p className="text-xs text-muted-foreground mt-1">
-                        {completedLessons} of {totalLesson} lessons completed
+            <CardContent className="flex flex-col flex-1 p-6">
+                <div className="flex-1">
+                    <Link href={`/dashboard/${data.Course.slug}`} className="font-bold text-xl line-clamp-2 hover:text-primary transition-colors block mb-2">
+                        {data.Course.title}
+                    </Link>
+                    <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed mb-6">
+                        {data.Course.smallDescription}
                     </p>
                 </div>
 
-                <Link
-                    href={`/dashboard/${data.Course.slug}`}
-                    className={buttonVariants({ className: "w-full mt-4" })}
-                >
-                    Watch Course
-                </Link>
+                <div className="space-y-3 mt-auto">
+                    <div className="flex justify-between text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        <p>Progress</p>
+                        <p>{progressPercentage}%</p>
+                    </div>
+                    <Progress value={progressPercentage} className="h-2 rounded-full" />
+                    <p className="text-xs text-muted-foreground pt-1">
+                        {completedLessons} of {totalLesson} lessons completed
+                    </p>
+
+                    <Link
+                        href={`/dashboard/${data.Course.slug}`}
+                        className={buttonVariants({ className: "w-full mt-4 font-semibold shadow-sm" })}
+                    >
+                        Watch Course
+                    </Link>
+                </div>
             </CardContent>
         </Card>
     );

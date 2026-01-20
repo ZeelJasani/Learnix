@@ -271,13 +271,13 @@ export default function ProfilePage() {
 
                             {/* Tabs Navigation */}
                             <div className="border-b">
-                                <nav className="-mb-px flex space-x-8">
+                                <nav className="-mb-px flex w-full justify-between md:justify-start md:space-x-8">
                                     {tabs.map((tab) => (
                                         <button
                                             key={tab.id}
                                             onClick={() => setActiveTab(tab.id)}
                                             className={`
-                                                whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                                                flex-1 md:flex-none whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-center transition-colors
                                                 ${activeTab === tab.id
                                                     ? "border-primary text-primary"
                                                     : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"

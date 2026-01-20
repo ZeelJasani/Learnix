@@ -1,14 +1,21 @@
 "use client"
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { ChevronRight, type LucideIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import {
   SidebarGroup,
-  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -20,59 +27,73 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: Icon
+    icon?: any
+    isActive?: boolean
+    items?: {
+      title: string
+      url: string
+    }[]
   }[]
 }) {
-
-
   const pathname = usePathname()
+
   return (
-    <SidebarGroup className="pt-8">
-      <SidebarGroupContent className="flex flex-col gap-2">
-        {pathname.startsWith("/admin") && (
-          <SidebarMenu>
-            <SidebarMenuItem className="flex items-center gap-2">
+    <SidebarGroup>
+      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarMenu>
+        {items.map((item) => {
+          // Check if item has sub-items
+          if (item.items && item.items.length > 0) {
+            return (
+              <Collapsible
+                key={item.title}
+                asChild
+                defaultOpen={item.isActive}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.title}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {item.items.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton asChild>
+                            <Link href={subItem.url}>
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            )
+          }
+
+          // Render as simple link if no sub-items
+          return (
+            <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
-                tooltip="Create course"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+                tooltip={item.title}
+                isActive={pathname === item.url}
               >
-                <Link href="/admin/courses/create">
-                  <IconCirclePlusFilled />
-                  <span>Create course</span>
-                </Link>
-              </SidebarMenuButton>
-
-            </SidebarMenuItem>
-          </SidebarMenu>
-        )}
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title} asChild>
-                <Link
-                  href={item.url}
-                  className={cn(
-                    pathname === item.url && "bg-accent text-accent-foreground"
-                  )}
-                >
-
-
-                  {/* {item.icon && <item.icon />}
-                  <span>{item.title}</span> */}
-                  {item.icon && (
-                    <item.icon
-                      className={cn(pathname === item.url && "text-primary")}
-                    />
-                  )}
-
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
+          )
+        })}
+      </SidebarMenu>
     </SidebarGroup>
   )
 }
