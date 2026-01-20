@@ -7,8 +7,7 @@ import {
   Home,
   Settings,
   User,
-  Sparkles,
-  Command,
+  Users,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -28,8 +27,7 @@ import {
 } from "@/components/ui/sidebar"
 import learnix from '@/public/learnix.png'
 
-// Improved data structure with potential for nested items
-const data = {
+const defaultData = {
   navMain: [
     {
       title: "Home",
@@ -45,11 +43,6 @@ const data = {
       title: "Courses",
       url: "/courses",
       icon: Book,
-      // Example of how nested items would look if enabled:
-      // items: [
-      //   { title: "All Courses", url: "/courses" },
-      //   { title: "My Learning", url: "/courses/learning" },
-      // ]
     },
   ],
   navSecondary: [
@@ -66,7 +59,45 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+const adminData = {
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "/admin/dashboard",
+      icon: Gauge,
+    },
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: Users,
+    },
+    {
+      title: "Courses",
+      url: "/admin/courses",
+      icon: Book,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: User,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ],
+}
+
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  userType?: "admin" | "user"
+}
+
+export function AppSidebar({ userType = "user", ...props }: AppSidebarProps) {
+  const data = userType === "admin" ? adminData : defaultData;
+
   return (
     <Sidebar collapsible="icon" className="border-r" {...props}>
       <SidebarHeader>
@@ -75,7 +106,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  {/* Fallback icon if image fails or for design preference, but using Image as requested */}
                   <Image src={learnix} alt="Learnix" className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

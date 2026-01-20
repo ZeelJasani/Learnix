@@ -21,22 +21,27 @@ type DashboardStats = {
   }>;
 };
 
-export async function adminGetDashboardStats(): Promise<DashboardStats> {
+export async function adminGetDashboardStats(
+  month?: number,
+  year?: number
+): Promise<DashboardStats> {
   try {
     await requireAdmin();
 
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const now = new Date();
+    const targetYear = year || now.getFullYear();
+    const targetMonth = month !== undefined ? month : now.getMonth();
 
-    // First, fetch all the counts in parallel
+    const startDate = new Date(targetYear, targetMonth, 1);
+    const endDate = new Date(targetYear, targetMonth + 1, 0); // Last day of month
+
+    // First, fetch basic counts (Total is absolute, not time-bound)
     const [
       totalSignups,
       totalCustomers,
       totalCourses,
       totalLessons,
-      recentSignups,
+      monthlySignups,
       activeUsers,
     ] = await Promise.all([
       prisma.user.count(),
@@ -47,7 +52,7 @@ export async function adminGetDashboardStats(): Promise<DashboardStats> {
         where: { status: 'PUBLISHED' },
       }),
       prisma.lesson.count({
-        where: { 
+        where: {
           Chapter: {
             Course: {
               status: 'PUBLISHED'
@@ -56,20 +61,25 @@ export async function adminGetDashboardStats(): Promise<DashboardStats> {
         },
       }),
       prisma.user.count({
-        where: { createdAt: { gte: thirtyDaysAgo } },
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate
+          }
+        },
       }),
       prisma.user.count({
-        where: { 
+        where: {
           sessions: {
             some: {
-              updatedAt: { gte: sevenDaysAgo }
+              updatedAt: { gte: startDate } // Active since start of month
             }
           }
         },
       }),
     ]);
 
-    // Then fetch the daily stats with proper typing (PostgreSQL)
+    // Then fetch daily stats for the specific range
     const dailyStats = await prisma.$queryRaw<DailyStat[]>`
       SELECT
         date_trunc('day', u."createdAt")::date AS date,
@@ -77,24 +87,52 @@ export async function adminGetDashboardStats(): Promise<DashboardStats> {
         COUNT(DISTINCT e.id) AS enrollments
       FROM "user" u
       LEFT JOIN "Enrollment" e ON u.id = e."userId"
-      WHERE u."createdAt" >= ${thirtyDaysAgo}
+      WHERE u."createdAt" >= ${startDate} AND u."createdAt" <= ${endDate}
       GROUP BY 1
       ORDER BY 1 ASC
     `;
 
-    // Convert BigInt to Number for JSON serialization
-    const formattedStats = dailyStats.map(stat => ({
-      date: stat.date,
-      signups: Number(stat.signups),
-      enrollments: Number(stat.enrollments)
-    }));
+    // Create a map for quick lookup
+    const statsMap = new Map(
+      (dailyStats as any[]).map((stat) => [
+        new Date(stat.date).toISOString().split('T')[0],
+        stat,
+      ])
+    );
+
+    const formattedStats = [];
+    const daysInMonth = endDate.getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      // Construct date YYYY-MM-DD in local time logic but matching ISO output
+      // We use the same construction logic as the map keys if possible, but simplest is explicit string building
+      // to avoid timezone shifts when "noon" or "midnight" is ambiguous.
+
+      const d = new Date(targetYear, targetMonth, day);
+      // The map keys are from .toISOString().split('T')[0] which is UTC.
+      // We must ensure we generate the matching key. 
+      // If we use UTC loop:
+      const utcDate = new Date(Date.UTC(targetYear, targetMonth, day));
+      const dateString = utcDate.toISOString().split('T')[0];
+
+      // CAUTION: Prisma generic date queries might return 00:00:00 UTC.
+      // Let's rely on the formatted date string for the chart label too.
+
+      const stat = statsMap.get(dateString);
+
+      formattedStats.push({
+        date: dateString,
+        signups: stat ? Number(stat.signups) : 0,
+        enrollments: stat ? Number(stat.enrollments) : 0,
+      });
+    }
 
     return {
       totalSignups,
       totalCustomers,
       totalCourses,
       totalLessons,
-      recentSignups,
+      recentSignups: monthlySignups,
       activeUsers,
       statsByDate: formattedStats,
     };

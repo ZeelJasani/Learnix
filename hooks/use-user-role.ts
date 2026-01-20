@@ -1,47 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 
-interface UserRole {
+export interface UserRole {
     role: string | null;
     isAdmin: boolean;
     isLoading: boolean;
 }
 
 export function useUserRole(): UserRole {
-    const { isSignedIn, isLoaded } = useUser();
-    const [role, setRole] = useState<string | null>(null);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const { user, isLoaded } = useUser();
 
-    useEffect(() => {
-        if (!isLoaded) return;
+    if (!isLoaded) {
+        return { role: null, isAdmin: false, isLoading: true };
+    }
 
-        if (!isSignedIn) {
-            setRole(null);
-            setIsAdmin(false);
-            setIsLoading(false);
-            return;
-        }
+    if (!user) {
+        return { role: null, isAdmin: false, isLoading: false };
+    }
 
-        const fetchRole = async () => {
-            try {
-                const response = await fetch("/api/user/get-current-user-role");
-                const data = await response.json();
-                setRole(data.role);
-                setIsAdmin(data.isAdmin);
-            } catch (error) {
-                console.error("Error fetching user role:", error);
-                setRole(null);
-                setIsAdmin(false);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    const role = (user.publicMetadata?.role as string) || null;
+    const isAdmin = role === "admin";
 
-        fetchRole();
-    }, [isSignedIn, isLoaded]);
-
-    return { role, isAdmin, isLoading };
+    return { role, isAdmin, isLoading: false };
 }

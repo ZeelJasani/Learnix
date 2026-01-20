@@ -6,11 +6,11 @@ export async function GET() {
   try {
     await requireAdmin();
     const stats = await adminGetDashboardStats();
-    return NextResponse.json(stats);
+    return NextResponse.json({ data: stats });
   } catch (error) {
     console.error('Error in GET /api/admin/dashboard:', error);
     return new NextResponse(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Failed to fetch dashboard data',
         details: error instanceof Error ? error.message : 'Unknown error'
       }),

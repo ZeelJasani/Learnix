@@ -1,44 +1,35 @@
-// "server-only";
-
 import { redirect } from "next/navigation";
-import { requireUser } from "@/app/data/user/require-user";
+import { auth } from "@clerk/nextjs/server";
 
 export async function requireAdmin(returnJson = false) {
-  try {
-    const user = await requireUser();
+  const { userId, sessionClaims } = await auth();
 
-    if (!user) {
-      if (returnJson) {
-        throw new Error('Authentication required');
-      }
-      redirect('/login');
-    }
-
-    const userRole = (user.role || '').toString().toLowerCase();
-    if (userRole !== 'admin') {
-      if (returnJson) {
-        throw new Error('Insufficient permissions');
-      }
-      redirect('/not-admin');
-    }
-
-    return { user };
-  } catch (error) {
-    // Check if this is a Next.js redirect (which throws an error internally)
-    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-      throw error;
-    }
-
-    // If we have a redirect digest, it means Next.js is trying to redirect
-    if ((error as any)?.digest?.startsWith('NEXT_REDIRECT')) {
-      throw error;
-    }
-
-    // For other errors, redirect to not-admin if it's an auth issue
+  if (!userId) {
     if (returnJson) {
-      throw error;
+      throw new Error('Authentication required');
     }
-
-    redirect('/not-admin');
+    redirect('/login');
   }
+
+  //  Check Clerk's session claims for the role
+  const metadata = sessionClaims?.metadata as { role?: string } | undefined;
+  //  Alternatively check public_metadata if you configured it there in Clerk Dashboard
+  //  const role = (sessionClaims?.public_metadata as { role?: string })?.role;
+  //  We'll check 'role' at the top level of the claim if you used the template shown
+  //  Or strictly follow the Clerk template: "role": "{{user.public_metadata.role}}"
+
+  // Based on standard Clerk pattern or the one likely configured:
+  // We'll traverse metadata since custom claims usually live there or at root.
+  // Assuming the claim name is 'role' from the provided screenshot which shows "role": "{{...}}"
+  const role = (sessionClaims as any)?.role || metadata?.role || (sessionClaims as any)?.public_metadata?.role;
+
+  if ((role || '').toString().toLowerCase() !== 'admin') {
+    if (returnJson) {
+      throw new Error('Insufficient permissions');
+    }
+    // redirect('/not-admin'); -- Users requested remove not-admin page sometimes, but let's keep redirection safe
+    redirect('/dashboard'); // Redirect to dashboard instead of a specific error page for smoother UX
+  }
+
+  return { userId, role };
 }
