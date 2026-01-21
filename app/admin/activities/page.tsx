@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, BookOpen, Calendar, Users, GraduationCap, Clock, School } from "lucide-react";
+import { Plus, BookOpen, GraduationCap, School } from "lucide-react";
 import { toast } from "sonner";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import Image from "next/image";
+import { CreateActivityDialog } from "./_components/create-activity-dialog";
+import { ActivityListItem } from "./_components/activity-list-item";
 
 interface Course {
     id: string;
@@ -34,14 +31,6 @@ interface Activity {
     _count: { completions: number };
     createdAt: string;
 }
-
-const activityTypes = [
-    { value: "ASSIGNMENT", label: "Assignment" },
-    { value: "QUIZ", label: "Quiz" },
-    { value: "PROJECT", label: "Project" },
-    { value: "READING", label: "Reading" },
-    { value: "VIDEO", label: "Video" },
-];
 
 // Course Card Component with proper image handling
 function ActivityCourseCard({
@@ -117,50 +106,11 @@ function ActivityCourseCard({
     );
 }
 
-// Selected Course Preview in Dialog
-function SelectedCoursePreview({ course }: { course: Course }) {
-    const imageUrl = useConstructUrl(course.fileKey);
-
-    return (
-        <div className="flex items-center gap-4 p-4 rounded-xl border bg-muted/30">
-            <div className="h-20 w-32 rounded-lg bg-muted overflow-hidden shrink-0 relative">
-                {imageUrl ? (
-                    <Image
-                        src={imageUrl}
-                        alt={course.title}
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <GraduationCap className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                )}
-            </div>
-            <div className="min-w-0 flex-1">
-                <h4 className="font-semibold truncate">{course.title}</h4>
-                <p className="text-sm text-muted-foreground truncate">{course.smallDescription}</p>
-                <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs">{course.category}</Badge>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function AdminActivitiesPage() {
     const [activities, setActivities] = useState<Activity[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    // Form state
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [type, setType] = useState("ASSIGNMENT");
-    const [startDate, setStartDate] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    const [courseId, setCourseId] = useState("");
     const [selectedCourseForActivity, setSelectedCourseForActivity] = useState<Course | null>(null);
 
     useEffect(() => {
@@ -192,32 +142,7 @@ export default function AdminActivitiesPage() {
 
     const openCreateDialog = (course: Course) => {
         setSelectedCourseForActivity(course);
-        setCourseId(course.id);
         setIsDialogOpen(true);
-    };
-
-    const handleCreate = async () => {
-        if (!title || !courseId) {
-            toast.error("Please fill in required fields");
-            return;
-        }
-
-        try {
-            const res = await fetch("/api/admin/activities", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title, description, type, startDate: startDate || null, dueDate: dueDate || null, courseId })
-            });
-
-            if (!res.ok) throw new Error("Failed to create activity");
-
-            toast.success("Activity created successfully");
-            setIsDialogOpen(false);
-            resetForm();
-            fetchActivities();
-        } catch {
-            toast.error("Failed to create activity");
-        }
     };
 
     const handleDelete = async (id: string) => {
@@ -232,16 +157,6 @@ export default function AdminActivitiesPage() {
         } catch {
             toast.error("Failed to delete activity");
         }
-    };
-
-    const resetForm = () => {
-        setTitle("");
-        setDescription("");
-        setType("ASSIGNMENT");
-        setStartDate("");
-        setDueDate("");
-        setCourseId("");
-        setSelectedCourseForActivity(null);
     };
 
     const groupedActivities = activities.reduce((acc, activity) => {
@@ -297,99 +212,15 @@ export default function AdminActivitiesPage() {
             </div>
 
             {/* Create Activity Dialog */}
-            <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-                <DialogContent className="max-w-md w-[95vw] max-h-[90vh] overflow-y-auto rounded-2xl">
-                    <DialogHeader className="text-left">
-                        <DialogTitle>Create Activity</DialogTitle>
-                        <DialogDescription>
-                            {selectedCourseForActivity?.title}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-4 py-2">
-                        {/* Activity Type */}
-                        <div className="grid grid-cols-3 gap-2">
-                            {activityTypes.map(t => (
-                                <button
-                                    key={t.value}
-                                    type="button"
-                                    onClick={() => setType(t.value)}
-                                    className={`p-2 rounded-lg border text-xs font-medium transition-all ${type === t.value
-                                        ? "border-primary bg-primary text-primary-foreground"
-                                        : "border-border hover:bg-muted"
-                                        }`}
-                                >
-                                    {t.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Title */}
-                        <div className="space-y-1.5">
-                            <Label htmlFor="title" className="text-sm">Title *</Label>
-                            <Input
-                                id="title"
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                                placeholder="Activity title"
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-1.5">
-                            <Label htmlFor="description" className="text-sm">Description</Label>
-                            <Textarea
-                                id="description"
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                                placeholder="Optional description"
-                                rows={2}
-                                className="resize-none"
-                            />
-                        </div>
-
-                        {/* Dates */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="startDate" className="text-sm">Start Date</Label>
-                                <Input
-                                    id="startDate"
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label htmlFor="dueDate" className="text-sm">End Date</Label>
-                                <Input
-                                    id="dueDate"
-                                    type="date"
-                                    value={dueDate}
-                                    onChange={e => setDueDate(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsDialogOpen(false)}
-                            className="flex-1"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleCreate}
-                            disabled={!title}
-                            className="flex-1"
-                        >
-                            Create
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {selectedCourseForActivity && (
+                <CreateActivityDialog
+                    open={isDialogOpen}
+                    onOpenChange={setIsDialogOpen}
+                    courseId={selectedCourseForActivity.id}
+                    courseTitle={selectedCourseForActivity.title}
+                    onSuccess={fetchActivities}
+                />
+            )}
 
             {/* Activities List */}
             <div>
@@ -422,44 +253,11 @@ export default function AdminActivitiesPage() {
                                 <CardContent>
                                     <div className="space-y-3">
                                         {courseActivities.map(activity => (
-                                            <div
+                                            <ActivityListItem
                                                 key={activity.id}
-                                                className="flex items-start justify-between p-4 rounded-xl border bg-muted/20 hover:bg-muted/40 transition-colors"
-                                            >
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <h4 className="font-medium">{activity.title}</h4>
-                                                        <Badge variant="secondary" className="text-xs">
-                                                            {activity.type}
-                                                        </Badge>
-                                                    </div>
-                                                    {activity.description && (
-                                                        <p className="text-sm text-muted-foreground line-clamp-2">
-                                                            {activity.description}
-                                                        </p>
-                                                    )}
-                                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                                        {activity.dueDate && (
-                                                            <span className="flex items-center gap-1">
-                                                                <Calendar className="h-3.5 w-3.5" />
-                                                                Due: {new Date(activity.dueDate).toLocaleDateString()}
-                                                            </span>
-                                                        )}
-                                                        <span className="flex items-center gap-1">
-                                                            <Users className="h-3.5 w-3.5" />
-                                                            {activity._count.completions} completed
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
-                                                    onClick={() => handleDelete(activity.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
+                                                activity={activity}
+                                                onDelete={handleDelete}
+                                            />
                                         ))}
                                     </div>
                                 </CardContent>

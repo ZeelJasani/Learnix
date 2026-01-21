@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { EditCourseForm } from "./_components/EditCourseForm";
 import { CourseStructure } from "./_components/CourseStructure";
+import { CourseActivities } from "./_components/CourseActivities";
 
 
 type Params = Promise<{ courseId: string }>
@@ -20,9 +21,10 @@ export default async function EditRoute({ params }: { params: Params }) {
 
 
             <Tabs defaultValue="basic-info" className="w-full">
-                <TabsList className="grid grid-cols-2 w-full">
-                    <TabsTrigger value="basic-info">Baic Information</TabsTrigger>
-                    <TabsTrigger value="course-structure">course structure</TabsTrigger>
+                <TabsList className="grid grid-cols-3 w-full">
+                    <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+                    <TabsTrigger value="course-structure">Structure</TabsTrigger>
+                    <TabsTrigger value="activities">Activities</TabsTrigger>
                 </TabsList>
                 <TabsContent value="basic-info">
                     <Card>
@@ -40,13 +42,26 @@ export default async function EditRoute({ params }: { params: Params }) {
                 <TabsContent value="course-structure">
                     <Card>
                         <CardHeader>
-                            <CardTitle>course structure</CardTitle>
+                            <CardTitle>Course Structure</CardTitle>
                             <CardDescription>
                                 Here you can update your course structure
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                           <CourseStructure data={data} />
+                            <CourseStructure data={data} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="activities">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Activities</CardTitle>
+                            <CardDescription>
+                                Manage activities, assignments and quizzes for this course
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <CourseActivities data={data} />
                         </CardContent>
                     </Card>
                 </TabsContent>
