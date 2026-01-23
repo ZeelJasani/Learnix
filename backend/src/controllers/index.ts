@@ -1,0 +1,10 @@
+export { UserController } from './user.controller';
+export { CourseController } from './course.controller';
+export { ChapterController } from './chapter.controller';
+export { LessonController } from './lesson.controller';
+export { EnrollmentController } from './enrollment.controller';
+export { ProgressController } from './progress.controller';
+export { AdminController } from './admin.controller';
+export { ActivityController } from './activity.controller';
+export { UploadController } from './upload.controller';
+export { WebhookController } from './webhook.controller';
