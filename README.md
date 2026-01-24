@@ -1,556 +1,512 @@
-<!-- **Learnix** 🎓
+# Learnix - Modern Learning Management System
 
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![Clerk](https://img.shields.io/badge/Clerk-000000?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com/)
-[![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
+<div align="center">
 
-## 🚀 Project Overview
+![Learnix Logo](https://via.placeholder.com/200x200)
 
-Learnix is a modern, full-stack e-learning platform that enables users to access educational content, track their progress, and engage with courses. Built with Next.js and TypeScript, it provides a seamless learning experience with features like course enrollment, progress tracking, and secure payments.
+**A full-featured learning management system built with Next.js 15, Express.js, and MongoDB**
 
-## ✨ Key Features
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4.x-green?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-- 🔐 **Authentication & Authorization** - Secure user authentication with Clerk
-- 📚 **Course Management** - Create, read, update, and delete courses
-- 📊 **Progress Tracking** - Track lesson completion and course progress
-- 💳 **Payment Integration** - Secure payment processing with Stripe
-- 🖼️ **Media Handling** - Upload and manage course content with AWS S3
-- 📱 **Responsive Design** - Works seamlessly across all devices
-- 🎨 **Modern UI** - Built with Radix UI and Tailwind CSS
-- 🔄 **Real-time Updates** - Interactive learning experience with real-time progress updates
+<!-- [Live Demo](https://learnix-sepia.vercel.app) -->
+
+</div>
+
+
+
+<!-- ## 📸 Screenshots -->
+
+---
+<br />
+
+<div align="center">
+  <img src="frontend/public/project-image/home-page.png" alt="Home Page" width="45%">
+  <img src="frontend/public/project-image/course-page.png" alt="Courses Listing" width="45%">
+</div>
+
+<div align="center">
+  <img src="frontend/public/project-image/course-view.png" alt="Course Detail" width="45%">
+  <img src="frontend/public/project-image/dashboard.png" alt="Student Dashboard" width="45%">
+</div>
+
+## ✨ Features
+
+### For Students
+- 🎓 **Course Discovery** - Browse and search through published courses with real-time search
+- 💳 **Seamless Enrollment** - Enroll in free or paid courses with Stripe integration
+- 📹 **Video Learning** - Watch video lessons with automatic progress tracking
+- 📊 **Progress Dashboard** - Track course completion and view enrolled courses
+- 📝 **Activity Assignments** - View and complete course activities with due dates
+- 🌙 **Dark Mode Support** - Toggle between light and dark themes
+
+### For Instructors/Admins
+- ✏️ **Course Management** - Create, edit, and publish courses with rich content
+- 📚 **Chapter Organization** - Structure courses with chapters and lessons
+- ☁️ **Cloud Storage** - Upload videos and thumbnails directly to AWS S3
+- 🎯 **Activity Creation** - Create assignments and activities with deadlines
+- 📈 **Analytics Dashboard** - View enrollment statistics and user engagement
+- 👥 **User Management** - Manage users and assign roles (Admin, Instructor, User)
+
+### Platform Features
+- 🔐 **Secure Authentication** - Clerk-powered auth with role-based access control
+- 📱 **Mobile Responsive** - Mobile-first design works seamlessly on all devices
+- 🚀 **Fast Performance** - Server-side rendering with Next.js 15 App Router
+- 🔍 **Instant Search** - Real-time course search with debouncing
+- 💰 **Payment Processing** - Secure Stripe integration for course purchases
+- 🎨 **Modern UI** - Beautiful interface built with Tailwind CSS and shadcn/ui
+
+## 🏗️ Project Structure
+
+```
+learnix/
+├── frontend/                     # Next.js 15 Frontend Application
+│   ├── app/                      # App Router (Next.js 15)
+│   │   ├── (public)/             # Public routes
+│   │   │   ├── courses/          # Course browsing & details
+│   │   │   └── about/            # About page
+│   │   ├── admin/                # Admin dashboard
+│   │   │   ├── courses/          # Course management
+│   │   │   ├── activities/       # Activity management
+│   │   │   ├── users/            # User management
+│   │   │   └── dashboard/        # Analytics & stats
+│   │   ├── dashboard/            # Student dashboard
+│   │   │   └── [slug]/           # Course learning interface
+│   │   ├── api/                  # API routes
+│   │   │   ├── admin/            # Admin endpoints
+│   │   │   ├── user/             # User endpoints
+│   │   │   ├── webhook/          # Webhooks (Stripe, Clerk)
+│   │   │   └── s3/               # S3 file operations
+│   │   └── data/                 # Server-side data fetching
+│   ├── components/               # React components
+│   │   └── ui/                   # shadcn/ui components
+│   ├── hooks/                    # Custom React hooks
+│   ├── lib/                      # Utility libraries
+│   │   ├── api-client.ts         # Backend API client
+│   │   └── utils.ts              # Helper functions
+│   └── public/                   # Static assets
+│
+├── backend/                      # Express.js Backend Application
+│   ├── src/
+│   │   ├── config/               # Configuration files
+│   │   │   ├── database.ts       # MongoDB connection
+│   │   │   └── env.ts            # Environment variables
+│   │   ├── controllers/          # Request handlers
+│   │   │   ├── user.controller.ts
+│   │   │   ├── course.controller.ts
+│   │   │   ├── chapter.controller.ts
+│   │   │   ├── lesson.controller.ts
+│   │   │   ├── enrollment.controller.ts
+│   │   │   └── activity.controller.ts
+│   │   ├── middleware/           # Express middleware
+│   │   │   ├── auth.ts           # Clerk JWT verification
+│   │   │   ├── requireUser.ts    # User requirement check
+│   │   │   └── errorHandler.ts   # Global error handling
+│   │   ├── models/               # Mongoose schemas
+│   │   │   ├── User.ts
+│   │   │   ├── Course.ts
+│   │   │   ├── Chapter.ts
+│   │   │   ├── Lesson.ts
+│   │   │   ├── Enrollment.ts
+│   │   │   ├── LessonProgress.ts
+│   │   │   ├── Activity.ts
+│   │   │   └── ActivityCompletion.ts
+│   │   ├── routes/               # API route definitions
+│   │   ├── services/             # Business logic layer
+│   │   └── utils/                # Utility functions
+│   │       ├── apiResponse.ts    # Response formatter
+│   │       ├── apiError.ts       # Error classes
+│   │       └── logger.ts         # Winston logger
+│   └── dist/                     # Compiled TypeScript output
+│
+├── docs/                         # Additional documentation
+└── README.md                     # This file
+```
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI, Shadcn/ui
-- **State Management**: React Context API
-- **Form Handling**: React Hook Form with Zod validation
-- **Drag & Drop**: @dnd-kit
-- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/) + CSS Modules
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- **State Management**: [React Query](https://tanstack.com/query/latest) + [Zustand](https://github.com/pmndrs/zustand)
-- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Icons**: [Lucide React](https://lucide.dev/) + [Tabler Icons](https://tabler.io/icons)
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 15** | React framework with App Router |
+| **React 19** | UI library for component-based development |
+| **TypeScript** | Type-safe JavaScript superset |
+| **Tailwind CSS** | Utility-first CSS framework |
+| **shadcn/ui** | Re-usable component library |
+| **Lucide React** | Modern icon library |
+| **Tabler Icons** | Additional icon set |
+| **Clerk** | Authentication and user management |
 
 ### Backend
-- **Runtime**: [Node.js 18+](https://nodejs.org/)
-- **API**: [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/) (Better Auth)
-- **File Storage**: [AWS SDK v3](https://aws.amazon.com/sdk-for-javascript/)
-- **Email Service**: [Resend](https://resend.com/)
-- **Security**: [Arcjet](https://arcjet.com/)
+| Technology | Purpose |
+|------------|---------|
+| **Node.js** | JavaScript runtime environment |
+| **Express.js** | Fast, minimalist web framework |
+| **TypeScript** | Type-safe JavaScript |
+| **Mongoose** | MongoDB ODM for data modeling |
+| **Zod** | Schema validation library |
+| **Winston** | Flexible logging library |
 
-### Database
-- **Primary Database**: [PostgreSQL 16](https://www.postgresql.org/)
-- **ORM**: [Prisma](https://www.prisma.io/) (Type-safe database client)
-- **Migrations**: Version-controlled with Prisma Migrate
+### Database & Storage
+| Technology | Purpose |
+|------------|---------|
+| **MongoDB** | NoSQL database for flexible data storage |
+| **MongoDB Atlas** | Cloud-hosted database service |
+| **AWS S3** | Object storage for videos and images |
 
-### DevOps & Tools
-- **Hosting**: [Vercel](https://vercel.com/)
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions)
-- **Containerization**: [Docker](https://www.docker.com/)
-- **Linting/Formatting**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
-- **Testing**: [Jest](https://jestjs.io/) + [Playwright](https://playwright.dev/) + [React Testing Library](https://testing-library.com/)
+### Payment & Services
+| Technology | Purpose |
+|------------|---------|
+| **Stripe** | Payment processing and subscriptions |
+| **Clerk** | User authentication and management |
+| **Vercel** | Frontend deployment and hosting |
+| **Railway/Render** | Backend deployment platform |
 
-## Key Features
-
-- **User Authentication**: Secure login with multiple providers (GitHub, email OTP)
-- **Course Management**: Create and organize courses with chapters and lessons
-- **Rich Content Editor**: Advanced text editing with TipTap integration
-- **File Management**: Secure file uploads with S3-compatible storage
-- **Responsive Design**: Mobile-first approach with modern UI components
-- **Admin Dashboard**: Comprehensive course administration tools
-- **Payment Processing**: Integrated Stripe payment system
-
-## Folder Structure
+## 🏛️ Architecture
 
 ```
-masterji/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                  # Authentication routes
-│   │   ├── _components/         # Auth-specific components
-│   │   ├── login/               # Login page
-│   │   └── verify-request/      # Email verification
-│   ├── (public)/                # Public routes
-│   │   ├── _components/         # Public components (Navbar, UserDropdown)
-│   │   └── page.tsx             # Landing page
-│   ├── admin/                   # Admin dashboard
-│   │   ├── courses/             # Course management
-│   │   │   ├── _components/     # Admin course components
-│   │   │   ├── [courseId]/      # Dynamic course routes
-│   │   │   │   └── edit/        # Course editing interface
-│   │   │   └── create/          # Course creation
-│   │   └── layout.tsx           # Admin layout
-│   ├── api/                     # API routes
-│   │   ├── auth/                # Authentication endpoints
-│   │   └── s3/                  # File upload/delete endpoints
-│   ├── data/                    # Server-side data functions
-│   │   └── admin/               # Admin-specific data operations
-│   ├── globals.css              # Global styles
-│   └── layout.tsx               # Root layout
-├── components/                   # Reusable UI components
-│   ├── file-uploader/           # File upload components
-│   ├── rich-text-editor/        # TipTap-based text editor
-│   ├── sidebar/                 # Navigation components
-│   └── ui/                      # shadcn/ui components
-├── hooks/                       # Custom React hooks
-├── lib/                         # Utility libraries
-│   ├── generated/               # Prisma generated types
-│   ├── auth.ts                  # Authentication configuration
-│   ├── db.ts                    # Database connection
-│   ├── S3Client.ts              # S3 client configuration
-│   └── zodSchemas.ts            # Data validation schemas
-├── prisma/                      # Database schema and migrations
-│   └── schema.prisma            # Prisma schema definition
-├── public/                      # Static assets
-└── middleware.ts                # Next.js middleware
+┌─────────────────────────────────────────────────────────────────┐
+│                         CLIENT BROWSER                          │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      FRONTEND (Next.js 15)                      │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   Pages     │  │ Components  │  │    Server Actions       │  │
+│  │  (App Dir)  │  │  (shadcn)   │  │   (API Calls)           │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                         REST API Calls
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    BACKEND (Express.js)                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   Routes    │  │ Controllers │  │       Services          │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │ Middleware  │  │   Models    │  │       Utils             │  │
+│  │ (Auth/CORS) │  │ (Mongoose)  │  │   (Logger/Response)     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌───────────────────┐  ┌──────────────┐  ┌────────────────────────┐
+│     MongoDB       │  │   AWS S3     │  │       Stripe           │
+│   (Database)      │  │  (Storage)   │  │     (Payments)         │
+└───────────────────┘  └──────────────┘  └────────────────────────┘
+```
+
+### Data Flow
+
+1. **User Request** → Frontend (Next.js) receives user interaction
+2. **API Call** → Backend (Express.js) via REST endpoints
+3. **Authentication** → Clerk JWT token verification middleware
+4. **Authorization** → Role-based access control check
+5. **Data Processing** → Service layer handles business logic
+6. **Database Query** → MongoDB operations via Mongoose ODM
+7. **Response** → Formatted JSON response back to frontend
+8. **UI Update** → React components re-render with new data
+
+
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** v18 or higher
+- **Bun** (optional, for faster frontend builds)
+- **MongoDB** (local installation or MongoDB Atlas account)
+- **Clerk Account** for authentication
+- **Stripe Account** for payment processing
+- **AWS S3 Bucket** for file storage
+
+### Environment Variables
+
+#### Frontend (`frontend/.env`)
+
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
+CLERK_SECRET_KEY=sk_test_xxxxx
+
+# Backend API
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# AWS S3
+AWS_ACCESS_KEY_ID=xxxxx
+AWS_SECRET_ACCESS_KEY=xxxxx
+AWS_REGION=us-east-1
+AWS_ENDPOINT_URL_S3=https://s3.us-east-1.amazonaws.com
+NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES=your-bucket-name
+```
+
+#### Backend (`backend/.env`)
+
+```env
+# Server Configuration
+NODE_ENV=development
+PORT=5000
+
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/learnix
+
+# Clerk Authentication
+CLERK_SECRET_KEY=sk_test_xxxxx
+CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
+
+# Admin Users (comma-separated emails)
+ADMIN_EMAILS=admin@example.com,superadmin@example.com
+
+# Stripe Payment
+STRIPE_SECRET_KEY=sk_test_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# AWS S3 Storage
+AWS_ACCESS_KEY_ID=xxxxx
+AWS_SECRET_ACCESS_KEY=xxxxx
+AWS_REGION=us-east-1
+AWS_ENDPOINT_URL_S3=https://s3.us-east-1.amazonaws.com
+S3_BUCKET_NAME=your-bucket-name
+
+# CORS
+FRONTEND_URL=http://localhost:3000
 ```
 
 
 
-## 💻 Usage
+### Core Endpoints
 
-### For Learners
-1. **Browse Courses**: Visit the public landing page to explore available courses
-2. **User Registration**: Sign up using email or GitHub OAuth
-3. **Course Access**: Enroll in courses and track progress
-4. **Learning Interface**: Access course content through organized chapters and lessons
+#### Users
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/users/sync` | Sync/create user from Clerk | ✅ |
+| GET | `/users/profile` | Get current user profile | ✅ |
+| GET | `/users` | Get all users | ✅ Admin |
 
-### For Instructors/Admins
-1. **Admin Access**: Login with admin credentials
-2. **Course Creation**: Use the admin dashboard to create new courses
-3. **Content Management**: Organize courses into chapters and lessons
-4. **Media Upload**: Upload images and videos using the integrated file manager
-5. **Course Publishing**: Manage course status (draft, published, archived)
+#### Courses
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/courses` | Get all published courses | ❌ |
+| GET | `/courses/:slug` | Get course details by slug | ❌ |
+| GET | `/courses/search?q=query` | Search courses | ❌ |
+| POST | `/courses` | Create new course | ✅ Admin |
+| PUT | `/courses/:id` | Update course | ✅ Admin |
+| DELETE | `/courses/:id` | Delete course | ✅ Admin |
+| GET | `/courses/admin` | Get all courses (including unpublished) | ✅ Admin |
 
-### Key Functionalities
-- **Authentication**: Secure login with multiple providers
+#### Chapters
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/chapters/course/:courseId` | Get all chapters for a course | ✅ |
+| POST | `/chapters` | Create new chapter | ✅ Admin |
+| PUT | `/chapters/:id` | Update chapter | ✅ Admin |
+| DELETE | `/chapters/:id` | Delete chapter | ✅ Admin |
+| POST | `/chapters/reorder` | Reorder chapters | ✅ Admin |
 
-### Authentication & Security
-- **Better Auth**: Modern authentication library with multiple providers
-- **GitHub OAuth**: Social login integration
+#### Lessons
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/lessons/:id/content` | Get lesson content | ✅ |
+| POST | `/lessons` | Create new lesson | ✅ Admin |
+| PUT | `/lessons/:id` | Update lesson | ✅ Admin |
+| DELETE | `/lessons/:id` | Delete lesson | ✅ Admin |
+| POST | `/lessons/:id/progress` | Update lesson progress | ✅ |
 
-### Storage & Media
-- **AWS S3**: Scalable file storage for images and videos
-- **Presigned URLs**: Secure, time-limited file access
+#### Enrollments
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/enrollments/check/:courseId` | Check enrollment status | ✅ |
+| GET | `/enrollments/my-courses` | Get user's enrolled courses | ✅ |
+| POST | `/enrollments` | Create enrollment | ✅ |
 
-### Database & ORM
-- **Prisma**: Type-safe database client and migrations
-- **PostgreSQL**: Robust relational database
-
-### Email & Communication
-- **Resend**: Transactional email service for verification
-
-### UI & Components
-- **shadcn/ui**: High-quality, accessible UI components
-- **Radix UI**: Unstyled, accessible component primitives
-- **Tailwind CSS**: Utility-first CSS framework
-
-## 🚀 Performance & Best Practices
-
-### Optimizations Implemented
-- **Next.js 15**: Latest framework with App Router
-- **Turbopack**: Fast bundler for development
-- **Image Optimization**: Next.js built-in image optimization
-- **Code Splitting**: Automatic route-based code splitting
-- **TypeScript**: Type safety and better developer experience
-
-### Security Best Practices
-- **Input Validation**: Zod schema validation
-- **Rate Limiting**: API protection against abuse
-- **Secure File Uploads**: Presigned URLs and file type validation
-- **Authentication**: Secure session management
-- **Environment Variables**: Proper secret management
-
-### Accessibility
-- **Radix UI**: Built-in accessibility features
-- **Semantic HTML**: Proper HTML structure
-- **Keyboard Navigation**: Full keyboard support
-- **Screen Reader**: ARIA labels and descriptions -->
+#### Activities
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/activities` | Get user's activities | ✅ |
+| GET | `/activities/course/:courseId` | Get course activities | ✅ Admin |
+| POST | `/activities` | Create activity | ✅ Admin |
+| PUT | `/activities/:id` | Update activity | ✅ Admin |
+| DELETE | `/activities/:id` | Delete activity | ✅ Admin |
+| POST | `/activities/:id/complete` | Mark activity as complete | ✅ |
 
 
 
+## 💾 Database Schema
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ ENROLLMENT : has
+    USER ||--o{ LESSON_PROGRESS : tracks
+    USER ||--o{ ACTIVITY_COMPLETION : completes
+    COURSE ||--o{ CHAPTER : contains
+    COURSE ||--o{ ENROLLMENT : has
+    COURSE ||--o{ ACTIVITY : has
+    CHAPTER ||--o{ LESSON : contains
+    LESSON ||--o{ LESSON_PROGRESS : has
+    ACTIVITY ||--o{ ACTIVITY_COMPLETION : has
+
+    USER {
+        ObjectId _id PK
+        string clerkId UK
+        string email UK
+        string name
+        string image
+        string role
+        string stripeCustomerId
+        boolean banned
+        Date createdAt
+    }
+
+    COURSE {
+        ObjectId _id PK
+        string title
+        string slug UK
+        string description
+        string smallDescription
+        string fileKey
+        number price
+        number duration
+        string level
+        string category
+        string status
+        string stripePriceId
+        ObjectId userId FK
+        Date createdAt
+    }
+
+    CHAPTER {
+        ObjectId _id PK
+        string title
+        number position
+        ObjectId courseId FK
+    }
+
+    LESSON {
+        ObjectId _id PK
+        string title
+        string description
+        string videoKey
+        string thumbnailKey
+        number position
+        ObjectId chapterId FK
+    }
+
+    ENROLLMENT {
+        ObjectId _id PK
+        ObjectId userId FK
+        ObjectId courseId FK
+        string status
+        number amount
+        Date createdAt
+    }
+
+    LESSON_PROGRESS {
+        ObjectId _id PK
+        ObjectId userId FK
+        ObjectId lessonId FK
+        boolean completed
+        Date completedAt
+    }
+
+    ACTIVITY {
+        ObjectId _id PK
+        string title
+        string description
+        string type
+        Date startDate
+        Date dueDate
+        ObjectId courseId FK
+    }
+
+    ACTIVITY_COMPLETION {
+        ObjectId _id PK
+        ObjectId userId FK
+        ObjectId activityId FK
+        Date completedAt
+    }
+```
+
+## 🔐 Authentication & Authorization
+
+### Authentication Flow
+
+1. User signs in via Clerk (Social OAuth or Email/Password)
+2. Clerk provides JWT token to client
+3. Frontend stores token and includes it in API request headers
+4. Backend middleware verifies JWT signature with Clerk
+5. User data is synced to MongoDB on first login
+6. User role is stored in both MongoDB and Clerk publicMetadata for instant access
+
+### Role-Based Access Control
+
+| Role | Permissions |
+|------|-------------|
+| **User** | Browse courses, enroll in courses, view lessons, track progress, complete activities |
+| **Instructor** | All User permissions + Create and manage own courses |
+| **Admin** | Full access to all features, user management, course management, analytics |
+
+### Setting Admin Users
+
+update user roles directly in DataBase
+
+
+## ⚡ Performance Optimization
+
+### Frontend Optimizations
+- **Server Components** - Leveraging Next.js 15 React Server Components for faster initial page loads
+- **Image Optimization** - Next.js Image component with automatic WebP conversion and lazy loading
+- **Code Splitting** - Automatic route-based code splitting reduces bundle size
+- **Instant Role Loading** - User roles cached in Clerk metadata for zero-delay authorization
+- **Background Sync** - Non-blocking user synchronization improves perceived performance
+
+### Backend Optimizations
+- **Lean Queries** - Using Mongoose `.lean()` method for 50% faster read operations
+- **Database Indexing** - Strategic indexes on frequently queried fields (email, slug, clerkId)
+- **Connection Pooling** - MongoDB connection reuse reduces latency
+- **Selective Projections** - Fetching only required fields reduces data transfer
+- **Response Compression** - Gzip compression for API responses
+
+### Caching Strategy
+- Clerk metadata caching for instant role access
+- Static page generation for public routes
+- Client-side state caching with React state management
+- Browser caching headers for static assets
+
+## 🔒 Security
+
+### Implemented Security Measures
+
+- ✅ **Authentication** - Clerk JWT verification on all protected routes
+- ✅ **Authorization** - Role-based access control with middleware
+- ✅ **CORS** - Configured allowed origins to prevent unauthorized access
+- ✅ **Helmet** - Security headers to prevent common vulnerabilities
+- ✅ **Input Validation** - Zod schema validation on all inputs
+- ✅ **NoSQL Injection Prevention** - Mongoose ODM with parameterized queries
+- ✅ **XSS Protection** - React's built-in escaping and CSP headers
+- ✅ **CSRF Protection** - SameSite cookie attributes
+- ✅ **Rate Limiting** - Configurable rate limiting with Arcjet
+- ✅ **Environment Variables** - Sensitive data stored securely in `.env` files
+- ✅ **HTTPS Only** - Enforced in production environments
 
 
 
-
+---
 
 <div align="center">
 
-# 🎓 Learnix
+**Made with ❤️ by the Learnix Team**
 
-### Next-Generation E-Learning Platform
-
-*Empowering education through modern web technology*
-
-
-
-**Built with cutting-edge technologies for seamless learning experiences**
+If you found this project helpful, please give it a ⭐!
 
 </div>
-
-<br/>
-
-## 📖 Table of Contents
-
-- [What is Learnix?](#what-is-learnix)
-- [Why Learnix?](#why-learnix)
-- [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
-- [Project Architecture](#project-architecture)
-- [Core Features](#core-features)
-- [User Guides](#user-guides)
-- [API Documentation](#api-documentation)
-- [Performance & Security](#performance--security)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## 🎯 What is Learnix?
-
-Learnix is a **production-ready, full-stack e-learning platform** designed to deliver seamless educational experiences. Built on Next.js 15 with TypeScript, it combines modern web development practices with robust backend infrastructure to create a scalable, secure, and user-friendly learning management system.
-
-> **Perfect for:** Educational institutions, online course creators, corporate training programs, and individual instructors looking for a comprehensive learning platform.
-
----
-
-## 💡 Why Learnix?
-
-| Feature | Description |
-|---------|-------------|
-| **🚀 Blazing Fast** | Powered by Next.js 15 with Turbopack for lightning-fast development and production builds |
-| **🔒 Enterprise Security** | Multi-layered security with Better Auth, Arcjet protection, and secure file handling |
-| **📱 Responsive First** | Mobile-optimized design that works flawlessly across all devices |
-| **🎨 Modern UI/UX** | Beautiful, accessible components built with Radix UI and Tailwind CSS |
-| **💳 Payment Ready** | Integrated Stripe for seamless course monetization |
-| **☁️ Cloud Native** | AWS S3 integration for scalable media storage |
-
----
-
-## 🛠️ Technology Stack
-
-<details>
-<summary><b>Frontend Technologies</b> (Click to expand)</summary>
-```yaml
-Framework: Next.js 14 (App Router)
-Language: TypeScript
-Styling: 
-  - Tailwind CSS 4.0
-  - CSS Modules
-UI Libraries:
-  - Radix UI (Accessible primitives)
-  - shadcn/ui (Component library)
-State Management:
-  - React Query (Server state)
-  - Zustand (Client state)
-Form Handling:
-  - React Hook Form
-  - Zod (Validation)
-Rich Text: TipTap Editor
-Drag & Drop: @dnd-kit
-Icons: Lucide React, Tabler Icons
-```
-
-</details>
-
-<details>
-<summary><b>Backend Infrastructure</b> (Click to expand)</summary>
-```yaml
-Runtime: Node.js 18+
-API: Next.js Route Handlers
-Authentication: Better Auth (NextAuth.js)
-Database:
-  - PostgreSQL 16
-  - Prisma ORM
-File Storage: AWS SDK v3 (S3)
-Email: Resend
-Security: Arcjet
-Payment: Stripe
-```
-
-</details>
-
-<details>
-<summary><b>Development & DevOps</b> (Click to expand)</summary>
-```yaml
-Hosting: Vercel
-Version Control: Git + GitHub
-CI/CD: GitHub Actions
-Containerization: Docker
-Code Quality:
-  - ESLint
-  - Prettier
-Testing:
-  - Jest (Unit)
-  - Playwright (E2E)
-  - React Testing Library
-```
-
-</details>
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-```bash
-Node.js >= 18.0.0
-PostgreSQL >= 16
-npm or yarn or pnpm
-AWS Account (for S3)
-Stripe Account
-```
-
-### Installation
-
-**Step 1:** Clone the repository
-```bash
-git clone https://github.com/yourusername/learnix.git
-cd learnix
-```
-
-**Step 2:** Install dependencies
-```bash
-npm install
-# or
-pnpm install
-```
-
-**Step 3:** Configure environment variables
-```bash
-cp .env.example .env.local
-```
-
-Required environment variables:
-```env
-# Database
-DATABASE_URL="postgresql://..."
-
-# Authentication
-AUTH_SECRET="your-secret-key"
-AUTH_GITHUB_ID="..."
-AUTH_GITHUB_SECRET="..."
-
-# AWS S3
-AWS_ACCESS_KEY_ID="..."
-AWS_SECRET_ACCESS_KEY="..."
-AWS_REGION="..."
-AWS_S3_BUCKET="..."
-
-# Stripe
-STRIPE_SECRET_KEY="..."
-STRIPE_WEBHOOK_SECRET="..."
-
-# Email
-RESEND_API_KEY="..."
-```
-
-**Step 4:** Set up the database
-```bash
-npx prisma generate
-npx prisma db push
-npx prisma db seed  # Optional: seed with demo data
-```
-
-**Step 5:** Start development server
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` 🎉
-
----
-
-## 🏗️ Project Architecture
-```
-📦 learnix/
-│
-├── 🎨 app/                      # Next.js App Router
-│   ├── (auth)/                  # 🔐 Authentication flow
-│   │   ├── login/
-│   │   └── verify-request/
-│   │
-│   ├── (public)/                # 🌍 Public-facing pages
-│   │   ├── _components/
-│   │   └── page.tsx
-│   │
-│   ├── admin/                   # 👨‍💼 Admin dashboard
-│   │   ├── courses/
-│   │   │   ├── [courseId]/edit/
-│   │   │   └── create/
-│   │   └── layout.tsx
-│   │
-│   ├── api/                     # 🔌 API endpoints
-│   │   ├── auth/
-│   │   └── s3/
-│   │
-│   └── data/                    # 📊 Server actions
-│
-├── 🧩 components/               # Reusable components
-│   ├── file-uploader/
-│   ├── rich-text-editor/
-│   ├── sidebar/
-│   └── ui/                      # shadcn/ui components
-│
-├── 🪝 hooks/                    # Custom React hooks
-│
-├── 📚 lib/                      # Utilities & configs
-│   ├── auth.ts
-│   ├── db.ts
-│   ├── S3Client.ts
-│   └── zodSchemas.ts
-│
-├── 🗄️ prisma/                   # Database schema
-│   └── schema.prisma
-│
-└── 🔒 middleware.ts             # Route protection
-```
-
----
-
-## ✨ Core Features
-
-### 🔐 Authentication & Authorization
-- Multi-provider authentication (GitHub OAuth, Email OTP)
-- Secure session management with Better Auth
-- Role-based access control (Student, Instructor, Admin)
-- Email verification system
-
-### 📚 Course Management System
-- **Create & Edit**: Intuitive course creation interface
-- **Chapter Organization**: Drag-and-drop chapter reordering
-- **Lesson Management**: Rich content lessons with multimedia support
-- **Draft System**: Save and preview before publishing
-
-### 🎥 Rich Media Support
-- AWS S3 integration for scalable storage
-- Image and video upload with progress tracking
-- Presigned URLs for secure file access
-- Automatic file type validation
-
-### 📊 Progress Tracking
-- Real-time lesson completion tracking
-- Course progress visualization
-- Personal learning dashboard
-- Achievement system
-
-### 💳 Payment Integration
-- Stripe checkout for course purchases
-- Secure payment processing
-- Webhook handling for payment events
-- Subscription management support
-
-### 🎨 Modern User Interface
-- Responsive design for all screen sizes
-- Dark mode support
-- Accessible components (WCAG compliant)
-- Smooth animations and transitions
-
----
-
-## 👥 User Guides
-
-### For Students
-
-1. **Getting Started**
-   - Sign up using email or GitHub
-   - Browse available courses
-   - Enroll in courses of interest
-
-2. **Learning Experience**
-   - Access course dashboard
-   - Navigate through chapters and lessons
-   - Track your progress
-   - Complete lessons at your own pace
-
-### For Instructors
-
-1. **Access Admin Panel**
-```
-   Navigate to /admin after logging in with instructor credentials
-```
-
-2. **Create a New Course**
-   - Click "Create Course" button
-   - Fill in course details (title, description, category)
-   - Upload course thumbnail
-   - Set pricing information
-
-3. **Add Content**
-   - Create chapters within your course
-   - Add lessons to each chapter
-   - Use the rich text editor for lesson content
-   - Upload supplementary materials
-
-4. **Publish Course**
-   - Review all content
-   - Set course status to "Published"
-   - Monitor enrollments and feedback
-
----
-
-## 🔌 API Documentation
-
-### Authentication Endpoints
-```typescript
-POST   /api/auth/signin          // Sign in user
-POST   /api/auth/signout         // Sign out user
-POST   /api/auth/verify          // Verify email
-GET    /api/auth/session         // Get current session
-```
-
-### File Upload Endpoints
-```typescript
-POST   /api/s3/upload            // Upload file to S3
-DELETE /api/s3/delete            // Delete file from S3
-```
-
-### Course API (Server Actions)
-```typescript
-// Located in app/data/admin/
-getCourses()                     // Fetch all courses
-getCourseById(id)                // Fetch single course
-createCourse(data)               // Create new course
-updateCourse(id, data)           // Update course
-deleteCourse(id)                 // Delete course
-```
-
----
-
-## ⚡ Performance & Security
-
-### Performance Optimizations
-
-- ✅ Next.js 15 with Turbopack for faster builds
-- ✅ Automatic code splitting and lazy loading
-- ✅ Image optimization with Next/Image
-- ✅ React Server Components for reduced bundle size
-- ✅ Edge runtime for faster API responses
-- ✅ PostgreSQL query optimization with Prisma
-
-### Security Measures
-
-- 🔒 Input validation with Zod schemas
-- 🔒 Rate limiting with Arcjet
-- 🔒 CSRF protection
-- 🔒 SQL injection prevention via Prisma
-- 🔒 XSS protection with Content Security Policy
-- 🔒 Secure file uploads with type validation
-- 🔒 Environment variable protection
-
-### Accessibility Features
-
-- ♿ WCAG 2.1 Level AA compliant
-- ♿ Keyboard navigation support
-- ♿ Screen reader optimization
-- ♿ Semantic HTML structure
-- ♿ ARIA labels and descriptions
-
----
-<!-- </div> -->
