@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "nodemon",
         "build": "tsc",
+        "vercel-build": "npm run build",
         "start": "node dist/server.js",
         "lint": "eslint src --ext .ts",
         "lint:fix": "eslint src --ext .ts --fix"
