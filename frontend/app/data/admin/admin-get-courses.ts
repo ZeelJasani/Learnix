@@ -13,6 +13,7 @@ export interface AdminCourseType {
     fileKey: string;
     category: string;
     slug: string;
+    chapterCount?: number;
 }
 
 export async function adminGetCourses(): Promise<AdminCourseType[]> {
@@ -22,10 +23,14 @@ export async function adminGetCourses(): Promise<AdminCourseType[]> {
         return [];
     }
 
-    const response = await api.get<AdminCourseType[]>('/admin/courses', token);
+    const response = await api.get<any[]>('/admin/courses', token);
 
     if (response.success && response.data) {
-        return response.data;
+        // Map _id to id for MongoDB compatibility
+        return response.data.map((course: any) => ({
+            ...course,
+            id: course.id || course._id?.toString() || course._id,
+        }));
     }
 
     return [];

@@ -32,6 +32,7 @@ export interface AdminCourseSingularType {
     smallDescription: string;
     chapter?: AdminChapter[];
     chapters?: AdminChapter[];
+    originalIdentifier?: string;
 }
 
 export async function adminGetCourse(id: string): Promise<AdminCourseSingularType> {
@@ -52,6 +53,10 @@ export async function adminGetCourse(id: string): Promise<AdminCourseSingularTyp
     if (course.chapters && !course.chapter) {
         course.chapter = course.chapters;
     }
+
+    // Add the original identifier to the course object for form submission
+    // This ensures we use the same identifier (ID or slug) that was used to fetch the course
+    course.originalIdentifier = id;
 
     return course;
 }

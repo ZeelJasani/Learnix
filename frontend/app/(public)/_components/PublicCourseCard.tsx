@@ -85,7 +85,7 @@ export function PublicCourseCard({ data }: iAppProps) {
                     </div>
                     <div className="flex items-center gap-1.5">
                         <Users className="size-4" />
-                        <span>12 chapters</span>
+                        <span>{data.chapterCount || 0} chapters</span>
                     </div>
                 </div>
 

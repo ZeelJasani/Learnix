@@ -16,7 +16,7 @@ export default async function EditRoute({ params }: { params: Params }) {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-8">Edit Course: <span className="text-primary">{data.title}</span></h1>
+            <h1 className="text-3xl font-bold mb-12 mt-6">Edit Course: <span className="text-primary">{data.title}</span></h1>
 
 
 

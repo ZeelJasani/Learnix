@@ -90,7 +90,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
     <div>
       <Link
         className={buttonVariants({ variant: "outline", className: "mb-6" })}
-        href={`/admin/courses/${courseId}/edit`}
+        href={`/admin/courses/${data.slug || data.id}/edit`}
       >
         <ArrowLeft className="size-4" />
         <span>Go Back</span>

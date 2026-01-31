@@ -42,22 +42,22 @@ router.delete('/courses/:id', CourseController.delete);
 
 // Chapters
 router.get('/chapters/:courseId', ChapterController.getByCourseId);
-router.post('/chapters', validateBody(createChapterSchema), ChapterController.create);
+router.post('/chapters', ChapterController.create);
+router.put('/chapters/reorder', ChapterController.reorder); // Specific route FIRST
 router.put('/chapters/:id', ChapterController.update);
 router.delete('/chapters/:id', ChapterController.delete);
-router.put('/chapters/reorder', validateBody(reorderChaptersSchema), ChapterController.reorder);
 
 // Lessons
 router.get('/lessons/:chapterId', LessonController.getByChapterId);
-router.post('/lessons', validateBody(createLessonSchema), LessonController.create);
+router.post('/lessons', LessonController.create);
+router.put('/lessons/reorder', LessonController.reorder); // Specific route FIRST
 router.put('/lessons/:id', LessonController.update);
 router.delete('/lessons/:id', LessonController.delete);
-router.put('/lessons/reorder', validateBody(reorderLessonsSchema), LessonController.reorder);
 
 // Activities
 router.get('/activities/:courseId', ActivityController.getByCourseId);
-router.post('/activities', validateBody(createActivitySchema), ActivityController.create);
-router.put('/activities/:id', validateBody(updateActivitySchema), ActivityController.update);
+router.post('/activities', ActivityController.create);
+router.put('/activities/:id', ActivityController.update);
 router.delete('/activities/:id', ActivityController.delete);
 
 // Uploads

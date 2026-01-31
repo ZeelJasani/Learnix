@@ -94,7 +94,6 @@ const courseSchema = new Schema<ICourse>(
 );
 
 // Indexes
-courseSchema.index({ slug: 1 });
 courseSchema.index({ status: 1 });
 courseSchema.index({ category: 1 });
 courseSchema.index({ userId: 1 });

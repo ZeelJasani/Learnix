@@ -14,9 +14,17 @@ export const requireAdmin = async (
 
         const role = (req.user.role || '').toLowerCase();
 
+        const fs = require('fs');
+        const path = require('path');
+        const logPath = path.join(__dirname, '../../debug.log');
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] requireAdmin called. Role in req.user: "${role}"\n`);
+
         if (role !== 'admin') {
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] requireAdmin FAILED.\n`);
             throw ApiError.forbidden('Admin access required');
         }
+
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] requireAdmin PASSED.\n`);
 
         next();
     } catch (error) {

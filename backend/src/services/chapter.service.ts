@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { Chapter, IChapter } from '../models/Chapter';
 import { Lesson } from '../models/Lesson';
-import { ApiError } from '../utils/apiError';
 
 interface CreateChapterData {
     title: string;
@@ -19,38 +18,20 @@ interface ReorderChapterData {
 }
 
 export class ChapterService {
-    /**
-     * Get all chapters for a course
-     */
+    // Get all chapters for a course
     static async getByCourseId(courseId: string): Promise<IChapter[]> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
-        }
-
         return Chapter.find({ courseId })
             .sort({ position: 1 })
-            .lean() as unknown as Promise<IChapter[]>;
+            .lean() as unknown as IChapter[];
     }
 
-    /**
-     * Get chapter by ID
-     */
+    // Get chapter by ID
     static async getById(id: string): Promise<IChapter | null> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid chapter ID');
-        }
-
         return Chapter.findById(id);
     }
 
-    /**
-     * Create a new chapter
-     */
+    // Create a new chapter - SIMPLE VERSION
     static async create(data: CreateChapterData): Promise<IChapter> {
-        if (!mongoose.Types.ObjectId.isValid(data.courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
-        }
-
         // Get the next position
         const lastChapter = await Chapter.findOne({ courseId: data.courseId })
             .sort({ position: -1 })
@@ -58,6 +39,7 @@ export class ChapterService {
 
         const position = lastChapter ? lastChapter.position + 1 : 0;
 
+        // Create and save chapter
         const chapter = new Chapter({
             title: data.title,
             courseId: new mongoose.Types.ObjectId(data.courseId),
@@ -68,61 +50,37 @@ export class ChapterService {
         return chapter;
     }
 
-    /**
-     * Update a chapter
-     */
+    // Update a chapter
     static async update(id: string, data: UpdateChapterData): Promise<IChapter | null> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid chapter ID');
-        }
-
         return Chapter.findByIdAndUpdate(id, data, { new: true });
     }
 
-    /**
-     * Delete a chapter and all its lessons
-     */
+    // Delete a chapter and all its lessons
     static async delete(id: string): Promise<boolean> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid chapter ID');
-        }
-
         const chapter = await Chapter.findById(id);
-        if (!chapter) {
-            return false;
-        }
+        if (!chapter) return false;
 
         // Delete all lessons in the chapter
         await Lesson.deleteMany({ chapterId: id });
         await Chapter.findByIdAndDelete(id);
 
         // Reorder remaining chapters
-        await this.reorderAfterDelete(chapter.courseId.toString(), chapter.position);
+        await Chapter.updateMany(
+            { courseId: chapter.courseId, position: { $gt: chapter.position } },
+            { $inc: { position: -1 } }
+        );
 
         return true;
     }
 
-    /**
-     * Reorder chapters after deletion
-     */
-    private static async reorderAfterDelete(courseId: string, deletedPosition: number): Promise<void> {
-        await Chapter.updateMany(
-            { courseId, position: { $gt: deletedPosition } },
-            { $inc: { position: -1 } }
-        );
-    }
-
-    /**
-     * Reorder chapters
-     */
+    // Reorder chapters
     static async reorder(courseId: string, items: ReorderChapterData[]): Promise<void> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
-        }
+        // Validate inputs
+        if (!courseId || !items) return;
 
         const bulkOps = items.map(item => ({
             updateOne: {
-                filter: { _id: new mongoose.Types.ObjectId(item.id), courseId: new mongoose.Types.ObjectId(courseId) },
+                filter: { _id: item.id, courseId: courseId }, // Allow Mongoose to cast
                 update: { $set: { position: item.position } },
             },
         }));

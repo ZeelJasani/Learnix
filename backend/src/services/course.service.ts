@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Course, ICourse, CourseStatus } from '../models/Course';
 import { Chapter } from '../models/Chapter';
 import { Lesson } from '../models/Lesson';
+import { LessonProgress } from '../models/LessonProgress';
 import { ApiError } from '../utils/apiError';
 
 interface CreateCourseData {
@@ -38,16 +39,30 @@ export class CourseService {
      * Get all published courses (public)
      */
     static async getAllPublished(): Promise<ICourse[]> {
-        return Course.find({ status: 'PUBLISHED' })
+        const courses = await Course.find({ status: 'PUBLISHED' })
             .sort({ createdAt: -1 })
             .select('title price smallDescription slug fileKey level duration category')
-            .lean() as unknown as Promise<ICourse[]>;
+            .lean();
+
+        // Get chapter counts for all courses
+        const coursesWithChapterCount = await Promise.all(
+            courses.map(async (course) => {
+                const chapterCount = await Chapter.countDocuments({ courseId: course._id });
+                return {
+                    ...course,
+                    id: course._id.toString(),
+                    chapterCount,
+                };
+            })
+        );
+
+        return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
     /**
      * Get course by slug with chapters and lessons (public)
      */
-    static async getBySlug(slug: string): Promise<any> {
+    static async getBySlug(slug: string, userId?: string): Promise<any> {
         const course = await Course.findOne({ slug, status: 'PUBLISHED' })
             .select('title description fileKey price duration level category smallDescription slug')
             .lean();
@@ -69,9 +84,34 @@ export class CourseService {
                     .select('title position')
                     .lean();
 
+                let lessonsWithProgress = lessons.map(lesson => ({
+                    ...lesson,
+                    lessonProgress: [] as any[]
+                }));
+
+                if (userId) {
+                    const lessonIds = lessons.map(l => l._id);
+                    const progressDocs = await LessonProgress.find({
+                        userId: new mongoose.Types.ObjectId(userId),
+                        lessonId: { $in: lessonIds }
+                    }).lean();
+
+                    lessonsWithProgress = lessons.map(lesson => {
+                        const progress = progressDocs.find(p => p.lessonId.toString() === lesson._id.toString());
+                        return {
+                            ...lesson,
+                            lessonProgress: progress ? [{
+                                completed: progress.completed,
+                                lessonId: lesson._id.toString(),
+                                id: progress._id.toString()
+                            }] : []
+                        };
+                    });
+                }
+
                 return {
                     ...chapter,
-                    lessons,
+                    lessons: lessonsWithProgress,
                 };
             })
         );
@@ -86,23 +126,43 @@ export class CourseService {
      * Get all courses (admin)
      */
     static async getAll(): Promise<ICourse[]> {
-        return Course.find()
+        const courses = await Course.find()
             .sort({ createdAt: -1 })
             .select('title smallDescription duration level status price fileKey category slug')
-            .lean() as unknown as Promise<ICourse[]>;
+            .lean();
+
+        // Get chapter counts for all courses
+        const coursesWithChapterCount = await Promise.all(
+            courses.map(async (course) => {
+                const chapterCount = await Chapter.countDocuments({ courseId: course._id });
+                return {
+                    ...course,
+                    id: course._id.toString(),
+                    chapterCount,
+                };
+            })
+        );
+
+        return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
     /**
-     * Get course by ID with full details (admin)
+     * Get course by ID or slug with full details (admin)
      */
-    static async getById(id: string): Promise<any> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async getById(idOrSlug: string): Promise<any> {
+        let course;
+
+        if (mongoose.Types.ObjectId.isValid(idOrSlug)) {
+            course = await Course.findById(idOrSlug)
+                .select('title description fileKey price duration level status slug smallDescription')
+                .lean();
         }
 
-        const course = await Course.findById(id)
-            .select('title description fileKey price duration level status slug smallDescription')
-            .lean();
+        if (!course) {
+            course = await Course.findOne({ slug: idOrSlug })
+                .select('title description fileKey price duration level status slug smallDescription')
+                .lean();
+        }
 
         if (!course) {
             return null;
@@ -123,13 +183,18 @@ export class CourseService {
 
                 return {
                     ...chapter,
-                    lessons,
+                    id: chapter._id.toString(),
+                    lessons: lessons.map(lesson => ({
+                        ...lesson,
+                        id: lesson._id.toString(),
+                    })),
                 };
             })
         );
 
         return {
             ...course,
+            id: course._id.toString(),
             chapters: chaptersWithLessons,
         };
     }
@@ -138,7 +203,6 @@ export class CourseService {
      * Create a new course
      */
     static async create(data: CreateCourseData): Promise<ICourse> {
-        // Check if slug already exists
         const existingCourse = await Course.findOne({ slug: data.slug });
         if (existingCourse) {
             throw ApiError.conflict('A course with this slug already exists');
@@ -154,47 +218,51 @@ export class CourseService {
     }
 
     /**
-     * Update a course
+     * Update a course by ID or slug
      */
-    static async update(id: string, data: UpdateCourseData): Promise<ICourse | null> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async update(idOrSlug: string, data: UpdateCourseData): Promise<ICourse | null> {
+        // Import locally to avoid circular dependency if any (though utils is safe)
+        const { resolveCourseId } = await import('../utils/id-resolver');
+        let courseId: string;
+        try {
+            courseId = await resolveCourseId(idOrSlug);
+        } catch (error) {
+            return null;
         }
 
-        // If updating slug, check for conflicts
+        // Check for slug conflict if changing slug
         if (data.slug) {
             const existingCourse = await Course.findOne({
                 slug: data.slug,
-                _id: { $ne: id }
+                _id: { $ne: courseId }
             });
             if (existingCourse) {
                 throw ApiError.conflict('A course with this slug already exists');
             }
         }
 
-        return Course.findByIdAndUpdate(id, data, { new: true });
+        return Course.findByIdAndUpdate(courseId, data, { new: true });
     }
 
     /**
-     * Delete a course and all related data
+     * Delete a course and all related data by ID or slug
      */
-    static async delete(id: string): Promise<boolean> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid course ID');
-        }
-
-        const course = await Course.findById(id);
-        if (!course) {
+    static async delete(idOrSlug: string): Promise<boolean> {
+        const { resolveCourseId } = await import('../utils/id-resolver');
+        let courseId: string;
+        try {
+            courseId = await resolveCourseId(idOrSlug);
+        } catch (error) {
             return false;
         }
 
         // Delete all chapters and lessons (cascade)
-        const chapters = await Chapter.find({ courseId: id });
+        const chapters = await Chapter.find({ courseId });
         for (const chapter of chapters) {
             await Lesson.deleteMany({ chapterId: chapter._id });
         }
-        await Chapter.deleteMany({ courseId: id });
-        await Course.findByIdAndDelete(id);
+        await Chapter.deleteMany({ courseId });
+        await Course.findByIdAndDelete(courseId);
 
         return true;
     }
@@ -226,21 +294,38 @@ export class CourseService {
      * Get recent courses (admin)
      */
     static async getRecent(limit = 5): Promise<ICourse[]> {
-        return Course.find()
+        const courses = await Course.find()
             .sort({ createdAt: -1 })
             .limit(limit)
             .select('title smallDescription duration level status price fileKey category slug createdAt')
-            .lean() as unknown as Promise<ICourse[]>;
+            .lean();
+
+        const coursesWithChapterCount = await Promise.all(
+            courses.map(async (course) => {
+                const chapterCount = await Chapter.countDocuments({ courseId: course._id });
+                return {
+                    ...course,
+                    id: course._id.toString(),
+                    chapterCount,
+                };
+            })
+        );
+
+        return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
     /**
      * Update course status
      */
-    static async updateStatus(id: string, status: CourseStatus): Promise<ICourse | null> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async updateStatus(idOrSlug: string, status: CourseStatus): Promise<ICourse | null> {
+        const { resolveCourseId } = await import('../utils/id-resolver');
+        let courseId: string;
+        try {
+            courseId = await resolveCourseId(idOrSlug);
+        } catch (error) {
+            return null;
         }
 
-        return Course.findByIdAndUpdate(id, { status }, { new: true });
+        return Course.findByIdAndUpdate(courseId, { status }, { new: true });
     }
 }

@@ -8,7 +8,7 @@ export const config = {
   ],
 };
 
-const isProtectedRoute = createRouteMatcher(["/admin(.*)", "/dashboard(.*)", "/profile(.*)", "/settings(.*)"]);
+const isProtectedRoute = createRouteMatcher(["/admin(.*)", "/dashboard(.*)", "/profile(.*)"]);
 
 export default clerkMiddleware(async (auth: ClerkMiddlewareAuth, request: NextRequest) => {
   const { pathname } = request.nextUrl;

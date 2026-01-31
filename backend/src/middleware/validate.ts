@@ -8,10 +8,12 @@ export const validate = (schema: ZodSchema, target: ValidationTarget = 'body') =
     return (req: Request, res: Response, next: NextFunction): void => {
         try {
             const dataToValidate = req[target];
+            console.log(`[Validation] Validating ${target}:`, JSON.stringify(dataToValidate, null, 2));
             schema.parse(dataToValidate);
             next();
         } catch (error) {
             if (error instanceof ZodError) {
+                console.error('[Validation] Validation failed:', error.errors);
                 const formattedErrors: Record<string, string[]> = {};
                 error.errors.forEach((err) => {
                     const path = err.path.join('.');
@@ -21,12 +23,20 @@ export const validate = (schema: ZodSchema, target: ValidationTarget = 'body') =
                     formattedErrors[path].push(err.message);
                 });
 
-                next(ApiError.badRequest('Validation failed', formattedErrors));
+                console.error('[Validation] Formatted errors:', formattedErrors);
+
+                // Create a detailed error message
+                const errorDetails = Object.entries(formattedErrors)
+                    .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                    .join('; ');
+
+                next(ApiError.badRequest(`Validation failed: ${errorDetails}`, formattedErrors));
             } else {
                 next(error);
             }
         }
     };
+
 };
 
 export const validateBody = (schema: ZodSchema) => validate(schema, 'body');

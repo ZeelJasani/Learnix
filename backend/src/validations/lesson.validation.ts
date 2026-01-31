@@ -1,28 +1,26 @@
 import { z } from 'zod';
 
+// Simple validation - just check if fields exist
 export const createLessonSchema = z.object({
-    name: z.string().min(3, 'Name must be at least 3 characters'),
-    courseId: z.string().min(1, 'Course ID is required'),
-    chapterId: z.string().min(1, 'Chapter ID is required'),
-    description: z.string().min(3).optional(),
-    thumbnail: z.string().optional(),
-    videoKey: z.string().optional(),
+    name: z.string(),
+    courseId: z.string().min(1),
+    chapterId: z.string().min(1),
 });
 
 export const updateLessonSchema = z.object({
-    title: z.string().min(3, 'Title must be at least 3 characters').optional(),
+    title: z.string().optional(),
     description: z.string().optional().nullable(),
     thumbnailKey: z.string().optional().nullable(),
     videoKey: z.string().optional().nullable(),
-    position: z.number().min(0).optional(),
+    position: z.number().optional(),
 });
 
 export const reorderLessonsSchema = z.object({
-    chapterId: z.string().min(1, 'Chapter ID is required'),
+    chapterId: z.string(),
     items: z.array(
         z.object({
-            id: z.string().min(1, 'Lesson ID is required'),
-            position: z.number().min(0),
+            id: z.string(),
+            position: z.number(),
         })
     ),
 });

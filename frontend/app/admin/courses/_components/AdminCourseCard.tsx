@@ -1,128 +1,13 @@
-// import { AdminCourseType } from "@/app/not-admin/admin-get-courses";
-// import { Button, buttonVariants } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-// import { useConstructUrl } from "@/hooks/use-construct-url";
-// import { ArrowRight, Eye, MoreVertical, Pencil, School, TimerIcon, Trash2 } from "lucide-react";
-// import Image from "next/image";
-// import Link from "next/link";
-
-
-// interface iAppProps {
-//     data: AdminCourseType;
-// }
-
-// export function AdminCourseCard({ data }: iAppProps) {
-
-
-//     const CourseImage = useConstructUrl(data.fileKey)
-//     return (
-//         <Card className="group relative py-0 gap-0">
-//             {/* absolute dropdown */}
-//             <div className="absolute top-2 right-2 z-10">
-//                 <DropdownMenu>
-//                     <DropdownMenuTrigger asChild>
-//                         <Button variant="secondary" size="icon">
-//                             <MoreVertical className="size-4" />
-//                         </Button>
-//                     </DropdownMenuTrigger>
-//                     <DropdownMenuContent align="end" className="w-48">
-//                         <DropdownMenuItem asChild>
-//                             <Link href={`/admin/courses/${data.id}/edit`}>
-//                                 <Pencil className="size-4 mr-2" />
-//                                 Edit Course
-//                             </Link>
-//                         </DropdownMenuItem>
-
-//                         <DropdownMenuItem asChild>
-//                             <Link href={`/courses/${data.slug}`}>
-//                                 <Eye className="size-4 mr-2" />
-//                                 Preview
-//                             </Link>
-//                         </DropdownMenuItem>
-
-//                         <DropdownMenuSeparator>
-//                             <DropdownMenuItem asChild>
-//                                 <Link href={`/courses/${data.id}/delete`}>
-//                                     <Trash2 className="size-4 mr-2 text-destructive" />
-//                                     Delete course
-//                                 </Link>
-//                             </DropdownMenuItem>
-
-//                         </DropdownMenuSeparator>
-//                     </DropdownMenuContent>
-//                 </DropdownMenu>
-
-//             </div>
-//             <Image
-//                 src={CourseImage}
-//                 alt="Course image"
-//                 width={600}
-//                 height={400}
-//                 className="w-full rounded-t-lg aspect-video h-full object-cover"
-//             />
-//             <CardContent className="p-4">
-//                 <Link
-//                     href={`/admin/courses/${data.id}/edit`}
-//                     className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors"
-//                 >
-//                     {data.title}
-//                 </Link>
-
-//                 <p className="line-clamp-2 text-sm text-muted-foreground leading-tight mt-2">
-//                     {data.smallDescription}
-//                 </p>
-//                 <div className="mt-4 flex items-center gap-x-5">
-//                     <div className="flex items-center gap-x-2">
-//                         <TimerIcon className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-//                         <p className="text-sm text-muted-foreground">
-//                             {data.duration}h
-//                         </p>
-//                     </div>
-//                     <div className="flex items-center gap-x-2">
-//                         <School className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-//                         <p className="text-sm text-muted-foreground">
-//                             {data.level}h
-//                         </p>
-//                     </div>
-//                 </div>
-
-
-
-//                 <Link
-//                     className={buttonVariants({
-//                         className: "w-full mt-4",
-//                     })}
-//                     href={`/admin/courses/${data.id}/edit`}>
-//                     Edit Course <ArrowRight className="size-4" />
-
-//                 </Link>
-//             </CardContent>
-//         </Card>
-//     );
-// }
-
-
-
-
-// // masteji-mordern-lms.t3.storageapi.dev
-
-
-
-
-
-
-
-
-
+"use client";
 
 import { AdminCourseType } from "@/app/data/admin/admin-get-courses";
+import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import { ArrowRight, Eye, MoreVertical, Pencil, School, TimerIcon, Trash2 } from "lucide-react";
+import { ArrowRight, Eye, MoreVertical, Pencil, Clock, Users, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -130,91 +15,143 @@ interface iAppProps {
     data: AdminCourseType;
 }
 
+// Map levels to colors
+const levelColors: Record<string, string> = {
+    BEGINNER: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400",
+    INTERMEDIATE: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400",
+    ADVANCED: "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400",
+};
+
+// Map categories to colors
+const categoryColors: Record<string, string> = {
+    Development: "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
+    Design: "border-purple-200 bg-purple-50 text-purple-600 dark:border-purple-900 dark:bg-purple-950/50 dark:text-purple-400",
+    Business: "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-400",
+    Marketing: "border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900 dark:bg-orange-950/50 dark:text-orange-400",
+};
+
 export function AdminCourseCard({ data }: iAppProps) {
     const CourseImage = useConstructUrl(data.fileKey);
+    const levelClass = levelColors[data.level] || levelColors.BEGINNER;
+    const categoryClass = categoryColors[data.category] || "border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400";
+    const editLink = `/admin/courses/${data.id}/edit`;
+
     return (
-        <Card className="group relative py-0 gap-0">
+        <Card className="group relative overflow-hidden py-0 gap-0 hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20">
+            {/* Image Container */}
+            <div className="relative overflow-hidden">
+                {/* Level Badge */}
+                <Badge className={`absolute top-3 left-3 z-10 ${levelClass} border-0 shadow-sm`}>
+                    {data.level}
+                </Badge>
 
-            <div className="absolute top-2 right-2 z-10">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="bg-black/40 hover:bg-black/60 border-none text-white">
-                            <MoreVertical className="size-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
+                {/* Admin Dropdown Menu */}
+                <div className="absolute top-3 right-3 z-10">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="secondary" size="icon" className="bg-black/40 hover:bg-black/60 border-none text-white shadow-lg">
+                                <MoreVertical className="size-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                    <DropdownMenuContent
-                        align="end"
-                        className="w-48 bg-[#2D2D2D] border-gray-700 text-gray-200"
-                    >
+                        <DropdownMenuContent
+                            align="end"
+                            className="w-48 bg-[#2D2D2D] border-gray-700 text-gray-200"
+                        >
+                            <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
+                                <Link href={editLink}>
+                                    <Pencil className="size-4 mr-2" />
+                                    Edit Course
+                                </Link>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
-                            <Link href={`/admin/courses/${data.id}/edit`}>
-                                <Pencil className="size-4 mr-2" />
-                                Edit Course
-                            </Link>
-                        </DropdownMenuItem>
+                            <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
+                                <Link href={`/courses/${data.slug || data.id}`}>
+                                    <Eye className="size-4 mr-2" />
+                                    Preview
+                                </Link>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
-                            <Link href={`/courses/${data.slug}`}>
-                                <Eye className="size-4 mr-2" />
-                                Preview
-                            </Link>
-                        </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-gray-700" />
 
-                        {/* [FIXED] Separator બે આઇટમ્સની વચ્ચે હોવો જોઈએ */}
-                        <DropdownMenuSeparator className="bg-gray-700" />
+                            <DropdownMenuItem asChild className="cursor-pointer text-red-400 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400">
+                                <Link href={`/admin/courses/${data.id}/delete`}>
+                                    <Trash2 className="size-4 mr-2" />
+                                    Delete course
+                                </Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
 
-                        {/* [CHANGE HERE] ડિલીટ આઇટમને લાલ કલર અને કસ્ટમ સ્ટાઇલ આપી */}
-                        <DropdownMenuItem asChild className="cursor-pointer text-red-400 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400">
-                            <Link href={`/admin/courses/${data.id}/delete`}>
-                                <Trash2 className="size-4 mr-2" />
-                                Delete course
-                            </Link>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Image with hover zoom */}
+                <div className="overflow-hidden">
+                    <Image
+                        width={600}
+                        height={400}
+                        className="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
+                        src={CourseImage}
+                        alt={data.title}
+                    />
+                </div>
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-            <Image
-                src={CourseImage}
-                alt="Course image"
-                width={600}
-                height={400}
-                className="w-full rounded-t-lg aspect-video h-full object-cover"
-            />
-            <CardContent className="p-4">
+
+            <CardContent className="p-5">
+                {/* Category Tag */}
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-3 ${categoryClass}`}>
+                    {data.category}
+                </span>
+
+                {/* Title */}
                 <Link
-                    href={`/admin/courses/${data.id}/edit`}
-                    className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors"
+                    href={editLink}
+                    className="font-semibold text-lg line-clamp-2 hover:text-primary transition-colors block mb-2 group-hover:text-primary"
                 >
                     {data.title}
                 </Link>
 
-                <p className="line-clamp-2 text-sm text-muted-foreground leading-tight mt-2">
+                {/* Description */}
+                <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed mb-4">
                     {data.smallDescription}
                 </p>
-                <div className="mt-4 flex items-center gap-x-5">
-                    <div className="flex items-center gap-x-2">
-                        <TimerIcon className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-                        <p className="text-sm text-muted-foreground">
-                            {data.duration}h
-                        </p>
+
+                {/* Meta Info */}
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-1.5">
+                        <Clock className="size-4" />
+                        <span>{data.duration}h</span>
                     </div>
-                    <div className="flex items-center gap-x-2">
-                        <School className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-                        <p className="text-sm text-muted-foreground">
-                            {data.level}
-                        </p>
+                    <div className="flex items-center gap-1.5">
+                        <Users className="size-4" />
+                        <span>{data.chapterCount || 0} chapters</span>
                     </div>
                 </div>
 
-                <Link
-                    className={buttonVariants({
-                        className: "w-full mt-4",
-                    })}
-                    href={`/admin/courses/${data.id}/edit`}>
-                    Edit Course <ArrowRight className="size-4 ml-2" />
-                </Link>
+                {/* Divider */}
+                <div className="border-t border-border/50 pt-4 flex items-center justify-between">
+                    {/* Price */}
+                    <div>
+                        <span className="text-2xl font-bold text-primary">
+                            ₹{data.price}
+                        </span>
+                    </div>
+
+                    {/* CTA Button */}
+                    <Link
+                        href={editLink}
+                        className={buttonVariants({
+                            variant: "default",
+                            size: "sm",
+                            className: "group/btn gap-1"
+                        })}
+                    >
+                        Edit Course
+                        <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
+                    </Link>
+                </div>
             </CardContent>
         </Card>
     );
@@ -224,29 +161,39 @@ export function AdminCourseCard({ data }: iAppProps) {
 
 export function AdminCourseCardSkeleton() {
     return (
-        <Card className="group relative py-0 gap-0">
-            <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-                <Skeleton className="h-6 w-16 rounded-full" />
-                <Skeleton className="size-8 rounded-md" />
+        <Card className="group relative py-0 gap-0 overflow-hidden">
+            <div className="relative">
+                <div className="absolute top-3 left-3 z-10">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                </div>
+                <div className="absolute top-3 right-3 z-10">
+                    <Skeleton className="size-8 rounded-md" />
+                </div>
+                <Skeleton className="w-full aspect-video" />
             </div>
-            <div className="w-full relative h-fit">
-                <Skeleton className="w-full rounded-t-lg aspect-video h-[250px] object-cover" />
-            </div>
-            <CardContent className="p-4">
-                <Skeleton className="h-6 w-3/4 mb-2 rounded" />
-                <Skeleton className="h-4 w-full mb-4 rounded" />
-                <div className="mt-4 flex items-center gap-x-5">
-                    <div className="flex items-center gap-x-2">
-                        <Skeleton className="size-6 rounded-md" />
-                        <Skeleton className="h-4 w-10 rounded" />
-                    </div>
-                    <div className="flex items-center gap-x-2">
-                        <Skeleton className="size-6 rounded-md" />
-                        <Skeleton className="h-4 w-10 rounded" />
-                    </div>
+
+            <CardContent className="p-5">
+                <Skeleton className="h-5 w-20 rounded-full mb-3" />
+
+                <div className="space-y-2 mb-4">
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-3/4" />
                 </div>
 
-                <Skeleton className="mt-4 h-10 w-full rounded" />
+                <div className="space-y-2 mb-4">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                </div>
+
+                <div className="flex items-center gap-4 mb-4">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
+                </div>
+
+                <div className="border-t pt-4 flex items-center justify-between">
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-9 w-28 rounded-md" />
+                </div>
             </CardContent>
         </Card>
     );

@@ -52,12 +52,7 @@ const defaultData = {
       title: "Profile",
       url: "/profile",
       icon: User,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
-    },
+    }
   ],
 }
 
@@ -89,11 +84,6 @@ const adminData = {
       title: "Profile",
       url: "/profile",
       icon: User,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
     },
   ],
 }

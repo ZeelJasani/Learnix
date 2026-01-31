@@ -14,6 +14,7 @@ const startServer = async (): Promise<void> => {
             logger.info(`📚 Environment: ${env.NODE_ENV}`);
             logger.info(`🔗 API URL: http://localhost:${env.PORT}/api`);
             logger.info(`❤️  Health check: http://localhost:${env.PORT}/api/health`);
+            logger.info('🔄 Server forced restart for validation fix');
         });
 
         // Graceful shutdown

@@ -48,7 +48,7 @@ interface SortableItemProps {
 }
 
 export function CourseStructure({ data }: iAppProps) {
-    const initialItems: ChapterItem[] = data.chapter.map((chapter) => ({
+    const initialItems: ChapterItem[] = data.chapter?.map((chapter) => ({
         id: chapter.id,
         title: chapter.title || `Chapter ${chapter.position}`,
         order: chapter.position,
@@ -58,18 +58,20 @@ export function CourseStructure({ data }: iAppProps) {
             title: lesson.title || `Lesson ${lesson.position}`,
             order: lesson.position,
         })),
-    }));
+    })) || [];
 
     const [items, setItems] = useState(initialItems);
 
-    console.log(items)
+    // Handle potential missing id if backend returns _id
+    const courseId = data.id || (data as any)._id || data.originalIdentifier;
+    console.log("CourseStructure data:", data, "Resolved courseId:", courseId);
 
 
 
     useEffect(() => {
         setItems((prevItems) => {
             const updatedItems =
-                data.chapter.map((chapter) => ({
+                data.chapter?.map((chapter) => ({
                     id: chapter.id,
                     title: chapter.title || `Chapter ${chapter.position}`,
                     order: chapter.position,
@@ -122,7 +124,7 @@ export function CourseStructure({ data }: iAppProps) {
         const overId = over.id;
         const activeType = active.data.current?.type as "chapter" | "lesson";
         const overType = over.data.current?.type as "chapter" | "lesson";
-        const courseId = data.id;
+        // const courseId = data.id; // Already defined above
 
 
         if (activeType === "chapter") {
@@ -324,7 +326,7 @@ export function CourseStructure({ data }: iAppProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between border-b border-border">
                     <CardTitle>Chapters</CardTitle>
-                    <NewChapterModel courseId={data.id} />
+                    <NewChapterModel courseId={courseId} />
                 </CardHeader>
                 <CardContent className="space-y-8">
                     <SortableContext
@@ -376,7 +378,7 @@ export function CourseStructure({ data }: iAppProps) {
                                                     <Trash2 className="size-4" />
                                                 </Button> */}
 
-                                                <DeleteChapter chapterId={item.id} courseId={data.id} />
+                                                <DeleteChapter chapterId={item.id} courseId={courseId} />
                                             </div>
 
                                             <CollapsibleContent>
@@ -413,7 +415,7 @@ export function CourseStructure({ data }: iAppProps) {
                                                                         <DeleteLesson
                                                                             chapterId={item.id}
                                                                             lessonId={lesson.id}
-                                                                            courseId={data.id} />
+                                                                            courseId={courseId} />
                                                                     </div>
                                                                 )}
                                                             </SortableItem>
@@ -421,7 +423,7 @@ export function CourseStructure({ data }: iAppProps) {
 
                                                     </SortableContext>
                                                     <div className="p-2">
-                                                        <NewLessonModel chapterId={item.id} courseId={data.id} />
+                                                        <NewLessonModel chapterId={item.id} courseId={courseId} />
                                                     </div>
                                                 </div>
                                             </CollapsibleContent>

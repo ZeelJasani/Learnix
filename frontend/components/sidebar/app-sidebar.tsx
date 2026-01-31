@@ -106,12 +106,7 @@ const data = {
       title: "Profile",
       url: "/admin/profile",
       icon: IconSettings,
-    },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: IconSettings,
-    },
+    }
   ],
 }
 
