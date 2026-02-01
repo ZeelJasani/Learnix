@@ -64,22 +64,41 @@ export class ActivityService {
     /**
      * Get activities for a course (admin)
      */
-    static async getByCourseId(courseId: string): Promise<IActivity[]> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async getByCourseId(courseIdOrSlug: string): Promise<IActivity[]> {
+        let courseId = courseIdOrSlug;
+
+        if (!mongoose.Types.ObjectId.isValid(courseIdOrSlug)) {
+            const course = await import('../models/Course').then(m => m.Course.findOne({ slug: courseIdOrSlug }).select('_id'));
+            if (!course) {
+                throw ApiError.badRequest('Invalid course ID from Activity Service');
+            }
+            courseId = course._id.toString();
         }
 
-        return Activity.find({ courseId: new mongoose.Types.ObjectId(courseId) })
+        const activities = await Activity.find({ courseId: new mongoose.Types.ObjectId(courseId) })
             .sort({ dueDate: 1, createdAt: -1 })
-            .lean() as unknown as Promise<IActivity[]>;
+            .lean();
+
+        // Transform for frontend: _id -> id, added _count stub
+        return activities.map(activity => ({
+            ...activity,
+            id: (activity as any)._id.toString(),
+            _count: { completions: 0 } // Stub to prevent frontend crash
+        })) as unknown as IActivity[];
     }
 
     /**
      * Create a new activity
      */
     static async create(data: CreateActivityData): Promise<IActivity> {
+        let courseId = data.courseId;
+
         if (!mongoose.Types.ObjectId.isValid(data.courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+            const course = await import('../models/Course').then(m => m.Course.findOne({ slug: data.courseId }).select('_id'));
+            if (!course) {
+                throw ApiError.badRequest('Invalid course ID');
+            }
+            courseId = course._id.toString();
         }
 
         const activity = new Activity({
@@ -88,7 +107,7 @@ export class ActivityService {
             type: data.type || 'ASSIGNMENT',
             startDate: data.startDate || null,
             dueDate: data.dueDate || null,
-            courseId: new mongoose.Types.ObjectId(data.courseId),
+            courseId: new mongoose.Types.ObjectId(courseId),
         });
 
         await activity.save();

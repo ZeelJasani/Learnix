@@ -15,7 +15,6 @@ const chapterSchema = new Schema<IChapter>(
             type: String,
             required: true,
             trim: true,
-            minlength: 3,
         },
         position: {
             type: Number,

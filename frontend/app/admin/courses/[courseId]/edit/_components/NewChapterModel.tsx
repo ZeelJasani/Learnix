@@ -1,21 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { chapterSchema, ChapterSchemaType } from "@/lib/zodSchemas";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createChapter } from "../actions";
 import { tryCatch } from "@/hooks/try-catch";
 
-
 export function NewChapterModel({ courseId }: { courseId: string }) {
     const [isOpen, setIsOpen] = useState(false);
-
-    const [isPending, startTransition] = useTransition()
+    const [isPending, startTransition] = useTransition();
 
     const form = useForm<ChapterSchemaType>({
         resolver: zodResolver(chapterSchema),
@@ -25,17 +23,12 @@ export function NewChapterModel({ courseId }: { courseId: string }) {
         },
     });
 
-
     async function onSubmit(values: ChapterSchemaType) {
-        // console.log('Form submitted with values:', values);
         startTransition(async () => {
             try {
-                // console.log('Starting form submission');
                 const { data: result, error } = await tryCatch(createChapter({ ...values, courseId }));
-                // console.log('Server response:', { result, error });
 
                 if (error) {
-                    // console.error('Error in form submission:', error);
                     toast.error("An error occurred. Please try again later");
                     return;
                 }
@@ -54,11 +47,7 @@ export function NewChapterModel({ courseId }: { courseId: string }) {
         });
     }
 
-    // function handleOpenChange(open: boolean) {
-    //     setIsOpen(open);
-    // }
     function handleOpenChange(open: boolean) {
-
         if (!open) {
             form.reset();
         }
@@ -74,7 +63,7 @@ export function NewChapterModel({ courseId }: { courseId: string }) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.error("Form validation errors:", JSON.stringify(errors, null, 2)))} className="space-y-8">
                         <DialogHeader>
                             <DialogTitle>Create New Chapter</DialogTitle>
                             <DialogDescription>
@@ -94,6 +83,7 @@ export function NewChapterModel({ courseId }: { courseId: string }) {
                                             disabled={isPending}
                                         />
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -102,7 +92,12 @@ export function NewChapterModel({ courseId }: { courseId: string }) {
                                 type="submit"
                                 disabled={isPending}
                             >
-                                {isPending ? 'Creating...' : 'Save Changes'}
+                                {isPending ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : 'Create'}
                             </Button>
                         </DialogFooter>
                     </form>

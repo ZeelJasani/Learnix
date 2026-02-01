@@ -20,10 +20,10 @@ export class CourseController {
     /**
      * Get course by slug (public)
      */
-    static async getBySlug(req: Request, res: Response, next: NextFunction): Promise<void> {
+    static async getBySlug(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { slug } = req.params;
-            const course = await CourseService.getBySlug(slug);
+            const course = await CourseService.getBySlug(slug, req.user?.id);
 
             if (!course) {
                 throw ApiError.notFound('Course not found');

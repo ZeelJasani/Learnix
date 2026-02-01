@@ -2,12 +2,9 @@ import { Response, NextFunction } from 'express';
 import { UserRequest } from '../middleware/requireUser';
 import { LessonService } from '../services/lesson.service';
 import { ApiResponse } from '../utils/apiResponse';
-import { ApiError } from '../utils/apiError';
 
 export class LessonController {
-    /**
-     * Get lessons for a chapter
-     */
+    // Get lessons for a chapter
     static async getByChapterId(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId } = req.params;
@@ -18,9 +15,7 @@ export class LessonController {
         }
     }
 
-    /**
-     * Get lesson content (for enrolled users)
-     */
+    // Get lesson content
     static async getContent(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -32,64 +27,55 @@ export class LessonController {
         }
     }
 
-    /**
-     * Create lesson
-     */
+    // Create lesson - REWRITTEN & SIMPLIFIED
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { name, chapterId, description, thumbnail, videoKey } = req.body;
+            console.log('[LessonController] Create request received');
+            const { name, courseId, chapterId } = req.body;
+
+            // Basic check
+            if (!name || !chapterId || !courseId) {
+                throw new Error("Missing required fields: name, chapterId or courseId");
+            }
+
+            console.log(`[LessonController] Creating lesson '${name}' in chapter '${chapterId}'`);
+
             const lesson = await LessonService.create({
                 title: name,
                 chapterId,
-                description,
-                thumbnailKey: thumbnail,
-                videoKey,
             });
+
+            console.log('[LessonController] Lesson created successfully:', lesson._id);
             ApiResponse.created(res, lesson);
         } catch (error) {
+            console.error('[LessonController] Creation failed:', error);
             next(error);
         }
     }
 
-    /**
-     * Update lesson
-     */
+    // Update lesson
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
             const lesson = await LessonService.update(id, req.body);
-
-            if (!lesson) {
-                throw ApiError.notFound('Lesson not found');
-            }
-
             ApiResponse.success(res, lesson);
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Delete lesson
-     */
+    // Delete lesson
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const deleted = await LessonService.delete(id);
-
-            if (!deleted) {
-                throw ApiError.notFound('Lesson not found');
-            }
-
+            await LessonService.delete(id);
             ApiResponse.success(res, { deleted: true });
         } catch (error) {
             next(error);
         }
     }
 
-    /**
-     * Reorder lessons
-     */
+    // Reorder lessons
     static async reorder(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId, items } = req.body;

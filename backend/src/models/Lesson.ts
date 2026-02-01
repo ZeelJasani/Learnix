@@ -18,7 +18,6 @@ const lessonSchema = new Schema<ILesson>(
             type: String,
             required: true,
             trim: true,
-            minlength: 3,
         },
         description: {
             type: String,

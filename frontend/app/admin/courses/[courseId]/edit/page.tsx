@@ -1,4 +1,5 @@
 import { adminGetCourse } from "@/app/data/admin/admin-get-course";
+import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -10,13 +11,14 @@ import { CourseActivities } from "./_components/CourseActivities";
 type Params = Promise<{ courseId: string }>
 
 export default async function EditRoute({ params }: { params: Params }) {
+    await requireAdminOrMentor();
 
     const { courseId } = await params;
     const data = await adminGetCourse(courseId);
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-8">Edit Course: <span className="text-primary">{data.title}</span></h1>
+            <h1 className="text-3xl font-bold mb-12 mt-6">Edit Course: <span className="text-primary">{data.title}</span></h1>
 
 
 

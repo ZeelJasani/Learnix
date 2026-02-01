@@ -1,113 +1,74 @@
 import { Button } from "@/components/ui/button";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from "@/components/ui/dialog";
-import { z } from "zod";
-import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
+import { Plus, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  Form, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl 
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createLesson } from "../actions";
 import { tryCatch } from "@/hooks/try-catch";
 
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  courseId: z.string(),
-  chapterId: z.string(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-export function NewLessonModel({ 
-  courseId, 
-  chapterId 
-}: { 
-  courseId: string;
-  chapterId: string;
-}) {
+export function NewLessonModel({ courseId, chapterId }: { courseId: string; chapterId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LessonSchemaType>({
+    resolver: zodResolver(lessonSchema),
     defaultValues: {
       name: "",
-      courseId,
-      chapterId,
+      courseId: courseId,
+      chapterId: chapterId,
     },
   });
 
-  const onSubmit = (values: FormValues) => {
+  async function onSubmit(values: LessonSchemaType) {
     startTransition(async () => {
       try {
-        const { data: result, error } = await tryCatch(
-          createLesson({ 
-            name: values.name,
-            courseId: values.courseId,
-            chapterId: values.chapterId
-          })
-        );
-        
+        const { data: result, error } = await tryCatch(createLesson({ ...values, courseId, chapterId }));
+
         if (error) {
-          toast.error(error.message);
+          toast.error("An error occurred. Please try again later");
           return;
         }
 
         if (result?.status === "success") {
           toast.success("Lesson created successfully");
-          form.reset({
-            name: "",
-            courseId,
-            chapterId
-          });
+          form.reset();
           setIsOpen(false);
         } else if (result?.status === 'error') {
           toast.error(result.message || "Failed to create lesson");
         }
-      } catch (error) {
-        console.error('Error:', error);
+      } catch (err) {
+        console.error('Unexpected error in onSubmit:', err);
         toast.error("An unexpected error occurred");
       }
     });
-  };
+  }
+
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      form.reset();
+    }
+    setIsOpen(open);
+  }
 
   return (
-    <Dialog 
-      open={isOpen} 
-      onOpenChange={(open) => {
-        if (!open) {
-          form.reset();
-        }
-        setIsOpen(open);
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-center gap-2">
+        <Button variant="outline" size="sm" className="gap-2 flex items-center">
           <Plus className="size-4" /> New Lesson
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <DialogHeader>
               <DialogTitle>Create New Lesson</DialogTitle>
               <DialogDescription>
-                What would you like to name your Lesson?
+                What would you like to name your lesson?
               </DialogDescription>
             </DialogHeader>
             <FormField
@@ -115,24 +76,29 @@ export function NewLessonModel({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lesson Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="Enter lesson name"
-                      disabled={isPending}
+                    <Input
+                      placeholder="Lesson Name"
                       {...field}
+                      disabled={isPending}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isPending}
-                className="w-full"
               >
-                {isPending ? 'Creating...' : 'Create Lesson'}
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : 'Create'}
               </Button>
             </DialogFooter>
           </form>

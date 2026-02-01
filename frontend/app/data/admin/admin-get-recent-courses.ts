@@ -13,6 +13,7 @@ export interface RecentCourseType {
   fileKey: string;
   slug: string;
   category: string;
+  chapterCount?: number;
 }
 
 export async function adminGetRecentCourses(): Promise<RecentCourseType[]> {

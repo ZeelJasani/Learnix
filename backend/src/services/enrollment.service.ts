@@ -17,9 +17,18 @@ export class EnrollmentService {
     /**
      * Check if user is enrolled in a course
      */
-    static async isEnrolled(userId: string, courseId: string): Promise<{ enrolled: boolean; status?: string }> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async isEnrolled(userId: string, courseIdOrSlug: string): Promise<{ enrolled: boolean; status?: string }> {
+        let courseId;
+
+        // Try to find course by ID or slug
+        if (mongoose.Types.ObjectId.isValid(courseIdOrSlug)) {
+            courseId = courseIdOrSlug;
+        } else {
+            const course = await Course.findOne({ slug: courseIdOrSlug }).select('_id').lean();
+            if (!course) {
+                throw ApiError.notFound('Course not found');
+            }
+            courseId = course._id.toString();
         }
 
         const enrollment = await Enrollment.findOne({
@@ -109,14 +118,23 @@ export class EnrollmentService {
      * Create a new enrollment (pending)
      */
     static async create(data: CreateEnrollmentData): Promise<IEnrollment> {
-        if (!mongoose.Types.ObjectId.isValid(data.courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+        let courseId;
+
+        // Try to find course by ID or slug
+        if (mongoose.Types.ObjectId.isValid(data.courseId)) {
+            courseId = data.courseId;
+        } else {
+            const course = await Course.findOne({ slug: data.courseId }).select('_id').lean();
+            if (!course) {
+                throw ApiError.notFound('Course not found');
+            }
+            courseId = course._id.toString();
         }
 
         // Check if already enrolled
         const existing = await Enrollment.findOne({
             userId: new mongoose.Types.ObjectId(data.userId),
-            courseId: new mongoose.Types.ObjectId(data.courseId),
+            courseId: new mongoose.Types.ObjectId(courseId),
         });
 
         if (existing) {
@@ -132,7 +150,7 @@ export class EnrollmentService {
 
         const enrollment = new Enrollment({
             userId: new mongoose.Types.ObjectId(data.userId),
-            courseId: new mongoose.Types.ObjectId(data.courseId),
+            courseId: new mongoose.Types.ObjectId(courseId),
             amount: data.amount,
             status: data.status || 'Pending',
         });

@@ -36,9 +36,20 @@ export class ActivityController {
      */
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
+            console.log('[ActivityController] Create request received:', req.body);
+            const { title, courseId, type } = req.body;
+
+            if (!title || !courseId) {
+                throw new Error("Missing required fields: title or courseId");
+            }
+
+            console.log(`[ActivityController] Creating activity '${title}' for course '${courseId}'`);
+
             const activity = await ActivityService.create(req.body);
+            console.log('[ActivityController] Activity created successfully:', activity._id);
             ApiResponse.created(res, activity);
         } catch (error) {
+            console.error('[ActivityController] Creation failed:', error);
             next(error);
         }
     }

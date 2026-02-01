@@ -29,7 +29,7 @@ const aj = arcjet.withRule(rateLimit);
 // Constants
 const MINIMUM_PRICE_INR = 50;
 
-function getBaseUrl(): string {
+async function getBaseUrl(): Promise<string> {
   const fromEnv = env.APP_URL;
   if (fromEnv) {
     try {
@@ -39,7 +39,7 @@ function getBaseUrl(): string {
     }
   }
 
-  const h = headers();
+  const h = await headers();
   const proto = h.get("x-forwarded-proto") ?? "http";
   const host = h.get("x-forwarded-host") ?? h.get("host");
   if (!host) {
@@ -135,7 +135,7 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
     const enrollmentId = enrollmentResponse.data?.id;
 
     // 7. Create Checkout Session
-    const baseUrl = getBaseUrl();
+    const baseUrl = await getBaseUrl();
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       line_items: [{ price: course.stripePriceId, quantity: 1 }],

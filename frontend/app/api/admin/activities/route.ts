@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
+        console.log("[API Route] Creating activity with body:", body);
 
         const response = await fetch(`${API_BASE_URL}/admin/activities`, {
             method: 'POST',
@@ -63,7 +64,19 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(body),
         });
 
-        const data = await response.json();
+        console.log("[API Route] Backend response status:", response.status);
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            console.error("[API Route] Failed to parse backend JSON response");
+            const text = await response.text();
+            console.error("[API Route] Backend response text:", text);
+            return NextResponse.json({ error: "Backend error (non-JSON)" }, { status: 500 });
+        }
+
+        console.log("[API Route] Backend response data:", data);
 
         if (!data.success) {
             return NextResponse.json({ error: data.message || "Failed to create activity" }, { status: 500 });

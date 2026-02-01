@@ -52,12 +52,7 @@ const defaultData = {
       title: "Profile",
       url: "/profile",
       icon: User,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
-    },
+    }
   ],
 }
 
@@ -90,20 +85,42 @@ const adminData = {
       url: "/profile",
       icon: User,
     },
+  ],
+}
+
+const mentorData = {
+  navMain: [
     {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
+      title: "Dashboard",
+      url: "/mentor",
+      icon: Gauge,
+    },
+    {
+      title: "My Courses",
+      url: "/mentor/courses",
+      icon: Book,
+    },
+    {
+      title: "My Students",
+      url: "/mentor/students",
+      icon: Users,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: User,
     },
   ],
 }
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  userType?: "admin" | "user"
+  userType?: "admin" | "user" | "mentor"
 }
 
 export function AppSidebar({ userType = "user", ...props }: AppSidebarProps) {
-  const data = userType === "admin" ? adminData : defaultData;
+  const data = userType === "admin" ? adminData : userType === "mentor" ? mentorData : defaultData;
 
   return (
     <Sidebar collapsible="icon" className="border-r" {...props}>

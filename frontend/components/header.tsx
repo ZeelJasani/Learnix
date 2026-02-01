@@ -16,7 +16,7 @@ const baseMenuItems = [
 
 export const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
-    const { isAdmin } = useUserRole()
+    const { isAdmin, isMentor } = useUserRole()
 
     return (
         <header>
@@ -63,9 +63,18 @@ export const HeroHeader = () => {
                                         {isAdmin && (
                                             <li>
                                                 <Link
-                                                    href="/admin"
+                                                    href="/admin/dashboard"
                                                     className="text-muted-foreground hover:text-accent-foreground block duration-150">
                                                     <span>Admin</span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        {isMentor && (
+                                            <li>
+                                                <Link
+                                                    href="/mentor"
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    <span>Mentor Dashboard</span>
                                                 </Link>
                                             </li>
                                         )}
@@ -97,9 +106,18 @@ export const HeroHeader = () => {
                                         {isAdmin && (
                                             <li>
                                                 <Link
-                                                    href="/admin"
+                                                    href="/admin/dashboard"
                                                     className="text-muted-foreground hover:text-accent-foreground block duration-150">
                                                     <span>Admin</span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        {isMentor && (
+                                            <li>
+                                                <Link
+                                                    href="/mentor"
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    <span>Mentor Dashboard</span>
                                                 </Link>
                                             </li>
                                         )}
@@ -108,10 +126,10 @@ export const HeroHeader = () => {
                             </div>
 
                             <div className="flex w-full flex-col items-center space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                {/* Theme Toggle */}
+
                                 <ThemeToggle />
 
-                                {/* Show Login/Register when signed out */}
+
                                 <SignedOut>
                                     <Button
                                         asChild
@@ -130,7 +148,7 @@ export const HeroHeader = () => {
                                     </Button>
                                 </SignedOut>
 
-                                {/* Show User Dropdown when signed in */}
+
                                 <SignedIn>
                                     <UserDropdown />
                                 </SignedIn>

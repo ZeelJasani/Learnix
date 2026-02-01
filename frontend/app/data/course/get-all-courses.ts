@@ -12,13 +12,23 @@ export interface PublicCourseType {
     level: string;
     duration: number;
     category: string;
+    chapterCount?: number;
+    mentor?: {
+        id: string;
+        name: string;
+        image: string;
+    };
 }
 
 export async function getAllCourses(): Promise<PublicCourseType[]> {
-    const response = await api.get<PublicCourseType[]>('/courses');
+    const response = await api.get<any[]>('/courses');
 
     if (response.success && response.data) {
-        return response.data;
+        // Map _id to id for MongoDB compatibility
+        return response.data.map((course: any) => ({
+            ...course,
+            id: course.id || course._id?.toString() || course._id,
+        }));
     }
 
     return [];

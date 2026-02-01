@@ -4,7 +4,7 @@
     "description": "Learnix LMS Backend API - Node.js + Express + TypeScript + MongoDB",
     "main": "dist/server.js",
     "scripts": {
-        "dev": "nodemon",
+        "dev": "nodemon --exec ts-node src/server.ts",
         "build": "tsc",
         "vercel-build": "npm run build",
         "start": "node dist/server.js",

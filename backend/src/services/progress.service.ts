@@ -67,7 +67,7 @@ export class ProgressService {
      */
     static async getCourseProgress(
         userId: string,
-        courseId: string
+        courseIdOrSlug: string
     ): Promise<{
         totalLessons: number;
         completedLessons: number;
@@ -79,8 +79,14 @@ export class ProgressService {
             total: number;
         }>;
     }> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+        let courseId = courseIdOrSlug;
+
+        if (!mongoose.Types.ObjectId.isValid(courseIdOrSlug)) {
+            const course = await import('../models/Course').then(m => m.Course.findOne({ slug: courseIdOrSlug }).select('_id'));
+            if (!course) {
+                throw ApiError.badRequest('Invalid course ID');
+            }
+            courseId = course._id.toString();
         }
 
         // Verify enrollment
@@ -147,9 +153,15 @@ export class ProgressService {
     /**
      * Reset course progress for a user
      */
-    static async resetCourseProgress(userId: string, courseId: string): Promise<number> {
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            throw ApiError.badRequest('Invalid course ID');
+    static async resetCourseProgress(userId: string, courseIdOrSlug: string): Promise<number> {
+        let courseId = courseIdOrSlug;
+
+        if (!mongoose.Types.ObjectId.isValid(courseIdOrSlug)) {
+            const course = await import('../models/Course').then(m => m.Course.findOne({ slug: courseIdOrSlug }).select('_id'));
+            if (!course) {
+                throw ApiError.badRequest('Invalid course ID');
+            }
+            courseId = course._id.toString();
         }
 
         // Get all lessons in the course

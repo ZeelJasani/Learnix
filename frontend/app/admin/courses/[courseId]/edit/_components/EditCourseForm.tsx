@@ -53,7 +53,7 @@ export function EditCourseForm({ data }: iAppProps) {
     const onSubmit = (values: CourseSchemaType) => {
         startTransition(async () => {
             try {
-                const { data: result, error } = await tryCatch(editCourse(values, data.id));
+                const { data: result, error } = await tryCatch(editCourse(values, data.originalIdentifier || data.id));
 
                 if (error) {
                     toast.error("An unexpected error occurred");

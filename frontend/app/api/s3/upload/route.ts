@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/S3Client";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
-import { requireAdmin } from "@/app/data/admin/require-admin";
+import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 
 export const fileUploadSchema = z.object({
     fileName: z.string().min(1, { message: "Filename is required" }),
@@ -34,8 +34,8 @@ const aj = arcjet.withRule(
 
 
 export async function POST(request: Request) {
-    const session = await requireAdmin();
-    
+    const session = await requireAdminOrMentor();
+
     try {
         // Add rate limiting protection
         const decision = await aj.protect(request, {
@@ -65,18 +65,18 @@ export async function POST(request: Request) {
         if (!validation.success) {
             console.error('Validation error:', validation.error);
             return NextResponse.json(
-                { 
+                {
                     error: "Invalid request body",
-                    details: process.env.NODE_ENV === 'development' 
-                        ? validation.error.format() 
-                        : undefined 
+                    details: process.env.NODE_ENV === 'development'
+                        ? validation.error.format()
+                        : undefined
                 },
                 { status: 400 }
             );
         }
 
         const { fileName, contentType, size } = validation.data;
-        
+
         // Validate file size (max 10MB for images, 100MB for videos)
         const maxSize = contentType.startsWith('image/') ? 10 * 1024 * 1024 : 100 * 1024 * 1024;
         if (size > maxSize) {
@@ -117,9 +117,9 @@ export async function POST(request: Request) {
         } catch (error) {
             console.error('Error generating pre-signed URL:', error);
             return NextResponse.json(
-                { 
+                {
                     error: "Failed to generate upload URL",
-                    details: process.env.NODE_ENV === 'development' 
+                    details: process.env.NODE_ENV === 'development'
                         ? error instanceof Error ? error.message : String(error)
                         : undefined
                 },

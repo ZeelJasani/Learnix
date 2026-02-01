@@ -45,7 +45,7 @@ const userSchema = new Schema<IUser>(
         },
         role: {
             type: String,
-            enum: ['admin', 'instructor', 'user'],
+            enum: ['admin', 'mentor', 'user'],
             default: 'user',
         },
         stripeCustomerId: {
@@ -72,7 +72,6 @@ const userSchema = new Schema<IUser>(
 );
 
 // Indexes
-userSchema.index({ email: 1 });
 userSchema.index({ createdAt: -1 });
 
 export const User = mongoose.model<IUser>('User', userSchema);

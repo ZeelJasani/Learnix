@@ -1,8 +1,8 @@
 "use server";
 
-import { requireAdmin } from "@/app/data/admin/require-admin";
+import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import { ApiResponse } from "@/lib/types";
-import { ChapterSchemaType, CourseSchemaType, chapterSchema, courseSchema } from "@/lib/zodSchemas";
+import { ChapterSchemaType, CourseSchemaType, chapterSchema, courseSchema, lessonSchema } from "@/lib/zodSchemas";
 import { api, getAuthToken } from "@/lib/api-client";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
@@ -25,7 +25,7 @@ const aj = arcjet
 
 export async function editCourse(data: CourseSchemaType, courseId: string): Promise<ApiResponse> {
     try {
-        const user = await requireAdmin();
+        const user = await requireAdminOrMentor(true);
         const req = await request();
         const decision = await aj.protect(req, {
             fingerprint: user.user.id,
@@ -84,7 +84,7 @@ export async function reorderLesson(
     lessons: { id: string; position: number }[],
     courseId: string
 ): Promise<ApiResponse> {
-    await requireAdmin();
+    await requireAdminOrMentor(true);
     try {
         if (!lessons || lessons.length === 0) {
             return {
@@ -111,6 +111,7 @@ export async function reorderLesson(
         }
 
         revalidatePath(`/admin/courses/${courseId}/edit`);
+        revalidatePath(`/mentor/courses/${courseId}/edit`);
 
         return {
             status: "success",
@@ -129,7 +130,7 @@ export async function reorderChapters(
     courseId: string,
     chapters: { id: string; position: number }[]
 ): Promise<ApiResponse> {
-    await requireAdmin();
+    await requireAdminOrMentor(true);
     try {
         if (!chapters || chapters.length === 0) {
             return {
@@ -156,6 +157,7 @@ export async function reorderChapters(
         }
 
         revalidatePath(`/admin/courses/${courseId}/edit`);
+        revalidatePath(`/mentor/courses/${courseId}/edit`);
 
         return {
             status: "success",
@@ -172,14 +174,15 @@ export async function reorderChapters(
 
 
 export async function createChapter(values: ChapterSchemaType): Promise<ApiResponse> {
-    await requireAdmin();
     try {
-        const result = chapterSchema.safeParse(values);
+        await requireAdminOrMentor(true);
 
-        if (!result.success) {
+        const validatedFields = chapterSchema.safeParse(values);
+
+        if (!validatedFields.success) {
             return {
                 status: "error",
-                message: "Invalid data"
+                message: "Invalid data",
             };
         }
 
@@ -189,39 +192,37 @@ export async function createChapter(values: ChapterSchemaType): Promise<ApiRespo
         }
 
         const response = await api.post('/admin/chapters', {
-            name: result.data.name,
-            courseId: result.data.courseId,
+            name: values.name,
+            courseId: values.courseId,
         }, token);
 
         if (!response.success) {
-            return {
-                status: "error",
-                message: response.message || "Failed to create chapter"
-            };
+            console.error("createChapter API failed:", response);
+            return { status: "error", message: response.message || "Failed to create chapter" };
         }
 
-        revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
-
-        return {
-            status: "success",
-            message: "Chapter created successfully"
-        }
-    } catch {
-        return {
-            status: "error",
-            message: "Failed to create chapter"
-        };
+        revalidatePath(`/admin/courses/${values.courseId}/edit`);
+        revalidatePath(`/mentor/courses/${values.courseId}/edit`);
+        return { status: "success", message: "Chapter created successfully" };
+    } catch (error) {
+        console.error("Error in createChapter:", error);
+        return { status: "error", message: "Failed to create chapter" };
     }
 }
 
 
-export async function createLesson(values: {
-    name: string;
-    courseId: string;
-    chapterId: string
-}): Promise<ApiResponse> {
+export async function createLesson(values: { name: string; courseId: string; chapterId: string }): Promise<ApiResponse> {
     try {
-        await requireAdmin();
+        await requireAdminOrMentor(true);
+
+        const validatedFields = lessonSchema.safeParse(values);
+
+        if (!validatedFields.success) {
+            return {
+                status: "error",
+                message: "Invalid data",
+            };
+        }
 
         const token = await getAuthToken();
         if (!token) {
@@ -235,24 +236,15 @@ export async function createLesson(values: {
         }, token);
 
         if (!response.success) {
-            return {
-                status: "error",
-                message: response.message || "Failed to create lesson"
-            };
+            return { status: "error", message: response.message || "Failed to create lesson" };
         }
 
         revalidatePath(`/admin/courses/${values.courseId}/edit`);
-
-        return {
-            status: "success",
-            message: "Lesson created successfully"
-        };
+        revalidatePath(`/mentor/courses/${values.courseId}/edit`);
+        return { status: "success", message: "Lesson created successfully" };
     } catch (error) {
-        console.error("Error creating lesson:", error);
-        return {
-            status: "error",
-            message: "Failed to create lesson"
-        };
+        console.error("Error:", error);
+        return { status: "error", message: "Failed to create lesson" };
     }
 }
 
@@ -266,7 +258,7 @@ export async function deleteLesson({
     courseId: string;
     lessonId: string
 }): Promise<ApiResponse> {
-    await requireAdmin();
+    await requireAdminOrMentor(true);
 
     try {
         const token = await getAuthToken();
@@ -284,6 +276,7 @@ export async function deleteLesson({
         }
 
         revalidatePath(`/admin/courses/${courseId}/edit`);
+        revalidatePath(`/mentor/courses/${courseId}/edit`);
 
         return {
             status: "success",
@@ -306,7 +299,7 @@ export async function deleteChapter({
     chapterId: string;
     courseId: string;
 }): Promise<ApiResponse> {
-    await requireAdmin();
+    await requireAdminOrMentor(true);
 
     try {
         const token = await getAuthToken();
@@ -324,6 +317,7 @@ export async function deleteChapter({
         }
 
         revalidatePath(`/admin/courses/${courseId}/edit`);
+        revalidatePath(`/mentor/courses/${courseId}/edit`);
 
         return {
             status: "success",

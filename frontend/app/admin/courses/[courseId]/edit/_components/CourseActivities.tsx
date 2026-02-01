@@ -7,6 +7,16 @@ import { Plus, BookOpen, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { CreateActivityDialog } from "@/app/admin/activities/_components/create-activity-dialog";
 import { ActivityListItem } from "@/app/admin/activities/_components/activity-list-item";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Course {
     id: string;
@@ -32,6 +42,8 @@ export function CourseActivities({ data }: { data: Course }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const [activityToDelete, setActivityToDelete] = useState<string | null>(null);
+
     useEffect(() => {
         fetchActivities();
     }, [data.id]);
@@ -49,17 +61,19 @@ export function CourseActivities({ data }: { data: Course }) {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this activity?")) return;
+    const confirmDelete = async () => {
+        if (!activityToDelete) return;
 
         try {
-            const res = await fetch(`/api/admin/activities?id=${id}`, { method: "DELETE" });
+            const res = await fetch(`/api/admin/activities?id=${activityToDelete}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Failed to delete");
 
             toast.success("Activity deleted");
             fetchActivities();
         } catch {
             toast.error("Failed to delete activity");
+        } finally {
+            setActivityToDelete(null);
         }
     };
 
@@ -97,7 +111,7 @@ export function CourseActivities({ data }: { data: Course }) {
                         <ActivityListItem
                             key={activity.id}
                             activity={activity}
-                            onDelete={handleDelete}
+                            onDelete={(id) => setActivityToDelete(id)}
                         />
                     ))}
                 </div>
@@ -110,6 +124,21 @@ export function CourseActivities({ data }: { data: Course }) {
                 courseTitle={data.title}
                 onSuccess={fetchActivities}
             />
+
+            <AlertDialog open={!!activityToDelete} onOpenChange={() => setActivityToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the activity and remove it from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

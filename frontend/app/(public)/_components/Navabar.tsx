@@ -12,7 +12,7 @@ const navigationItems = [
     { name: 'Courses', href: "/courses" },
     { name: 'Dashboard', href: "/dashboard" }
 ]
-// console.log(navigationItems);
+
 
 export function Navbar() {
     return (

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<!-- ![Learnix Logo](https://via.placeholder.com/200x200) -->
+![Learnix Logo](https://via.placeholder.com/200x200)
 
 **A full-featured learning management system built with Next.js 15, Express.js, and MongoDB**
 

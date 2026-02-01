@@ -16,6 +16,7 @@ export interface ICourse extends Document {
     slug: string;
     status: CourseStatus;
     stripePriceId: string;
+    stripeProductId: string;
     userId: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
@@ -82,6 +83,10 @@ const courseSchema = new Schema<ICourse>(
             required: true,
             unique: true,
         },
+        stripeProductId: {
+            type: String,
+            required: true,
+        },
         userId: {
             type: Schema.Types.ObjectId,
             ref: 'User',
@@ -94,7 +99,6 @@ const courseSchema = new Schema<ICourse>(
 );
 
 // Indexes
-courseSchema.index({ slug: 1 });
 courseSchema.index({ status: 1 });
 courseSchema.index({ category: 1 });
 courseSchema.index({ userId: 1 });
