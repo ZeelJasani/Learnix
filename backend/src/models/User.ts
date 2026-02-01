@@ -45,7 +45,7 @@ const userSchema = new Schema<IUser>(
         },
         role: {
             type: String,
-            enum: ['admin', 'instructor', 'user'],
+            enum: ['admin', 'mentor', 'user'],
             default: 'user',
         },
         stripeCustomerId: {

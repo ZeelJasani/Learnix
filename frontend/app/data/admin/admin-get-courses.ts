@@ -14,6 +14,11 @@ export interface AdminCourseType {
     category: string;
     slug: string;
     chapterCount?: number;
+    mentor?: {
+        id: string;
+        name: string;
+        image: string;
+    };
 }
 
 export async function adminGetCourses(): Promise<AdminCourseType[]> {

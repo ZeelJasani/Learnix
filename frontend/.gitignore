@@ -9,10 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-npm-shrinkwrap.json
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# Lock files should be committed
 
 # Testing
 /coverage
@@ -42,7 +39,8 @@ pnpm-lock.yaml
 .env.test.local
 .env.production.local
 .env.*.local
-.env.example
+.env.*.local
+
 
 # TypeScript
 *.tsbuildinfo

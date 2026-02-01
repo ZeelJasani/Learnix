@@ -43,7 +43,6 @@ export class LessonController {
             const lesson = await LessonService.create({
                 title: name,
                 chapterId,
-                courseId // Passing courseId just in case service needs it, though likely via chapter
             });
 
             console.log('[LessonController] Lesson created successfully:', lesson._id);

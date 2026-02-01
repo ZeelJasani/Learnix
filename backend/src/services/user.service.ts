@@ -77,9 +77,11 @@ export class UserService {
             user.email = email;
             user.image = clerkData.imageUrl;
             user.emailVerified = true;
+            // Only update role if user should be admin (don't downgrade mentor to user)
             if (shouldBeAdmin && user.role !== 'admin') {
                 user.role = 'admin';
             }
+            // Don't change role if it's already set (preserve mentor, admin, etc.)
             await user.save();
             return user;
         }
@@ -93,9 +95,11 @@ export class UserService {
             user.name = name;
             user.image = clerkData.imageUrl;
             user.emailVerified = true;
+            // Only update role if user should be admin (don't downgrade mentor to user)
             if (shouldBeAdmin && user.role !== 'admin') {
                 user.role = 'admin';
             }
+            // Don't change role if it's already set (preserve mentor, admin, etc.)
             await user.save();
             return user;
         }

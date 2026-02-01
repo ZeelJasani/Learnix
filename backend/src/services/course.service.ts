@@ -41,7 +41,8 @@ export class CourseService {
     static async getAllPublished(): Promise<ICourse[]> {
         const courses = await Course.find({ status: 'PUBLISHED' })
             .sort({ createdAt: -1 })
-            .select('title price smallDescription slug fileKey level duration category')
+            .select('title price smallDescription slug fileKey level duration category userId')
+            .populate('userId', 'name image')
             .lean();
 
         // Get chapter counts for all courses
@@ -52,6 +53,11 @@ export class CourseService {
                     ...course,
                     id: course._id.toString(),
                     chapterCount,
+                    mentor: course.userId ? {
+                        id: (course.userId as any)._id.toString(),
+                        name: (course.userId as any).name,
+                        image: (course.userId as any).image,
+                    } : null,
                 };
             })
         );
@@ -63,8 +69,12 @@ export class CourseService {
      * Get course by slug with chapters and lessons (public)
      */
     static async getBySlug(slug: string, userId?: string): Promise<any> {
-        const course = await Course.findOne({ slug, status: 'PUBLISHED' })
-            .select('title description fileKey price duration level category smallDescription slug')
+        const query = mongoose.Types.ObjectId.isValid(slug)
+            ? { $or: [{ _id: slug }, { slug }], status: 'PUBLISHED' }
+            : { slug, status: 'PUBLISHED' };
+
+        const course = await Course.findOne(query)
+            .select('title description fileKey price duration level category smallDescription slug stripePriceId')
             .lean();
 
         if (!course) {
@@ -118,6 +128,7 @@ export class CourseService {
 
         return {
             ...course,
+            id: course._id.toString(),
             chapters: chaptersWithLessons,
         };
     }
@@ -128,7 +139,8 @@ export class CourseService {
     static async getAll(): Promise<ICourse[]> {
         const courses = await Course.find()
             .sort({ createdAt: -1 })
-            .select('title smallDescription duration level status price fileKey category slug')
+            .select('title smallDescription duration level status price fileKey category slug userId')
+            .populate('userId', 'name image')
             .lean();
 
         // Get chapter counts for all courses
@@ -139,6 +151,11 @@ export class CourseService {
                     ...course,
                     id: course._id.toString(),
                     chapterCount,
+                    mentor: course.userId ? {
+                        id: (course.userId as any)._id.toString(),
+                        name: (course.userId as any).name,
+                        image: (course.userId as any).image,
+                    } : null,
                 };
             })
         );
@@ -208,8 +225,27 @@ export class CourseService {
             throw ApiError.conflict('A course with this slug already exists');
         }
 
+        // Import env dynamically to ensure it's loaded
+        const { env } = await import('../config/env');
+
+        // Construct image URL
+        const imageUrl = `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`;
+
+        // Create Stripe Product
+        const { StripeService } = await import('./stripe.service');
+        const stripeProduct = await StripeService.createProduct(
+            data.title,
+            data.description,
+            imageUrl
+        );
+
+        // Create Stripe Price
+        const stripePrice = await StripeService.createPrice(stripeProduct.id, data.price * 100);
+
         const course = new Course({
             ...data,
+            stripeProductId: stripeProduct.id,
+            stripePriceId: stripePrice.id,
             userId: new mongoose.Types.ObjectId(data.userId),
         });
 
@@ -221,8 +257,11 @@ export class CourseService {
      * Update a course by ID or slug
      */
     static async update(idOrSlug: string, data: UpdateCourseData): Promise<ICourse | null> {
-        // Import locally to avoid circular dependency if any (though utils is safe)
+        // Import locally
         const { resolveCourseId } = await import('../utils/id-resolver');
+        const { StripeService } = await import('./stripe.service');
+        const { env } = await import('../config/env');
+
         let courseId: string;
         try {
             courseId = await resolveCourseId(idOrSlug);
@@ -241,7 +280,39 @@ export class CourseService {
             }
         }
 
-        return Course.findByIdAndUpdate(courseId, data, { new: true });
+        // Get current course to access stripeProductId
+        const currentCourse = await Course.findById(courseId);
+        if (!currentCourse) return null;
+
+        const updateData: any = { ...data };
+
+        // Handle Stripe updates
+
+        // 1. If Price changes, create new Stripe Price
+        if (data.price !== undefined && data.price !== currentCourse.price) {
+            const newPrice = await StripeService.createPrice(currentCourse.stripeProductId, data.price * 100);
+            updateData.stripePriceId = newPrice.id;
+
+            // Also update default price on product
+            await StripeService.updateProduct(currentCourse.stripeProductId, {
+                default_price: newPrice.id
+            });
+        }
+
+        // 2. If details change, update Stripe Product
+        if (data.title || data.description || data.fileKey) {
+            const imageUrl = data.fileKey
+                ? `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`
+                : undefined;
+
+            await StripeService.updateProduct(currentCourse.stripeProductId, {
+                name: data.title,
+                description: data.description,  // Note: Stripe has description limit, might need truncate
+                image: imageUrl
+            });
+        }
+
+        return Course.findByIdAndUpdate(courseId, updateData, { new: true });
     }
 
     /**
@@ -284,10 +355,24 @@ export class CourseService {
             searchFilter.category = category;
         }
 
-        return Course.find(searchFilter)
+        const courses = await Course.find(searchFilter)
             .sort({ createdAt: -1 })
-            .select('title price smallDescription slug fileKey level duration category')
-            .lean() as unknown as Promise<ICourse[]>;
+            .select('title price smallDescription slug fileKey level duration category userId')
+            .populate('userId', 'name image')
+            .lean();
+
+        const coursesWithMentor = await Promise.all(courses.map(async (course) => {
+            return {
+                ...course,
+                mentor: course.userId ? {
+                    id: (course.userId as any)._id.toString(),
+                    name: (course.userId as any).name,
+                    image: (course.userId as any).image,
+                } : null,
+            };
+        }));
+
+        return coursesWithMentor as unknown as Promise<ICourse[]>;
     }
 
     /**
@@ -297,7 +382,8 @@ export class CourseService {
         const courses = await Course.find()
             .sort({ createdAt: -1 })
             .limit(limit)
-            .select('title smallDescription duration level status price fileKey category slug createdAt')
+            .select('title smallDescription duration level status price fileKey category slug createdAt userId')
+            .populate('userId', 'name image')
             .lean();
 
         const coursesWithChapterCount = await Promise.all(
@@ -307,6 +393,11 @@ export class CourseService {
                     ...course,
                     id: course._id.toString(),
                     chapterCount,
+                    mentor: course.userId ? {
+                        id: (course.userId as any)._id.toString(),
+                        name: (course.userId as any).name,
+                        image: (course.userId as any).image,
+                    } : null,
                 };
             })
         );

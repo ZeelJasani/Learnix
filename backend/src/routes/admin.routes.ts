@@ -10,6 +10,7 @@ import { UserController } from '../controllers/user.controller';
 import { verifyClerkToken } from '../middleware/auth';
 import { requireUser } from '../middleware/requireUser';
 import { requireAdmin } from '../middleware/requireAdmin';
+import { requireMentor } from '../middleware/requireMentor';
 import { validateBody } from '../middleware/validate';
 import { createCourseSchema, updateCourseSchema } from '../validations/course.validation';
 import { createChapterSchema, reorderChaptersSchema } from '../validations/chapter.validation';
@@ -19,52 +20,57 @@ import { fileUploadSchema } from '../validations/upload.validation';
 
 const router = Router();
 
-// All admin routes require authentication and admin role
+// All routes require authentication
 router.use(verifyClerkToken);
 router.use(requireUser);
-router.use(requireAdmin);
 
-// Dashboard
-router.get('/dashboard/stats', AdminController.getDashboardStats);
-router.get('/dashboard/users', AdminController.getAllUsers);
-router.get('/dashboard/enrollments', AdminController.getEnrollmentStats);
-router.get('/dashboard/recent-courses', AdminController.getRecentCourses);
+// Dashboard - Admin only
+router.get('/dashboard/stats', requireAdmin, AdminController.getDashboardStats);
+router.get('/dashboard/users', requireAdmin, AdminController.getAllUsers);
+router.get('/dashboard/enrollments', requireAdmin, AdminController.getEnrollmentStats);
+router.get('/dashboard/recent-courses', requireAdmin, AdminController.getRecentCourses);
 
-// Users
-router.get('/users', UserController.getAllUsers);
+// Users - Admin only
+router.get('/users', requireAdmin, UserController.getAllUsers);
+
+// Mentors - Admin only (listing all mentors)
+router.get('/mentors', requireAdmin, AdminController.getAllMentors);
+
+// --- Course Management (Admin OR Mentor) ---
 
 // Courses
-router.get('/courses', CourseController.getAll);
-router.get('/courses/:id', CourseController.getById);
-router.post('/courses', validateBody(createCourseSchema), CourseController.create);
-router.put('/courses/:id', validateBody(updateCourseSchema), CourseController.update);
-router.delete('/courses/:id', CourseController.delete);
+router.get('/courses', requireMentor, CourseController.getAll);
+router.get('/courses/:id', requireMentor, CourseController.getById);
+router.post('/courses', requireMentor, validateBody(createCourseSchema), CourseController.create);
+router.put('/courses/:id', requireMentor, validateBody(updateCourseSchema), CourseController.update);
+router.delete('/courses/:id', requireMentor, CourseController.delete);
 
 // Chapters
-router.get('/chapters/:courseId', ChapterController.getByCourseId);
-router.post('/chapters', ChapterController.create);
-router.put('/chapters/reorder', ChapterController.reorder); // Specific route FIRST
-router.put('/chapters/:id', ChapterController.update);
-router.delete('/chapters/:id', ChapterController.delete);
+router.get('/chapters/:courseId', requireMentor, ChapterController.getByCourseId);
+router.post('/chapters', requireMentor, ChapterController.create);
+router.put('/chapters/reorder', requireMentor, ChapterController.reorder);
+router.put('/chapters/:id', requireMentor, ChapterController.update);
+router.delete('/chapters/:id', requireMentor, ChapterController.delete);
 
 // Lessons
-router.get('/lessons/:chapterId', LessonController.getByChapterId);
-router.post('/lessons', LessonController.create);
-router.put('/lessons/reorder', LessonController.reorder); // Specific route FIRST
-router.put('/lessons/:id', LessonController.update);
-router.delete('/lessons/:id', LessonController.delete);
+router.get('/lessons/:chapterId', requireMentor, LessonController.getByChapterId);
+router.post('/lessons', requireMentor, LessonController.create);
+router.put('/lessons/reorder', requireMentor, LessonController.reorder);
+router.put('/lessons/:id', requireMentor, LessonController.update);
+router.delete('/lessons/:id', requireMentor, LessonController.delete);
 
 // Activities
-router.get('/activities/:courseId', ActivityController.getByCourseId);
-router.post('/activities', ActivityController.create);
-router.put('/activities/:id', ActivityController.update);
-router.delete('/activities/:id', ActivityController.delete);
+router.get('/activities/:courseId', requireMentor, ActivityController.getByCourseId);
+router.post('/activities', requireMentor, ActivityController.create);
+router.put('/activities/:id', requireMentor, ActivityController.update);
+router.delete('/activities/:id', requireMentor, ActivityController.delete);
 
 // Uploads
-router.post('/uploads/presigned-url', validateBody(fileUploadSchema), UploadController.getPresignedUrl);
-router.delete('/uploads/:key', UploadController.deleteFile);
+router.post('/uploads/presigned-url', requireMentor, validateBody(fileUploadSchema), UploadController.getPresignedUrl);
+router.delete('/uploads/:key', requireMentor, UploadController.deleteFile);
 
-// Enrollments
-router.get('/enrollments/stats', EnrollmentController.getStats);
+// Enrollments Stats (kept as admin for now, or move to mentor dashboard?)
+// Actually EnrollmentController.getStats seems to be general stats. Let's keep it admin for now or check usage.
+router.get('/enrollments/stats', requireAdmin, EnrollmentController.getStats);
 
 export default router;

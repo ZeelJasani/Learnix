@@ -80,7 +80,7 @@ export class ChapterService {
 
         const bulkOps = items.map(item => ({
             updateOne: {
-                filter: { _id: item.id, courseId: courseId }, // Allow Mongoose to cast
+                filter: { _id: new mongoose.Types.ObjectId(item.id), courseId: new mongoose.Types.ObjectId(courseId) }, // Allow Mongoose to cast
                 update: { $set: { position: item.position } },
             },
         }));

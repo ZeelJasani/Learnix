@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/app/data/admin/require-admin";
+import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import CreateCourseClient from "./CreateCourseClient2";
 
 
@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CourseCreationPage() {
   // server-side guard
-  await requireAdmin();
+  await requireAdminOrMentor();
 
   return <CreateCourseClient />;
 }

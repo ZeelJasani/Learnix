@@ -189,4 +189,33 @@ export class AdminService {
             topCourses: topCoursesResult,
         };
     }
+
+    /**
+     * Get all mentors
+     */
+    static async getAllMentors(): Promise<any[]> {
+        const mentors = await User.find({ role: 'mentor' })
+            .sort({ createdAt: -1 })
+            .select('name email image createdAt')
+            .lean();
+
+        // Get course count for each mentor
+        const mentorsWithStats = await Promise.all(
+            mentors.map(async (mentor) => {
+                const courseCount = await Course.countDocuments({ userId: mentor._id });
+                const enrollments = await Enrollment.countDocuments({
+                    courseId: { $in: await Course.find({ userId: mentor._id }).distinct('_id') }
+                });
+
+                return {
+                    ...mentor,
+                    id: mentor._id.toString(),
+                    courseCount,
+                    studentCount: enrollments,
+                };
+            })
+        );
+
+        return mentorsWithStats;
+    }
 }

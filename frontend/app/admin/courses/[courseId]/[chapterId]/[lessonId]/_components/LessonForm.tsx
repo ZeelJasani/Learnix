@@ -36,7 +36,7 @@ import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Uploader } from "@/components/file-uploader/Uploader";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { updateLesson } from "../actions";
 
 
@@ -52,6 +52,9 @@ interface iAppProps {
 export function LessonForm({ chapterId, data, courseId }: iAppProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const pathname = usePathname();
+  const isMentor = pathname?.startsWith("/mentor");
+  const basePath = isMentor ? "/mentor" : "/admin";
 
   const form = useForm<lessonSchemaType>({
     resolver: zodResolver(lessonSchema),
@@ -90,7 +93,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
     <div>
       <Link
         className={buttonVariants({ variant: "outline", className: "mb-6" })}
-        href={`/admin/courses/${data.slug || data.id}/edit`}
+        href={`${basePath}/courses/${courseId}/edit`}
       >
         <ArrowLeft className="size-4" />
         <span>Go Back</span>

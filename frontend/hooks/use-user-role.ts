@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 export interface UserRole {
     role: string | null;
     isAdmin: boolean;
+    isMentor: boolean;
     isLoading: boolean;
 }
 
@@ -94,6 +95,7 @@ export function useUserRole(): UserRole {
     return {
         role,
         isAdmin: role?.toLowerCase() === 'admin',
+        isMentor: role?.toLowerCase() === 'mentor',
         isLoading: !isLoaded || isLoading,
     };
 }

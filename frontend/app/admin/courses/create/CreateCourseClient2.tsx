@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useConfetti } from "@/hooks/use-confetti";
 
-export default function CreateCourseClient2() {
+export default function CreateCourseClient2({ basePath = "/admin/courses" }: { basePath?: string }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { triggerConfetti } = useConfetti();
@@ -62,7 +62,7 @@ export default function CreateCourseClient2() {
         toast.success(result.message);
         triggerConfetti();
         form.reset();
-        router.push("/admin/courses");
+        router.push(basePath);
       } else if (result.status === "error") {
         toast.error(result.message);
       }
@@ -71,8 +71,8 @@ export default function CreateCourseClient2() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <Link href="/admin/courses" className={buttonVariants({ variant: "outline", size: "icon" })}>
+      <div className="flex items-center gap-4 mt-6 mb-8">
+        <Link href={basePath} className={buttonVariants({ variant: "outline", size: "icon" })}>
           <ArrowLeft className="size-4" />
         </Link>
         <h1 className="text-2xl font-bold">Create Course</h1>

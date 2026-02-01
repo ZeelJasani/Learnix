@@ -3,14 +3,14 @@ import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { EditCourseForm } from "./_components/EditCourseForm";
-import { CourseStructure } from "./_components/CourseStructure";
-import { CourseActivities } from "./_components/CourseActivities";
+import { EditCourseForm } from "@/app/admin/courses/[courseId]/edit/_components/EditCourseForm";
+import { CourseStructure } from "@/app/admin/courses/[courseId]/edit/_components/CourseStructure";
+import { CourseActivities } from "@/app/admin/courses/[courseId]/edit/_components/CourseActivities";
 
 
 type Params = Promise<{ courseId: string }>
 
-export default async function EditRoute({ params }: { params: Params }) {
+export default async function MentorEditRoute({ params }: { params: Params }) {
     await requireAdminOrMentor();
 
     const { courseId } = await params;
@@ -19,8 +19,6 @@ export default async function EditRoute({ params }: { params: Params }) {
     return (
         <div>
             <h1 className="text-3xl font-bold mb-12 mt-6">Edit Course: <span className="text-primary">{data.title}</span></h1>
-
-
 
             <Tabs defaultValue="basic-info" className="w-full">
                 <TabsList className="grid grid-cols-3 w-full">

@@ -10,6 +10,8 @@ import { useConstructUrl } from "@/hooks/use-construct-url";
 import { ArrowRight, Eye, MoreVertical, Pencil, Clock, Users, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface iAppProps {
     data: AdminCourseType;
@@ -31,10 +33,14 @@ const categoryColors: Record<string, string> = {
 };
 
 export function AdminCourseCard({ data }: iAppProps) {
+    const pathname = usePathname();
+    const isMentor = pathname?.startsWith("/mentor");
+    const basePath = isMentor ? "/mentor" : "/admin";
+
     const CourseImage = useConstructUrl(data.fileKey);
     const levelClass = levelColors[data.level] || levelColors.BEGINNER;
     const categoryClass = categoryColors[data.category] || "border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400";
-    const editLink = `/admin/courses/${data.id}/edit`;
+    const editLink = `${basePath}/courses/${data.id}/edit`;
 
     return (
         <Card className="group relative overflow-hidden py-0 gap-0 hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20">
@@ -75,7 +81,7 @@ export function AdminCourseCard({ data }: iAppProps) {
                             <DropdownMenuSeparator className="bg-gray-700" />
 
                             <DropdownMenuItem asChild className="cursor-pointer text-red-400 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400">
-                                <Link href={`/admin/courses/${data.id}/delete`}>
+                                <Link href={`${basePath}/courses/${data.id}/delete`}>
                                     <Trash2 className="size-4 mr-2" />
                                     Delete course
                                 </Link>
@@ -100,10 +106,24 @@ export function AdminCourseCard({ data }: iAppProps) {
             </div>
 
             <CardContent className="p-5">
-                {/* Category Tag */}
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-3 ${categoryClass}`}>
-                    {data.category}
-                </span>
+                {/* Category Tag & Mentor Info */}
+                <div className="flex items-center justify-between mb-3">
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${categoryClass}`}>
+                        {data.category}
+                    </span>
+
+                    {data.mentor && (
+                        <div className="flex items-center gap-2" title={data.mentor.name}>
+                            <span className="text-xs text-muted-foreground hidden lg:inline-block max-w-[100px] truncate">
+                                {data.mentor.name}
+                            </span>
+                            <Avatar className="h-6 w-6">
+                                <AvatarImage src={data.mentor.image} alt={data.mentor.name} />
+                                <AvatarFallback>{data.mentor.name?.substring(0, 2).toUpperCase() || "ME"}</AvatarFallback>
+                            </Avatar>
+                        </div>
+                    )}
+                </div>
 
                 {/* Title */}
                 <Link

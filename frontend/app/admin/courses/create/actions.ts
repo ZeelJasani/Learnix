@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/app/data/admin/require-admin";
+import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { api, getAuthToken } from "@/lib/api-client";
 import { stripe } from "@/lib/stripe";
@@ -24,7 +24,7 @@ const aj = arcjet.withRule(
 
 export async function CreateCourse(courseInput: CourseSchemaType): Promise<ApiResponse> {
 
-    const session = await requireAdmin();
+    const session = await requireAdminOrMentor(true);
     try {
         const req = await request();
         const decision = await aj.protect(req, {

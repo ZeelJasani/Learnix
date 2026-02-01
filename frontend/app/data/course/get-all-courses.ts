@@ -13,6 +13,11 @@ export interface PublicCourseType {
     duration: number;
     category: string;
     chapterCount?: number;
+    mentor?: {
+        id: string;
+        name: string;
+        image: string;
+    };
 }
 
 export async function getAllCourses(): Promise<PublicCourseType[]> {

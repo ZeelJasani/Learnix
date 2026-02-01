@@ -14,6 +14,7 @@ import { ChevronDown, ChevronRight, FileText, GripVertical } from "lucide-react"
 import { CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { reorderChapters, reorderLesson } from "../actions";
 import { NewChapterModel } from "./NewChapterModel";
@@ -48,6 +49,9 @@ interface SortableItemProps {
 }
 
 export function CourseStructure({ data }: iAppProps) {
+    const pathname = usePathname();
+    const isMentor = pathname?.startsWith("/mentor");
+    const basePath = isMentor ? "/mentor" : "/admin";
     const initialItems: ChapterItem[] = data.chapter?.map((chapter) => ({
         id: chapter.id,
         title: chapter.title || `Chapter ${chapter.position}`,
@@ -406,7 +410,7 @@ export function CourseStructure({ data }: iAppProps) {
 
                                                                             <FileText className="size-4" />
                                                                             <Link
-                                                                                href={`/admin/courses/${data.id}/${item.id}/${lesson.id}`}
+                                                                                href={`${basePath}/courses/${data.id}/${item.id}/${lesson.id}`}
                                                                                 className="flex-1 hover:text-primary pl-2"
                                                                             >
                                                                                 {lesson.title}

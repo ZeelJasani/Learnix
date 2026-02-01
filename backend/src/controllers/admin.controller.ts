@@ -59,4 +59,16 @@ export class AdminController {
             next(error);
         }
     }
+
+    /**
+     * Get all mentors
+     */
+    static async getAllMentors(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentors = await AdminService.getAllMentors();
+            ApiResponse.success(res, mentors);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

@@ -16,7 +16,7 @@ const baseMenuItems = [
 
 export const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
-    const { isAdmin } = useUserRole()
+    const { isAdmin, isMentor } = useUserRole()
 
     return (
         <header>
@@ -69,6 +69,15 @@ export const HeroHeader = () => {
                                                 </Link>
                                             </li>
                                         )}
+                                        {isMentor && (
+                                            <li>
+                                                <Link
+                                                    href="/mentor"
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    <span>Mentor Dashboard</span>
+                                                </Link>
+                                            </li>
+                                        )}
                                     </SignedIn>
                                 </ul>
                             </div>
@@ -100,6 +109,15 @@ export const HeroHeader = () => {
                                                     href="/admin/dashboard"
                                                     className="text-muted-foreground hover:text-accent-foreground block duration-150">
                                                     <span>Admin</span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        {isMentor && (
+                                            <li>
+                                                <Link
+                                                    href="/mentor"
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    <span>Mentor Dashboard</span>
                                                 </Link>
                                             </li>
                                         )}

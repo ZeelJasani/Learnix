@@ -92,6 +92,79 @@ export async function requireAdmin(returnJson = false) {
   }
 }
 
+export async function requireAdminOrMentor(returnJson = false) {
+  try {
+    const user = await currentUser();
+    const baseUrl = await getBaseUrl();
+
+    if (!user) {
+      if (returnJson) {
+        throw new Error('Authentication required');
+      }
+      redirect(`${baseUrl}/login`);
+    }
+
+    // ✅ INSTANT: Check Clerk publicMetadata first
+    const metadataRole = (user.publicMetadata as { role?: string })?.role;
+    const roleLower = metadataRole?.toLowerCase();
+
+    if (roleLower === 'admin' || roleLower === 'mentor') {
+      // 🔄 BACKGROUND: Sync to DB silently (non-blocking)
+      backgroundSyncUser(user);
+      return { userId: user.id, role: metadataRole, user: { id: user.id, role: metadataRole } };
+    }
+
+    // If no metadata or not admin/mentor in metadata, check the database
+    const token = await getAuthToken();
+
+    if (!token) {
+      if (returnJson) {
+        throw new Error('Authentication required');
+      }
+      redirect(`${baseUrl}/login`);
+    }
+
+    // Sync user and check role from database
+    const syncResponse = await api.post<{ user: UserProfile }>('/users/sync', {
+      clerkId: user.id,
+      email: user.emailAddresses?.[0]?.emailAddress,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      imageUrl: user.imageUrl,
+    }, token);
+
+    const dbUser = syncResponse.data?.user;
+    const role = dbUser?.role;
+
+    // Update Clerk metadata if role differs (for next instant load)
+    if (role && role !== metadataRole) {
+      updateClerkMetadata(user.id, role);
+    }
+
+    const dbRoleLower = role?.toLowerCase();
+    if (!role || (dbRoleLower !== 'admin' && dbRoleLower !== 'mentor')) {
+      if (returnJson) {
+        throw new Error('Insufficient permissions');
+      }
+      // Redirect to dashboard if they are logged in but not authorized
+      redirect(`${baseUrl}/dashboard`);
+    }
+
+    return { userId: user.id, role, user: dbUser };
+  } catch (error: any) {
+    // Handle dynamic server usage errors during build/SSG
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE' || error?.message?.includes('NEXT_REDIRECT')) {
+      throw error;
+    }
+    console.error('Error in requireAdminOrMentor:', error);
+    if (returnJson) {
+      throw error;
+    }
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    redirect(`${baseUrl}/login`);
+  }
+}
+
 /**
  * Check if current user is an admin (returns boolean, doesn't redirect)
  */
