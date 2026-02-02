@@ -30,7 +30,7 @@ export const verifyClerkToken = async (
         }
 
         try {
-            // Verify the session token with Clerk
+            
             const verifiedToken = await clerkClient.verifyToken(token);
 
             req.auth = {

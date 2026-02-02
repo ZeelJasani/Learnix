@@ -4,9 +4,7 @@ import { UploadService } from '../services/upload.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class UploadController {
-    /**
-     * Get presigned URL for S3 upload
-     */
+
     static async getPresignedUrl(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { fileName, contentType, size, isImage } = req.body;
@@ -27,9 +25,7 @@ export class UploadController {
         }
     }
 
-    /**
-     * Delete file from S3
-     */
+
     static async deleteFile(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { key } = req.params;

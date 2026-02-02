@@ -1,5 +1,8 @@
 import { api, getAuthToken } from "@/lib/api-client";
 import { requireUser } from "@/app/data/user/require-user";
+
+export const dynamic = 'force-dynamic';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Table,

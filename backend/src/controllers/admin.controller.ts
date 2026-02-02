@@ -5,9 +5,7 @@ import { CourseService } from '../services/course.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class AdminController {
-    /**
-     * Get dashboard statistics
-     */
+
     static async getDashboardStats(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const month = req.query.month ? parseInt(req.query.month as string) : undefined;
@@ -20,9 +18,6 @@ export class AdminController {
         }
     }
 
-    /**
-     * Get all users
-     */
     static async getAllUsers(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const page = parseInt(req.query.page as string) || 1;
@@ -35,9 +30,7 @@ export class AdminController {
         }
     }
 
-    /**
-     * Get enrollment statistics
-     */
+
     static async getEnrollmentStats(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const stats = await AdminService.getEnrollmentStats();
@@ -47,9 +40,7 @@ export class AdminController {
         }
     }
 
-    /**
-     * Get recent courses
-     */
+
     static async getRecentCourses(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const limit = parseInt(req.query.limit as string) || 5;
@@ -60,9 +51,6 @@ export class AdminController {
         }
     }
 
-    /**
-     * Get all mentors
-     */
     static async getAllMentors(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const mentors = await AdminService.getAllMentors();

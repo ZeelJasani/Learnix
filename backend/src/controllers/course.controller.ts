@@ -5,9 +5,7 @@ import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
 
 export class CourseController {
-    /**
-     * Get all published courses (public)
-     */
+
     static async getAllPublished(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const courses = await CourseService.getAllPublished();
@@ -17,9 +15,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Get course by slug (public)
-     */
+
     static async getBySlug(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { slug } = req.params;
@@ -35,9 +31,6 @@ export class CourseController {
         }
     }
 
-    /**
-     * Search courses (public)
-     */
     static async search(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const query = (req.query.q as string) || '';
@@ -50,9 +43,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Get all courses (admin)
-     */
+
     static async getAll(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const courses = await CourseService.getAll();
@@ -62,9 +53,6 @@ export class CourseController {
         }
     }
 
-    /**
-     * Get course by ID (admin)
-     */
     static async getById(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -80,9 +68,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Create course (admin)
-     */
+
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -96,9 +82,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Update course (admin)
-     */
+
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -114,9 +98,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Delete course (admin)
-     */
+
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -132,9 +114,7 @@ export class CourseController {
         }
     }
 
-    /**
-     * Get recent courses (admin)
-     */
+ 
     static async getRecent(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const limit = parseInt(req.query.limit as string) || 5;

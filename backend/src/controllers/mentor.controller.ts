@@ -5,9 +5,7 @@ import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
 
 export class MentorController {
-    /**
-     * Get mentor dashboard statistics
-     */
+
     static async getDashboardStats(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const mentorId = req.user!.id;
@@ -18,9 +16,7 @@ export class MentorController {
         }
     }
 
-    /**
-     * Get all courses created by the mentor
-     */
+
     static async getMyCourses(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const mentorId = req.user!.id;
@@ -31,9 +27,7 @@ export class MentorController {
         }
     }
 
-    /**
-     * Get all students enrolled in mentor's courses
-     */
+
     static async getMyStudents(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const mentorId = req.user!.id;
@@ -44,9 +38,7 @@ export class MentorController {
         }
     }
 
-    /**
-     * Get mentor profile (public)
-     */
+
     static async getMentorProfile(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;

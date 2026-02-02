@@ -121,7 +121,11 @@ export class CourseService {
 
                 return {
                     ...chapter,
-                    lessons: lessonsWithProgress,
+                    id: chapter._id.toString(),
+                    lessons: lessonsWithProgress.map(lesson => ({
+                        ...lesson,
+                        id: lesson._id.toString(),
+                    })),
                 };
             })
         );
@@ -233,9 +237,10 @@ export class CourseService {
 
         // Create Stripe Product
         const { StripeService } = await import('./stripe.service');
+        const plainDescription = CourseService.getTextFromDescription(data.description);
         const stripeProduct = await StripeService.createProduct(
             data.title,
-            data.description,
+            plainDescription,
             imageUrl
         );
 
@@ -299,15 +304,42 @@ export class CourseService {
             });
         }
 
+        // Helper to extract text from TipTap JSON
+        const getTextFromDescription = (desc: string): string => {
+            try {
+                // Check if it looks like JSON object starting with { "type": "doc"
+                if (desc.trim().startsWith('{') && desc.includes('"type":"doc"')) {
+                    const json = JSON.parse(desc);
+                    let text = '';
+
+                    // Simple recursive extractor
+                    const extract = (node: any) => {
+                        if (node.text) text += node.text;
+                        if (node.content && Array.isArray(node.content)) {
+                            node.content.forEach(extract);
+                        }
+                    };
+
+                    extract(json);
+                    return text || desc;
+                }
+                return desc;
+            } catch (e) {
+                return desc;
+            }
+        };
+
         // 2. If details change, update Stripe Product
         if (data.title || data.description || data.fileKey) {
             const imageUrl = data.fileKey
                 ? `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`
                 : undefined;
 
+            const plainDescription = data.description ? CourseService.getTextFromDescription(data.description) : undefined;
+
             await StripeService.updateProduct(currentCourse.stripeProductId, {
                 name: data.title,
-                description: data.description,  // Note: Stripe has description limit, might need truncate
+                description: plainDescription,
                 image: imageUrl
             });
         }
@@ -418,5 +450,32 @@ export class CourseService {
         }
 
         return Course.findByIdAndUpdate(courseId, { status }, { new: true });
+    }
+
+    /**
+     * Helper to extract text from TipTap JSON
+     */
+    private static getTextFromDescription(desc: string): string {
+        try {
+            // Check if it looks like JSON object starting with { "type": "doc"
+            if (desc && desc.trim().startsWith('{') && desc.includes('"type":"doc"')) {
+                const json = JSON.parse(desc);
+                let text = '';
+
+                // Simple recursive extractor
+                const extract = (node: any) => {
+                    if (node.text) text += node.text;
+                    if (node.content && Array.isArray(node.content)) {
+                        node.content.forEach(extract);
+                    }
+                };
+
+                extract(json);
+                return text || desc;
+            }
+            return desc;
+        } catch (e) {
+            return desc;
+        }
     }
 }
