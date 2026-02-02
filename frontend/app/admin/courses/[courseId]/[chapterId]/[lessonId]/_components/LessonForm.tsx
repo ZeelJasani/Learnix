@@ -1,25 +1,3 @@
-// "use client";
-
-// import { AdminLessonType } from "@/app/data/admin/admin-get-lesson";
-
-// interface iAppProps {
-//     data: AdminLessonType;
-//     chapterId: string
-// }
-
-// export function LessonPage({chapterId, data}: iAppProps) {
-//     return (
-//         <div>
-//             <h1>
-//                 web tokens with jwt tokens
-//             </h1>
-//         </div>
-//     )
-// }
-
-
-
-
 "use client";
 
 import { AdminLessonType } from "@/app/data/admin/admin-get-lesson";
@@ -90,7 +68,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
     });
   };
   return (
-    <div>
+    <div className="mt-8">
       <Link
         className={buttonVariants({ variant: "outline", className: "mb-6" })}
         href={`${basePath}/courses/${courseId}/edit`}
@@ -142,7 +120,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
                 name="thumbnail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>thumbnail</FormLabel>
+                    <FormLabel>Thumbnail</FormLabel>
                     <FormControl>
                       <Uploader onChange={field.onChange} value={field.value || ""} fileTypeAccepted="image" />
                     </FormControl>
@@ -171,7 +149,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
                     Saving...
                   </>
                 ) : (
-                  "Save Changes"
+                  "Create Lesson"
                 )}
               </Button>
             </form>

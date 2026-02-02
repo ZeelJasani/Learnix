@@ -1,69 +1,8 @@
-// import { getCourseSidebarData } from "@/app/data/course/get-course-sidebar-data";
-// import { notFound, redirect } from "next/navigation";
-
-// interface iAppProps {
-//   params: { slug: string };
-// }
-
-// export default async function CourseSlugRoute({ params }: iAppProps) {
-//   const { slug } = params;
-  
-//   try {
-//     const course = await getCourseSidebarData(slug);
-
-//     if (!course?.course) {
-//       return notFound();
-//     }
-
-//     if (!course.course.chapter?.length) {
-//       return (
-//         <div className="flex items-center justify-center h-full text-center">
-//           <h2 className="text-2xl font-bold mb-2">No chapters available</h2>
-//           <p className="text-muted-foreground">
-//             This course does not have any chapters yet!
-//           </p>
-//         </div>
-//       );
-//     }
-
-//     const firstChapter = course.course.chapter[0];
-    
-//     if (!firstChapter.lessons?.length) {
-//       return (
-//         <div className="flex items-center justify-center h-full text-center">
-//           <h2 className="text-2xl font-bold mb-2">No lessons available</h2>
-//           <p className="text-muted-foreground">
-//             This chapter does not have any lessons yet!
-//           </p>
-//         </div>
-//       );
-//     }
-
-//     const firstLesson = firstChapter.lessons[0];
-    
-//     if (firstLesson) {
-//       redirect(`/dashboard/${slug}/${firstLesson.id}`);
-//     }
-
-//     return notFound();
-    
-//   } catch (error) {
-//     console.error('Error loading course:', error);
-//     return notFound();
-//   }
-// }
-
-
-
-
-
-
-
-
-
 import { getCourseSidebarData } from "@/app/data/course/get-course-sidebar-data";
 import { redirect } from "next/navigation";
-// import { redirect } from "next/dist/server/api-utils";
+import { FileQuestion, ChevronLeft, BookOpen } from "lucide-react";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 interface iAppProps {
   params: Promise<{ slug: string }>;
@@ -74,20 +13,63 @@ export default async function CourseSlugRoute({ params }: iAppProps) {
 
   const course = await getCourseSidebarData(slug);
 
-  const firstChapter = course.course.chapter[0];
-  const firstLesson = firstChapter.lessons[0];
+  if (!course?.course?.chapter?.length) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center min-h-[50vh]">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+          <FileQuestion className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h2 className="mt-6 text-2xl font-bold tracking-tight">No chapters available</h2>
+        <p className="mt-2 text-muted-foreground mb-8 text-center max-w-sm">
+          This course does not have any chapters yet. Please check back later or contact your mentor.
+        </p>
+        <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
+  const firstChapter = course.course.chapter[0];
+
+  if (!firstChapter.lessons?.length) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center min-h-[50vh]">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+          <BookOpen className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h2 className="mt-6 text-2xl font-bold tracking-tight">No lessons available</h2>
+        <p className="mt-2 text-muted-foreground mb-8 text-center max-w-sm">
+          This chapter currently has no lessons. Please check back later.
+        </p>
+        <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
+
+  const firstLesson = firstChapter.lessons[0];
 
   if (firstLesson) {
     redirect(`/dashboard/${slug}/${firstLesson.id}`)
   }
 
-return (
-    <div className="flex items-center justify-center h-full text-center">
-      <h2 className="text-2xl font-bold mb-2">No lessons available</h2>
-      <p className="text-muted-foreground">
-        This course does not have any lessons yet!
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center min-h-[50vh]">
+      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+        <FileQuestion className="h-10 w-10 text-muted-foreground" />
+      </div>
+      <h2 className="mt-6 text-2xl font-bold tracking-tight">No content available</h2>
+      <p className="mt-2 text-muted-foreground mb-8 text-center max-w-sm">
+        This course seems to be empty. Please check back later.
       </p>
+      <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        Back to Dashboard
+      </Link>
     </div>
   );
 }

@@ -55,15 +55,7 @@ export async function CreateCourse(courseInput: CourseSchemaType): Promise<ApiRe
             };
         }
 
-        // Create Stripe product
-        const stripeProduct = await stripe.products.create({
-            name: validation.data.title,
-            description: validation.data.smallDescription,
-            default_price_data: {
-                currency: 'inr',
-                unit_amount: validation.data.price * 100,
-            }
-        });
+
 
         // Get auth token for API call
         const token = await getAuthToken();

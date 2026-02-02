@@ -4,12 +4,25 @@ import { LessonService } from '../services/lesson.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class LessonController {
-    // Get lessons for a chapter
     static async getByChapterId(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId } = req.params;
             const lessons = await LessonService.getByChapterId(chapterId);
             ApiResponse.success(res, lessons);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // Get lesson by ID
+    static async getById(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lesson = await LessonService.getById(id);
+            if (!lesson) {
+                throw new Error("Lesson not found");
+            }
+            ApiResponse.success(res, lesson);
         } catch (error) {
             next(error);
         }

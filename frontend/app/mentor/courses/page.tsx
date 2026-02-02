@@ -1,5 +1,8 @@
 import { api, getAuthToken } from "@/lib/api-client";
 import { requireUser } from "@/app/data/user/require-user";
+
+export const dynamic = 'force-dynamic';
+
 import Link from "next/link";
 import { AdminCourseCard } from "@/app/admin/courses/_components/AdminCourseCard";
 import { buttonVariants } from "@/components/ui/button";
