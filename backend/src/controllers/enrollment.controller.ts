@@ -4,9 +4,7 @@ import { EnrollmentService } from '../services/enrollment.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class EnrollmentController {
-    /**
-     * Check if user is enrolled in a course
-     */
+
     static async checkEnrollment(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -19,9 +17,7 @@ export class EnrollmentController {
         }
     }
 
-    /**
-     * Create enrollment (pending)
-     */
+
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -39,9 +35,7 @@ export class EnrollmentController {
         }
     }
 
-    /**
-     * Get enrollment statistics (admin)
-     */
+
     static async getStats(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const stats = await EnrollmentService.getStats();

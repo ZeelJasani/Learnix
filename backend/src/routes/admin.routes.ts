@@ -53,7 +53,8 @@ router.put('/chapters/:id', requireMentor, ChapterController.update);
 router.delete('/chapters/:id', requireMentor, ChapterController.delete);
 
 // Lessons
-router.get('/lessons/:chapterId', requireMentor, LessonController.getByChapterId);
+router.get('/lessons/chapter/:chapterId', requireMentor, LessonController.getByChapterId);
+router.get('/lessons/:id', requireMentor, LessonController.getById);
 router.post('/lessons', requireMentor, LessonController.create);
 router.put('/lessons/reorder', requireMentor, LessonController.reorder);
 router.put('/lessons/:id', requireMentor, LessonController.update);

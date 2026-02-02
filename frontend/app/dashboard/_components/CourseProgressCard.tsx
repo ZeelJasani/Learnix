@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useCourseProgress } from "@/hooks/use-course-progress";
-import { getCourseSidebarDataType } from "@/app/data/course/get-course-sidebar-data";
+import { SidebarCourse } from "@/app/data/course/get-course-sidebar-data";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,14 +16,24 @@ interface iAppProps {
     data: EnrolledCourseType;
 }
 
+const levelColors: Record<string, string> = {
+    BEGINNER: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400",
+    INTERMEDIATE: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400",
+    ADVANCED: "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400",
+};
+
 export function CourseProgressCard({ data }: iAppProps) {
     const thumbnailUrl = useConstructUrl(data.Course.fileKey);
     const { totalLesson, completedLessons, progressPercentage } =
-        useCourseProgress({ courseData: data.Course as unknown as getCourseSidebarDataType['course'] });
+        useCourseProgress({ courseData: data.Course as unknown as SidebarCourse });
+
+    // Determine the color for the level badge
+    const levelClass = levelColors[data.Course.level] || levelColors.BEGINNER;
+
     return (
         <Card className="group relative overflow-hidden py-0 gap-0 h-full flex flex-col border-border/50 hover:border-border transition-colors">
 
-            <Badge className="absolute top-3 right-3 z-10 font-bold shadow-md">{data.Course.level}</Badge>
+            <Badge className={`absolute top-3 right-3 z-10 font-bold shadow-md ${levelClass} border-0`}>{data.Course.level}</Badge>
 
             <div className="relative aspect-video overflow-hidden border-b border-border/50">
                 <Image

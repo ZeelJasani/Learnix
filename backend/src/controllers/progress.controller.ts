@@ -4,9 +4,7 @@ import { ProgressService } from '../services/progress.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class ProgressController {
-    /**
-     * Mark lesson as complete
-     */
+
     static async markLessonComplete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -25,9 +23,7 @@ export class ProgressController {
         }
     }
 
-    /**
-     * Get course progress
-     */
+
     static async getCourseProgress(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -40,9 +36,7 @@ export class ProgressController {
         }
     }
 
-    /**
-     * Reset course progress
-     */
+
     static async resetCourseProgress(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;

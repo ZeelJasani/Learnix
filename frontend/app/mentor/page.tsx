@@ -1,6 +1,9 @@
 import { api, getAuthToken } from "@/lib/api-client";
 import { requireUser } from "@/app/data/user/require-user";
 import { BookOpen, DollarSign, Users } from "lucide-react";
+
+export const dynamic = 'force-dynamic';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 

@@ -4,7 +4,6 @@ import { LessonService } from '../services/lesson.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class LessonController {
-    // Get lessons for a chapter
     static async getByChapterId(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId } = req.params;
@@ -15,7 +14,21 @@ export class LessonController {
         }
     }
 
-    // Get lesson content
+
+    static async getById(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lesson = await LessonService.getById(id);
+            if (!lesson) {
+                throw new Error("Lesson not found");
+            }
+            ApiResponse.success(res, lesson);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    
     static async getContent(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -27,13 +40,13 @@ export class LessonController {
         }
     }
 
-    // Create lesson - REWRITTEN & SIMPLIFIED
+    
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             console.log('[LessonController] Create request received');
             const { name, courseId, chapterId } = req.body;
 
-            // Basic check
+           
             if (!name || !chapterId || !courseId) {
                 throw new Error("Missing required fields: name, chapterId or courseId");
             }
@@ -53,7 +66,7 @@ export class LessonController {
         }
     }
 
-    // Update lesson
+    
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -64,7 +77,7 @@ export class LessonController {
         }
     }
 
-    // Delete lesson
+
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -75,7 +88,7 @@ export class LessonController {
         }
     }
 
-    // Reorder lessons
+
     static async reorder(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId, items } = req.body;

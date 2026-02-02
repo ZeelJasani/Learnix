@@ -20,7 +20,7 @@ export class MentorService {
         // Count unique students enrolled in mentor's courses
         const studentCount = await Enrollment.distinct('userId', {
             courseId: { $in: courseIds },
-            status: 'COMPLETED'
+            status: 'Active'
         }).then(userIds => userIds.length);
 
         // Calculate total revenue (sum of all completed enrollments)
@@ -28,7 +28,7 @@ export class MentorService {
             {
                 $match: {
                     courseId: { $in: courseIds },
-                    status: 'COMPLETED'
+                    status: 'Active'
                 }
             },
             {
@@ -78,7 +78,7 @@ export class MentorService {
         // Get enrollments with user details
         const enrollments = await Enrollment.find({
             courseId: { $in: courseIds },
-            status: 'COMPLETED'
+            status: 'Active'
         })
             .populate('userId', 'name email image')
             .populate('courseId', 'title')
