@@ -218,4 +218,34 @@ export class AdminService {
 
         return mentorsWithStats;
     }
+
+    static async updateUserRole(userId: string, role: 'admin' | 'mentor' | 'user'): Promise<any> {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        user.role = role;
+        await user.save();
+
+        return user;
+    }
+
+    static async getAllCoursesWithContent(): Promise<any[]> {
+        const courses = await Course.find()
+            .populate('userId', 'name email image') // Mentor
+            .populate({
+                path: 'chapters',
+                options: { sort: { position: 1 } },
+                populate: {
+                    path: 'lessons',
+                    options: { sort: { position: 1 } },
+                }
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return courses;
+    }
 }

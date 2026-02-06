@@ -18,11 +18,11 @@ export const s3Client = new S3Client(s3Config);
 export const checkS3Connection = async (): Promise<{ connected: boolean; error?: string }> => {
     try {
         await s3Client.send(new ListBucketsCommand({}));
-        logger.info('S3 connection verified');
+        logger.info('✅ S3 connection verified');
         return { connected: true };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        logger.error('S3 connection failed:', errorMessage);
+        logger.error('❌ S3 connection failed:', errorMessage);
         return { connected: false, error: errorMessage };
     }
 };

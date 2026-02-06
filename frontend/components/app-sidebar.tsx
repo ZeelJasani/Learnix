@@ -9,6 +9,7 @@ import {
   User,
   Users,
   FileText,
+  GraduationCap,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -67,6 +68,11 @@ const adminData = {
       title: "Users",
       url: "/admin/users",
       icon: Users,
+    },
+    {
+      title: "Mentors",
+      url: "/admin/mentors",
+      icon: GraduationCap,
     },
     {
       title: "Activities",

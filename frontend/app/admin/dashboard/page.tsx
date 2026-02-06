@@ -6,7 +6,8 @@ import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactiv
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, ShoppingCart, Users, AlignLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-// import { DashboardMonthFilter } from "./_components/month-filter";
+import { DashboardMonthFilter } from "./_components/MonthFilter";
+import Link from "next/link";
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -17,9 +18,12 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
 
   const resolvedSearchParams = await searchParams;
 
-  // Default to January 2026 as per request, or use params
-  const month = resolvedSearchParams.month ? parseInt(resolvedSearchParams.month as string) : 0; // 0 = Jan
-  const year = resolvedSearchParams.year ? parseInt(resolvedSearchParams.year as string) : 2026;
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  // Default to current month/year if not specified
+  const month = resolvedSearchParams.month ? parseInt(resolvedSearchParams.month as string) : currentMonth;
+  const year = resolvedSearchParams.year ? parseInt(resolvedSearchParams.year as string) : currentYear;
 
   // Fetch data in parallel for performance
   const [stats, recentCourses] = await Promise.all([
@@ -36,7 +40,7 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
             Overview of your platform's performance
           </p>
         </div>
-        {/* <DashboardMonthFilter /> */}
+        <DashboardMonthFilter />
       </div>
 
       <Separator />
@@ -48,25 +52,30 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
           value={stats.totalSignups}
           description="Registered users on the platform"
           icon={Users}
+          href="/admin/users"
         />
         <StatsCard
           title="Total Customers"
           value={stats.totalCustomers}
           description="Users who have enrolled in courses"
           icon={ShoppingCart}
+          href="/admin/users"
         />
         <StatsCard
           title="Total Courses"
           value={stats.totalCourses}
           description="Available courses on the platform"
           icon={BookOpen}
+          href="/admin/courses"
         />
         <StatsCard
           title="Total Lessons"
           value={stats.totalLessons}
           description="Total learning material available"
           icon={AlignLeft}
+          href="/admin/lessons"
         />
+
       </div>
 
       {/* Charts & Activity */}
@@ -96,14 +105,16 @@ function StatsCard({
   value,
   description,
   icon: Icon,
+  href,
 }: {
   title: string;
   value: number;
   description: string;
   icon: any;
+  href?: string;
 }) {
-  return (
-    <Card>
+  const content = (
+    <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
@@ -114,4 +125,10 @@ function StatsCard({
       </CardContent>
     </Card>
   );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+
+  return content;
 }

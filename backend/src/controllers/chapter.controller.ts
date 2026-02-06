@@ -4,7 +4,7 @@ import { ChapterService } from '../services/chapter.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class ChapterController {
-
+    // Get chapters for a course
     static async getByCourseId(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { courseId } = req.params;
@@ -15,7 +15,7 @@ export class ChapterController {
         }
     }
 
-
+    // Create chapter - REWRITTEN & SIMPLIFIED
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             console.log('[ChapterController] Create request received');
@@ -40,7 +40,7 @@ export class ChapterController {
         }
     }
 
-
+    // Update chapter
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -51,7 +51,7 @@ export class ChapterController {
         }
     }
 
-
+    // Delete chapter
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -62,7 +62,7 @@ export class ChapterController {
         }
     }
 
-
+    // Reorder chapters - UPDATED for manual validation
     static async reorder(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             console.log('[ChapterController] Reorder request received');

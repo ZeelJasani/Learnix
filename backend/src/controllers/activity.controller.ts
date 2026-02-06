@@ -5,7 +5,9 @@ import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
 
 export class ActivityController {
-
+    /**
+     * Get activities for enrolled courses
+     */
     static async getForUser(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -15,6 +17,10 @@ export class ActivityController {
             next(error);
         }
     }
+
+    /**
+     * Get activities for a course (admin)
+     */
     static async getByCourseId(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { courseId } = req.params;
@@ -25,7 +31,9 @@ export class ActivityController {
         }
     }
 
-
+    /**
+     * Create activity (admin)
+     */
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             console.log('[ActivityController] Create request received:', req.body);
@@ -46,7 +54,9 @@ export class ActivityController {
         }
     }
 
-
+    /**
+     * Update activity (admin)
+     */
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -62,7 +72,9 @@ export class ActivityController {
         }
     }
 
-
+    /**
+     * Delete activity (admin)
+     */
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
@@ -78,6 +90,9 @@ export class ActivityController {
         }
     }
 
+    /**
+     * Mark activity as complete
+     */
     static async complete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;

@@ -7,7 +7,7 @@ import { env } from '../config/env';
 import { ApiResponse } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
 
-
+// Initialize Stripe
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 interface ClerkWebhookEvent {
@@ -17,7 +17,9 @@ interface ClerkWebhookEvent {
 }
 
 export class WebhookController {
-
+    /**
+     * Handle Clerk webhook events
+     */
     static async handleClerkWebhook(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const secret = env.CLERK_WEBHOOK_SECRET;
@@ -53,7 +55,7 @@ export class WebhookController {
                 return;
             }
 
-
+            // Handle user events
             if (event.type === 'user.created' || event.type === 'user.updated') {
                 const userData = event.data;
 
@@ -76,7 +78,9 @@ export class WebhookController {
         }
     }
 
-
+    /**
+     * Handle Stripe webhook events
+     */
     static async handleStripeWebhook(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const secret = env.STRIPE_WEBHOOK_SECRET;
@@ -97,7 +101,7 @@ export class WebhookController {
             let event: Stripe.Event;
 
             try {
-                
+                // Note: req.body should be raw buffer for Stripe verification
                 event = stripe.webhooks.constructEvent(
                     req.body,
                     signature,
@@ -111,7 +115,7 @@ export class WebhookController {
 
             logger.info(`Received Stripe webhook: ${event.type}`);
 
-            
+            // Handle checkout session completed
             if (event.type === 'checkout.session.completed') {
                 const session = event.data.object as Stripe.Checkout.Session;
                 const courseId = session.metadata?.courseId;
@@ -125,7 +129,7 @@ export class WebhookController {
                     return;
                 }
 
-               
+                // Find user by Stripe customer ID
                 const user = await UserService.getByStripeCustomerId(customerId);
 
                 if (!user) {
@@ -134,7 +138,7 @@ export class WebhookController {
                     return;
                 }
 
-                
+                // Verify payment was successful
                 if (session.payment_status !== 'paid') {
                     logger.info(`Payment not completed for session ${session.id}`);
                     if (enrollmentId) {
@@ -148,7 +152,7 @@ export class WebhookController {
                     return;
                 }
 
-            
+                // Activate enrollment
                 if (enrollmentId) {
                     const updated = await EnrollmentService.activate(
                         enrollmentId,
@@ -160,7 +164,7 @@ export class WebhookController {
                     if (updated) {
                         logger.info(`Activated enrollment ${enrollmentId}`);
                     } else {
-                        
+                        // Create new enrollment if pending not found
                         await EnrollmentService.create({
                             userId: user._id.toString(),
                             courseId,
@@ -170,7 +174,7 @@ export class WebhookController {
                         logger.info(`Created new active enrollment for user ${user._id}`);
                     }
                 } else {
-                   
+                    // Create new enrollment
                     await EnrollmentService.create({
                         userId: user._id.toString(),
                         courseId,
@@ -181,7 +185,7 @@ export class WebhookController {
                 }
             }
 
-         
+            // Handle session expiration
             if (event.type === 'checkout.session.expired') {
                 const session = event.data.object as Stripe.Checkout.Session;
                 const courseId = session.metadata?.courseId;
