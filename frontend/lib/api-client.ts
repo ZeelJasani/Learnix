@@ -4,6 +4,9 @@
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+console.log(`[ApiClient] Initialized with Base URL: ${API_BASE_URL}`);
+
+
 interface ApiResponse<T> {
     success: boolean;
     message?: string;
@@ -19,12 +22,11 @@ class ApiClient {
     }
 
     private async getAuthHeaders(): Promise<HeadersInit> {
-        // Import Clerk auth dynamically to get the token
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
         };
 
-        // Get token from Clerk if available (for server-side)
+
         if (typeof window === 'undefined') {
             try {
                 const { auth } = await import('@clerk/nextjs/server');
@@ -34,7 +36,6 @@ class ApiClient {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
             } catch {
-                // Not authenticated or Clerk not available
             }
         }
 
@@ -50,13 +51,25 @@ class ApiClient {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'GET',
-            headers,
-            cache: 'no-store',
-        });
+        try {
+            const response = await fetch(`${this.baseUrl}${endpoint}`, {
+                method: 'GET',
+                headers,
+                cache: 'no-store',
+            });
 
-        return response.json();
+            if (!response.ok) {
+                console.error(`[ApiClient] GET ${endpoint} failed: ${response.status} ${response.statusText}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error(`[ApiClient] GET ${endpoint} network error:`, error);
+            return {
+                success: false,
+                message: 'Network error occurred. Please ensure backend is running.',
+            } as ApiResponse<T>;
+        }
     }
 
     async post<T>(endpoint: string, data: unknown, token?: string): Promise<ApiResponse<T>> {
@@ -68,13 +81,25 @@ class ApiClient {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(data),
-        });
+        try {
+            const response = await fetch(`${this.baseUrl}${endpoint}`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(data),
+            });
 
-        return response.json();
+            if (!response.ok) {
+                console.error(`[ApiClient] POST ${endpoint} failed: ${response.status} ${response.statusText}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error(`[ApiClient] POST ${endpoint} network error:`, error);
+            return {
+                success: false,
+                message: 'Network error occurred. Please ensure backend is running.',
+            } as ApiResponse<T>;
+        }
     }
 
     async put<T>(endpoint: string, data: unknown, token?: string): Promise<ApiResponse<T>> {

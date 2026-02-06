@@ -71,4 +71,30 @@ export class AdminController {
             next(error);
         }
     }
+
+    static async updateUserRole(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { role } = req.body;
+
+            if (!['admin', 'mentor', 'user'].includes(role)) {
+                ApiResponse.error(res, 'Invalid role', 400);
+                return;
+            }
+
+            const user = await AdminService.updateUserRole(id, role);
+            ApiResponse.success(res, user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getCoursesWithContent(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const courses = await AdminService.getAllCoursesWithContent();
+            ApiResponse.success(res, courses);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

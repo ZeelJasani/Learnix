@@ -29,9 +29,12 @@ router.get('/dashboard/stats', requireAdmin, AdminController.getDashboardStats);
 router.get('/dashboard/users', requireAdmin, AdminController.getAllUsers);
 router.get('/dashboard/enrollments', requireAdmin, AdminController.getEnrollmentStats);
 router.get('/dashboard/recent-courses', requireAdmin, AdminController.getRecentCourses);
+router.get('/courses/content', requireAdmin, AdminController.getCoursesWithContent);
+
 
 // Users - Admin only
 router.get('/users', requireAdmin, UserController.getAllUsers);
+router.put('/users/:id/role', requireAdmin, AdminController.updateUserRole);
 
 // Mentors - Admin only (listing all mentors)
 router.get('/mentors', requireAdmin, AdminController.getAllMentors);

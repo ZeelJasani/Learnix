@@ -1,5 +1,6 @@
 import { getAllUsers } from "@/app/data/admin/get-all-users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RoleSelect } from "./_components/RoleSelect";
 import { Badge } from "@/components/ui/badge";
 import {
     Table,
@@ -49,9 +50,10 @@ export default async function AdminUsersPage() {
                                 <TableCell className="font-medium">{user.name || "N/A"}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
-                                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                                        {user.role || "user"}
-                                    </Badge>
+                                    <RoleSelect
+                                        userId={user.id}
+                                        currentRole={user.role || "user"}
+                                    />
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {user.createdAt
