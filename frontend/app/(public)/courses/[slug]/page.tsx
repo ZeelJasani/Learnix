@@ -13,6 +13,8 @@ import { CheckIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
 import { EnrollmentButton } from "./_components/EnrollmentButton";
+import { FreeEnrollModal } from "@/components/modals/FreeEnrollModal";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -265,10 +267,14 @@ export default async function SlugPage({ params }: { params: Params }) {
                             </div>
 
 
-                           
+
                             {isEnrolled ? (
-                                <Link className={buttonVariants({ className: "mt-6 w-full" })} 
-                                href="/dashboard">Watch Course</Link>
+                                <Link className={buttonVariants({ className: "mt-6 w-full" })}
+                                    href="/dashboard">Watch Course</Link>
+                            ) : course.price === 0 ? (
+                                <FreeEnrollModal courseId={course.id} courseTitle={course.title} courseSlug={course.slug}>
+                                    <Button className="mt-6 w-full">Enroll for Free</Button>
+                                </FreeEnrollModal>
                             ) : (
                                 <EnrollmentButton courseId={course.id} />
                             )}

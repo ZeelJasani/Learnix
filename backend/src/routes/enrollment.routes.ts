@@ -5,11 +5,12 @@ import { requireUser } from '../middleware/requireUser';
 
 const router = Router();
 
-// All routes require authentication
+
 router.use(verifyClerkToken);
 router.use(requireUser);
 
-router.get('/check/:courseId', EnrollmentController.checkEnrollment);
+router.get('/:courseId/check', EnrollmentController.checkEnrollment);
+router.post('/free', EnrollmentController.freeEnrollment);
 router.post('/', EnrollmentController.create);
 
 export default router;

@@ -27,7 +27,7 @@ export function EditCourseForm({ data }: iAppProps) {
     const router = useRouter();
 
     const form = useForm<CourseSchemaType>({
-        resolver: zodResolver(courseSchema),
+        resolver: zodResolver(courseSchema) as any,
         defaultValues: {
             title: data.title,
             description: data.description,
@@ -166,91 +166,91 @@ export function EditCourseForm({ data }: iAppProps) {
                 />
                 <div className="grid grid-cols-1 gap-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Category</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                    <FormLabel>Category</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Category" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {courseCategories.map((category) => (
+                                                <SelectItem key={category} value={category}>
+                                                    {category}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="level"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                    <FormLabel>Level</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select Level" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {courseLevels.map((level) => (
+                                                <SelectItem key={level} value={level}>
+                                                    {level}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="duration"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                    <FormLabel>Duration (hours)</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Category" />
-                                        </SelectTrigger>
+                                        <Input
+                                            placeholder="Course Duration"
+                                            type="number"
+                                            min="1"
+                                            max="500"
+                                            {...field}
+                                        />
                                     </FormControl>
-                                    <SelectContent>
-                                        {courseCategories.map((category) => (
-                                            <SelectItem key={category} value={category}>
-                                                {category}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="level"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Level</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                    <FormLabel>Course Price ($)</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select Level" />
-                                        </SelectTrigger>
+                                        <Input
+                                            placeholder="Course Price"
+                                            type="number"
+                                            min="0"
+                                            {...field}
+                                        />
                                     </FormControl>
-                                    <SelectContent>
-                                        {courseLevels.map((level) => (
-                                            <SelectItem key={level} value={level}>
-                                                {level}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Duration (hours)</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Course Duration"
-                                        type="number"
-                                        min="1"
-                                        max="500"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Course Price ($)</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Course Price"
-                                        type="number"
-                                        min="1"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </div>
                     <div className="col-span-2">
                         <FormField

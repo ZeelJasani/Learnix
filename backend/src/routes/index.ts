@@ -8,6 +8,7 @@ import mentorRoutes, { mentorPublicRouter } from './mentor.routes';
 import activityRoutes from './activity.routes';
 import adminRoutes from './admin.routes';
 import webhookRoutes from './webhook.routes';
+import { assignmentRouter } from './assignment.routes';
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use('/mentors', mentorPublicRouter);
 router.use('/activities', activityRoutes);
 router.use('/admin', adminRoutes);
 router.use('/webhooks', webhookRoutes);
+router.use('/assignments', assignmentRouter);
 
 export default router;

@@ -8,6 +8,8 @@ export interface ILesson extends Document {
     videoKey: string | null;
     position: number;
     chapterId: mongoose.Types.ObjectId;
+    type: 'video' | 'text' | 'project';
+    details: any;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -41,6 +43,15 @@ const lessonSchema = new Schema<ILesson>(
             ref: 'Chapter',
             required: true,
             index: true,
+        },
+        type: {
+            type: String,
+            enum: ['video', 'text', 'project'],
+            default: 'video',
+        },
+        details: {
+            type: Schema.Types.Mixed,
+            default: {},
         },
     },
     {

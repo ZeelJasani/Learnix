@@ -4,9 +4,7 @@ import { EnrollmentService } from '../services/enrollment.service';
 import { ApiResponse } from '../utils/apiResponse';
 
 export class EnrollmentController {
-    /**
-     * Check if user is enrolled in a course
-     */
+
     static async checkEnrollment(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -19,9 +17,7 @@ export class EnrollmentController {
         }
     }
 
-    /**
-     * Create enrollment (pending)
-     */
+
     static async create(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user!.id;
@@ -39,9 +35,26 @@ export class EnrollmentController {
         }
     }
 
-    /**
-     * Get enrollment statistics (admin)
-     */
+
+    static async freeEnrollment(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.user!.id;
+            const userEmail = req.user!.email;
+            const { courseId, email } = req.body;
+
+            if (email !== userEmail) {
+                ApiResponse.error(res, 'Email does not match logged-in user', 400);
+                return;
+            }
+
+            const enrollment = await EnrollmentService.freeEnrollment(userId, courseId);
+            ApiResponse.success(res, enrollment);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
     static async getStats(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const stats = await EnrollmentService.getStats();
