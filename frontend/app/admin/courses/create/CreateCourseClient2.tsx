@@ -241,7 +241,7 @@ export default function CreateCourseClient2({ basePath = "/admin/courses" }: { b
                     <FormItem className="w-full">
                       <FormLabel>Course Price ($)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Course Price" type="number" min="1" {...field} />
+                        <Input placeholder="Course Price" type="number" min="0" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

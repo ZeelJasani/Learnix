@@ -70,7 +70,8 @@ export async function CreateCourse(courseInput: CourseSchemaType): Promise<ApiRe
         // Create course via API
         const response = await api.post('/admin/courses', {
             ...validation.data,
-            stripePriceId: stripeProduct.default_price as string,
+            ...validation.data,
+            // Stripe creation is handled by the backend service
         }, token);
 
         if (!response.success) {

@@ -56,7 +56,6 @@ export const createCourseSchema = z.object({
         .max(200, 'Small description must be at most 200 characters'),
     slug: z.string().min(3, 'Slug must be at least 3 characters'),
     status: z.enum(courseStatuses).optional().default('DRAFT'),
-    stripePriceId: z.string().min(1, 'Stripe price ID is required'),
 });
 
 export const updateCourseSchema = createCourseSchema.partial();

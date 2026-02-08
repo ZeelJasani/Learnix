@@ -14,13 +14,10 @@ interface CreateEnrollmentData {
 }
 
 export class EnrollmentService {
-    /**
-     * Check if user is enrolled in a course
-     */
     static async isEnrolled(userId: string, courseIdOrSlug: string): Promise<{ enrolled: boolean; status?: string }> {
         let courseId;
 
-        // Try to find course by ID or slug
+
         if (mongoose.Types.ObjectId.isValid(courseIdOrSlug)) {
             courseId = courseIdOrSlug;
         } else {
@@ -43,9 +40,6 @@ export class EnrollmentService {
         return { enrolled: enrollment.status === 'Active', status: enrollment.status };
     }
 
-    /**
-     * Get user's enrolled courses with progress
-     */
     static async getEnrolledCourses(userId: string): Promise<any[]> {
         const enrollments = await Enrollment.find({
             userId: new mongoose.Types.ObjectId(userId),
@@ -58,12 +52,10 @@ export class EnrollmentService {
             })
             .lean();
 
-        // Get progress for each course
         const coursesWithProgress = await Promise.all(
             enrollments.map(async (enrollment) => {
                 const course = enrollment.courseId as any;
 
-                // Get chapters and lessons for the course
                 const chapters = await Chapter.find({ courseId: course._id }).lean();
 
                 const chaptersWithLessons = await Promise.all(
@@ -114,13 +106,9 @@ export class EnrollmentService {
         return coursesWithProgress;
     }
 
-    /**
-     * Create a new enrollment (pending)
-     */
     static async create(data: CreateEnrollmentData): Promise<IEnrollment> {
         let courseId;
 
-        // Try to find course by ID or slug
         if (mongoose.Types.ObjectId.isValid(data.courseId)) {
             courseId = data.courseId;
         } else {
@@ -131,7 +119,6 @@ export class EnrollmentService {
             courseId = course._id.toString();
         }
 
-        // Check if already enrolled
         const existing = await Enrollment.findOne({
             userId: new mongoose.Types.ObjectId(data.userId),
             courseId: new mongoose.Types.ObjectId(courseId),
@@ -141,7 +128,6 @@ export class EnrollmentService {
             if (existing.status === 'Active') {
                 throw ApiError.conflict('Already enrolled in this course');
             }
-            // Update pending enrollment
             existing.amount = data.amount;
             existing.status = data.status || 'Pending';
             await existing.save();
@@ -159,9 +145,6 @@ export class EnrollmentService {
         return enrollment;
     }
 
-    /**
-     * Activate enrollment (after payment)
-     */
     static async activate(enrollmentId: string, userId: string, courseId: string, amount?: number): Promise<IEnrollment | null> {
         const result = await Enrollment.findOneAndUpdate(
             {
@@ -180,9 +163,6 @@ export class EnrollmentService {
         return result;
     }
 
-    /**
-     * Cancel enrollment
-     */
     static async cancel(enrollmentId: string): Promise<IEnrollment | null> {
         if (!mongoose.Types.ObjectId.isValid(enrollmentId)) {
             throw ApiError.badRequest('Invalid enrollment ID');
@@ -195,9 +175,6 @@ export class EnrollmentService {
         );
     }
 
-    /**
-     * Delete pending enrollment (cleanup for failed payments)
-     */
     static async deletePending(enrollmentId: string, userId: string, courseId: string): Promise<boolean> {
         const result = await Enrollment.deleteOne({
             _id: new mongoose.Types.ObjectId(enrollmentId),
@@ -209,9 +186,6 @@ export class EnrollmentService {
         return result.deletedCount > 0;
     }
 
-    /**
-     * Get enrollment statistics
-     */
     static async getStats(): Promise<{
         total: number;
         active: number;
@@ -226,5 +200,55 @@ export class EnrollmentService {
         ]);
 
         return { total, active, pending, cancelled };
+    }
+
+    static async freeEnrollment(userId: string, courseId: string): Promise<IEnrollment> {
+        let resolvedCourseId: string;
+
+        if (mongoose.Types.ObjectId.isValid(courseId)) {
+            resolvedCourseId = courseId;
+        } else {
+            const courseBySlug = await Course.findOne({ slug: courseId }).select('_id price').lean();
+            if (!courseBySlug) {
+                throw ApiError.notFound('Course not found');
+            }
+            resolvedCourseId = courseBySlug._id.toString();
+        }
+
+        const course = await Course.findById(resolvedCourseId);
+        if (!course) {
+            throw ApiError.notFound('Course not found');
+        }
+
+        if (course.price !== 0) {
+            throw ApiError.badRequest('This course is not free');
+        }
+
+        const existingEnrollment = await Enrollment.findOne({
+            userId: new mongoose.Types.ObjectId(userId),
+            courseId: new mongoose.Types.ObjectId(resolvedCourseId),
+        });
+
+        if (existingEnrollment) {
+            if (existingEnrollment.status === 'Active') {
+                return existingEnrollment;
+            }
+            // If pending or cancelled, reactivate for free
+            existingEnrollment.status = 'Active';
+            existingEnrollment.amount = 0;
+            existingEnrollment.paymentId = `free_${Date.now()}`;
+            await existingEnrollment.save();
+            return existingEnrollment;
+        }
+
+        const enrollment = await Enrollment.create({
+            userId: new mongoose.Types.ObjectId(userId),
+            courseId: new mongoose.Types.ObjectId(resolvedCourseId),
+            amount: 0,
+            status: 'Active',
+            paymentId: `free_${Date.now()}`,
+        });
+
+        return enrollment;
     }
 }

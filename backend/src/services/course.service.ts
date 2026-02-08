@@ -35,9 +35,7 @@ interface UpdateCourseData {
 }
 
 export class CourseService {
-    /**
-     * Get all published courses (public)
-     */
+
     static async getAllPublished(): Promise<ICourse[]> {
         const courses = await Course.find({ status: 'PUBLISHED' })
             .sort({ createdAt: -1 })
@@ -45,7 +43,7 @@ export class CourseService {
             .populate('userId', 'name image')
             .lean();
 
-        // Get chapter counts for all courses
+
         const coursesWithChapterCount = await Promise.all(
             courses.map(async (course) => {
                 const chapterCount = await Chapter.countDocuments({ courseId: course._id });
@@ -65,9 +63,7 @@ export class CourseService {
         return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
-    /**
-     * Get course by slug with chapters and lessons (public)
-     */
+
     static async getBySlug(slug: string, userId?: string): Promise<any> {
         const query = mongoose.Types.ObjectId.isValid(slug)
             ? { $or: [{ _id: slug }, { slug }], status: 'PUBLISHED' }
@@ -81,7 +77,7 @@ export class CourseService {
             return null;
         }
 
-        // Get chapters with lessons
+
         const chapters = await Chapter.find({ courseId: course._id })
             .sort({ position: 1 })
             .select('title position')
@@ -137,9 +133,7 @@ export class CourseService {
         };
     }
 
-    /**
-     * Get all courses (admin)
-     */
+
     static async getAll(): Promise<ICourse[]> {
         const courses = await Course.find()
             .sort({ createdAt: -1 })
@@ -147,7 +141,7 @@ export class CourseService {
             .populate('userId', 'name image')
             .lean();
 
-        // Get chapter counts for all courses
+
         const coursesWithChapterCount = await Promise.all(
             courses.map(async (course) => {
                 const chapterCount = await Chapter.countDocuments({ courseId: course._id });
@@ -167,9 +161,7 @@ export class CourseService {
         return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
-    /**
-     * Get course by ID or slug with full details (admin)
-     */
+
     static async getById(idOrSlug: string): Promise<any> {
         let course;
 
@@ -189,7 +181,7 @@ export class CourseService {
             return null;
         }
 
-        // Get chapters with lessons
+
         const chapters = await Chapter.find({ courseId: course._id })
             .sort({ position: 1 })
             .select('title position')
@@ -220,37 +212,50 @@ export class CourseService {
         };
     }
 
-    /**
-     * Create a new course
-     */
+
     static async create(data: CreateCourseData): Promise<ICourse> {
         const existingCourse = await Course.findOne({ slug: data.slug });
         if (existingCourse) {
             throw ApiError.conflict('A course with this slug already exists');
         }
 
-        // Import env dynamically to ensure it's loaded
+
         const { env } = await import('../config/env');
 
-        // Construct image URL
+
         const imageUrl = `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`;
 
-        // Create Stripe Product
-        const { StripeService } = await import('./stripe.service');
-        const plainDescription = CourseService.getTextFromDescription(data.description);
-        const stripeProduct = await StripeService.createProduct(
-            data.title,
-            plainDescription,
-            imageUrl
-        );
+        console.log('CourseService.create called with:', JSON.stringify(data, null, 2));
 
-        // Create Stripe Price
-        const stripePrice = await StripeService.createPrice(stripeProduct.id, data.price * 100);
+        let stripeProductId: string;
+        let stripePriceId: string;
+
+        if (data.price === 0) {
+            console.log('Creating FREE course. Generating dummy IDs.');
+            const dummyId = new mongoose.Types.ObjectId().toString();
+            stripeProductId = `free_prod_${dummyId}`;
+            stripePriceId = `free_price_${dummyId}`;
+            console.log('Generated IDs:', { stripeProductId, stripePriceId });
+        } else {
+            console.log('Creating PAID course. Calling Stripe.');
+
+            const { StripeService } = await import('./stripe.service');
+            const plainDescription = CourseService.getTextFromDescription(data.description);
+            const stripeProduct = await StripeService.createProduct(
+                data.title,
+                plainDescription,
+                imageUrl
+            );
+            stripeProductId = stripeProduct.id;
+
+            const stripePrice = await StripeService.createPrice(stripeProduct.id, Math.round(data.price * 100));
+            stripePriceId = stripePrice.id;
+        }
 
         const course = new Course({
             ...data,
-            stripeProductId: stripeProduct.id,
-            stripePriceId: stripePrice.id,
+            stripeProductId,
+            stripePriceId,
             userId: new mongoose.Types.ObjectId(data.userId),
         });
 
@@ -258,13 +263,10 @@ export class CourseService {
         return course;
     }
 
-    /**
-     * Update a course by ID or slug
-     */
+
     static async update(idOrSlug: string, data: UpdateCourseData): Promise<ICourse | null> {
-        // Import locally
+
         const { resolveCourseId } = await import('../utils/id-resolver');
-        const { StripeService } = await import('./stripe.service');
         const { env } = await import('../config/env');
 
         let courseId: string;
@@ -274,7 +276,7 @@ export class CourseService {
             return null;
         }
 
-        // Check for slug conflict if changing slug
+
         if (data.slug) {
             const existingCourse = await Course.findOne({
                 slug: data.slug,
@@ -285,71 +287,73 @@ export class CourseService {
             }
         }
 
-        // Get current course to access stripeProductId
+
         const currentCourse = await Course.findById(courseId);
         if (!currentCourse) return null;
 
         const updateData: any = { ...data };
 
-        // Handle Stripe updates
 
-        // 1. If Price changes, create new Stripe Price
         if (data.price !== undefined && data.price !== currentCourse.price) {
-            const newPrice = await StripeService.createPrice(currentCourse.stripeProductId, data.price * 100);
-            updateData.stripePriceId = newPrice.id;
+            if (data.price === 0) {
+                const dummyId = new mongoose.Types.ObjectId().toString();
+                updateData.stripeProductId = `free_prod_${dummyId}`;
+                updateData.stripePriceId = `free_price_${dummyId}`;
+            } else {
+                const { StripeService } = await import('./stripe.service');
+                const wasFree = currentCourse.price === 0 || currentCourse.stripeProductId?.startsWith('free_');
 
-            // Also update default price on product
-            await StripeService.updateProduct(currentCourse.stripeProductId, {
-                default_price: newPrice.id
-            });
+                if (wasFree) {
+                    const imageUrl = (data.fileKey || currentCourse.fileKey)
+                        ? `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey || currentCourse.fileKey}`
+                        : undefined;
+
+                    const descToUse = data.description || currentCourse.description;
+                    const plainDescription = descToUse ? CourseService.getTextFromDescription(descToUse) : '';
+
+                    const stripeProduct = await StripeService.createProduct(
+                        data.title || currentCourse.title,
+                        plainDescription,
+                        imageUrl
+                    );
+                    updateData.stripeProductId = stripeProduct.id;
+                    const newPrice = await StripeService.createPrice(stripeProduct.id, Math.round(data.price * 100));
+                    updateData.stripePriceId = newPrice.id;
+                } else {
+                    const newPrice = await StripeService.createPrice(currentCourse.stripeProductId, Math.round(data.price * 100));
+                    updateData.stripePriceId = newPrice.id;
+
+                    await StripeService.updateProduct(currentCourse.stripeProductId, {
+                        default_price: newPrice.id
+                    });
+                }
+            }
         }
 
-        // Helper to extract text from TipTap JSON
-        const getTextFromDescription = (desc: string): string => {
-            try {
-                // Check if it looks like JSON object starting with { "type": "doc"
-                if (desc.trim().startsWith('{') && desc.includes('"type":"doc"')) {
-                    const json = JSON.parse(desc);
-                    let text = '';
-
-                    // Simple recursive extractor
-                    const extract = (node: any) => {
-                        if (node.text) text += node.text;
-                        if (node.content && Array.isArray(node.content)) {
-                            node.content.forEach(extract);
-                        }
-                    };
-
-                    extract(json);
-                    return text || desc;
-                }
-                return desc;
-            } catch (e) {
-                return desc;
-            }
-        };
-
-        // 2. If details change, update Stripe Product
-        if (data.title || data.description || data.fileKey) {
+        if ((data.title || data.description || data.fileKey) &&
+            currentCourse.price !== 0 &&
+            !currentCourse.stripeProductId?.startsWith('free_') &&
+            (data.price === undefined || data.price !== 0)
+        ) {
+            const { StripeService } = await import('./stripe.service');
             const imageUrl = data.fileKey
                 ? `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`
                 : undefined;
 
             const plainDescription = data.description ? CourseService.getTextFromDescription(data.description) : undefined;
 
-            await StripeService.updateProduct(currentCourse.stripeProductId, {
-                name: data.title,
-                description: plainDescription,
-                image: imageUrl
-            });
+            if (!updateData.stripeProductId) {
+                await StripeService.updateProduct(currentCourse.stripeProductId, {
+                    name: data.title,
+                    description: plainDescription,
+                    image: imageUrl
+                });
+            }
         }
 
         return Course.findByIdAndUpdate(courseId, updateData, { new: true });
     }
 
-    /**
-     * Delete a course and all related data by ID or slug
-     */
     static async delete(idOrSlug: string): Promise<boolean> {
         const { resolveCourseId } = await import('../utils/id-resolver');
         let courseId: string;
@@ -370,9 +374,6 @@ export class CourseService {
         return true;
     }
 
-    /**
-     * Search courses
-     */
     static async search(query: string, category?: string): Promise<ICourse[]> {
         const searchFilter: any = {
             status: 'PUBLISHED',
@@ -407,9 +408,6 @@ export class CourseService {
         return coursesWithMentor as unknown as Promise<ICourse[]>;
     }
 
-    /**
-     * Get recent courses (admin)
-     */
     static async getRecent(limit = 5): Promise<ICourse[]> {
         const courses = await Course.find()
             .sort({ createdAt: -1 })
@@ -437,9 +435,6 @@ export class CourseService {
         return coursesWithChapterCount as unknown as Promise<ICourse[]>;
     }
 
-    /**
-     * Update course status
-     */
     static async updateStatus(idOrSlug: string, status: CourseStatus): Promise<ICourse | null> {
         const { resolveCourseId } = await import('../utils/id-resolver');
         let courseId: string;
@@ -452,17 +447,12 @@ export class CourseService {
         return Course.findByIdAndUpdate(courseId, { status }, { new: true });
     }
 
-    /**
-     * Helper to extract text from TipTap JSON
-     */
     private static getTextFromDescription(desc: string): string {
         try {
-            // Check if it looks like JSON object starting with { "type": "doc"
             if (desc && desc.trim().startsWith('{') && desc.includes('"type":"doc"')) {
                 const json = JSON.parse(desc);
                 let text = '';
 
-                // Simple recursive extractor
                 const extract = (node: any) => {
                     if (node.text) text += node.text;
                     if (node.content && Array.isArray(node.content)) {

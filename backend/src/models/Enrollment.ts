@@ -8,6 +8,7 @@ export interface IEnrollment extends Document {
     courseId: mongoose.Types.ObjectId;
     amount: number;
     status: EnrollmentStatus;
+    paymentId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -33,6 +34,9 @@ const enrollmentSchema = new Schema<IEnrollment>(
             type: String,
             enum: ['Pending', 'Active', 'Cancelled'],
             default: 'Pending',
+        },
+        paymentId: {
+            type: String,
         },
     },
     {
