@@ -15,6 +15,7 @@ import {
     SidebarRail,
     SidebarFooter,
 } from "@/components/ui/sidebar"
+import { NavUser } from "@/components/nav-user"
 
 // Dashboard navigation data
 const data = {
@@ -34,7 +35,7 @@ const data = {
                 },
                 {
                     title: "My Learning",
-                    url: "/dashboard", // Currently main dashboard shows progress
+                    url: "/dashboard",
                     icon: BookOpen,
                 },
             ],
@@ -55,7 +56,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-semibold">Learnix</span>
-                                    <span className="">Student Portal</span>
+
                                 </div>
                             </div>
                         </SidebarMenuButton>
@@ -85,16 +86,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 ))}
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <a href="/dashboard/profile" className="flex items-center gap-2">
-                                <User className="size-4" />
-                                <span>Profile</span>
-                            </a>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <NavUser />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

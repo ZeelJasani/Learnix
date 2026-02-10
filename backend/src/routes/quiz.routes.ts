@@ -1,13 +1,13 @@
 import express from 'express';
 import { QuizController } from '../controllers/quiz.controller';
-import { verifyClerkToken } from '../middleware/auth';
-import { requireUser } from '../middleware/requireUser';
+import { verifyClerkToken, optionalVerifyClerkToken } from '../middleware/auth';
+import { requireUser, optionalRequireUser } from '../middleware/requireUser';
 import { requireAdmin } from '../middleware/requireAdmin';
 
 const router = express.Router();
 
-// Public routes (for students)
-router.get('/course/:courseId', QuizController.getByCourse); // Get all quizzes for a course
+// Public routes with optional auth (returns user-specific data if authenticated)
+router.get('/course/:courseId', optionalVerifyClerkToken, optionalRequireUser, QuizController.getByCourse);
 
 // Apply auth middleware to all other routes
 router.use(verifyClerkToken);

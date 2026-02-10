@@ -87,8 +87,9 @@ export class QuizController {
     static async getByCourse(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { courseId } = req.params;
+            const userId = req.user?.id;
             const includeUnpublished = req.user?.role === 'admin' || req.user?.role === 'instructor';
-            const quizzes = await QuizService.getQuizzesByCourse(courseId, includeUnpublished);
+            const quizzes = await QuizService.getQuizzesByCourse(courseId, userId, includeUnpublished);
             ApiResponse.success(res, quizzes);
         } catch (error) {
             next(error);

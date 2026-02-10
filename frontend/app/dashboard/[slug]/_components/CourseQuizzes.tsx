@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 interface CourseQuizzesProps {
     slug: string;
@@ -21,12 +22,18 @@ interface CourseQuizzesProps {
 export function CourseQuizzes({ slug }: CourseQuizzesProps) {
     const [quizzes, setQuizzes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { getToken } = useAuth();
 
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
+                const token = await getToken();
+
                 // First get course ID from slug
-                const courseRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/${slug}`);
+                const courseRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/${slug}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                    cache: 'no-store',
+                });
                 if (!courseRes.ok) {
                     console.error("Failed to fetch course");
                     setIsLoading(false);
@@ -42,8 +49,11 @@ export function CourseQuizzes({ slug }: CourseQuizzesProps) {
                     return;
                 }
 
-                // Now fetch quizzes for this course
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quizzes/course/${courseId}`);
+                // Now fetch quizzes for this course (with auth token so backend can return user's attempts)
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quizzes/course/${courseId}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                    cache: 'no-store',
+                });
 
                 if (response.ok) {
                     const result = await response.json();
@@ -123,7 +133,7 @@ export function CourseQuizzes({ slug }: CourseQuizzesProps) {
                             </div>
                             <div>
                                 <div className="text-2xl font-bold">
-                                    {quizzes.filter(q => q.status === "completed").length}
+                                    {quizzes.filter(q => q.attempts && q.attempts.length > 0).length}
                                 </div>
                                 <div className="text-sm text-muted-foreground">Completed</div>
                             </div>
@@ -218,15 +228,26 @@ export function CourseQuizzes({ slug }: CourseQuizzesProps) {
                                 )}
 
                                 <div className="flex gap-2">
-                                    <Link href={`/dashboard/${slug}/quiz/${quiz.id}`} className="flex-1">
-                                        <Button className="w-full">
-                                            <PlayCircle className="h-4 w-4 mr-2" />
-                                            {isCompleted ? "Retake Quiz" : "Start Quiz"}
-                                        </Button>
-                                    </Link>
-                                    {latestAttempt && (
-                                        <Link href={`/dashboard/${slug}/quiz/${quiz.id}/results`}>
-                                            <Button variant="outline">View Results</Button>
+                                    {isCompleted ? (
+                                        <>
+                                            <Link href={`/dashboard/${slug}/quiz/${quiz.id}/results/${latestAttempt._id}`} className="flex-1">
+                                                <Button className="w-full">
+                                                    View Results
+                                                </Button>
+                                            </Link>
+                                            {/* Optional: Add condition to check if retake is allowed based on quiz settings */}
+                                            <Link href={`/dashboard/${slug}/quiz/${quiz.id}`}>
+                                                <Button variant="outline">
+                                                    Retake
+                                                </Button>
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <Link href={`/dashboard/${slug}/quiz/${quiz.id}`} className="flex-1">
+                                            <Button className="w-full">
+                                                <PlayCircle className="h-4 w-4 mr-2" />
+                                                Start Quiz
+                                            </Button>
                                         </Link>
                                     )}
                                 </div>

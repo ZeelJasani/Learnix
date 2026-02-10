@@ -48,3 +48,42 @@ export const verifyClerkToken = async (
         next(error);
     }
 };
+
+/**
+ * Optional auth middleware - sets req.auth if token is present, but doesn't require it
+ */
+export const optionalVerifyClerkToken = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            // No token - continue without auth
+            return next();
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return next();
+        }
+
+        try {
+            const verifiedToken = await clerkClient.verifyToken(token);
+            req.auth = {
+                userId: verifiedToken.sub,
+                sessionId: verifiedToken.sid,
+                claims: verifiedToken as unknown as Record<string, unknown>,
+            };
+        } catch (clerkError) {
+            // Token invalid - continue without auth
+            logger.warn('Optional auth: invalid token, continuing without auth');
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

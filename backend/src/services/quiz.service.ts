@@ -116,7 +116,7 @@ export class QuizService {
     /**
      * Get all quizzes for a course
      */
-    static async getQuizzesByCourse(courseId: string, includeUnpublished = false): Promise<IQuiz[]> {
+    static async getQuizzesByCourse(courseId: string, userId?: string, includeUnpublished = false): Promise<any[]> {
         const filter: any = { courseId };
         if (!includeUnpublished) {
             filter.isPublished = true;
@@ -126,7 +126,32 @@ export class QuizService {
             .populate('createdBy', 'name email image')
             .sort({ createdAt: -1 });
 
-        return quizzes;
+        // If no user/public access, return as is
+        if (!userId) {
+            return quizzes;
+        }
+
+        // Fetch attempts for this user and these quizzes
+        const quizIds = quizzes.map(q => q._id);
+        const attempts = await QuizAttempt.find({
+            userId,
+            quizId: { $in: quizIds },
+            completedAt: { $ne: null }
+        }).sort({ completedAt: -1 });
+
+        // Attach attempts to quizzes
+        return quizzes.map(quiz => {
+            const quizObj = quiz.toObject();
+            // detailed attempts for this quiz
+            const quizAttempts = attempts.filter(a => a.quizId.toString() === quiz._id.toString());
+            // Sort by latest first
+            quizAttempts.sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
+
+            return {
+                ...quizObj,
+                attempts: quizAttempts
+            };
+        });
     }
 
     /**
@@ -199,7 +224,9 @@ export class QuizService {
         const gradeResult = this.gradeQuiz(quiz, data.answers);
 
         // Update attempt
+        // Explicitly set answers map
         attempt.answers = new Map(Object.entries(data.answers));
+
         attempt.results = gradeResult.results;
         attempt.score = gradeResult.score;
         attempt.totalPoints = gradeResult.totalPoints;
@@ -210,6 +237,7 @@ export class QuizService {
         attempt.isAutoSubmitted = data.isAutoSubmitted;
 
         await attempt.save();
+
         return attempt;
     }
 

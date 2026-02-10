@@ -15,6 +15,7 @@ import {
     SidebarRail,
     SidebarFooter,
 } from "@/components/ui/sidebar"
+import { NavUser } from "@/components/nav-user"
 
 // Mentor navigation data
 const data = {
@@ -90,16 +91,7 @@ export function MentorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                 ))}
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <a href="/dashboard/profile" className="flex items-center gap-2">
-                                <User className="size-4" />
-                                <span>Profile</span>
-                            </a>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <NavUser />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
