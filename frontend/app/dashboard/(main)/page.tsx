@@ -1,6 +1,6 @@
-import { getEnrolledCourses } from "../data/user/get-enrolled-courses";
+import { getEnrolledCourses } from "../../data/user/get-enrolled-courses";
 import { EmptyState } from "@/components/general/EmptyState";
-import { CourseProgressCard } from "./_components/CourseProgressCard";
+import { CourseProgressCard } from "../_components/CourseProgressCard";
 
 export default async function DashboardPage() {
   const enrolledCourses = await getEnrolledCourses();

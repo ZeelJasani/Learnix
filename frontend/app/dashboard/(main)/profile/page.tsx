@@ -39,7 +39,7 @@ export default async function ProfilePage() {
                 <CardHeader className="pb-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                         <Avatar className="h-24 w-24 border-4 border-primary/10">
-                            <AvatarImage src={user.image || ""} alt={user.name} />
+                            <AvatarImage src={user.image || ""} alt={user.name || "User"} />
                             <AvatarFallback className="text-2xl font-semibold">
                                 {initials}
                             </AvatarFallback>

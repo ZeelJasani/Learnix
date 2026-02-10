@@ -1,4 +1,11 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { ReactNode } from "react";
+import { AdminSidebar } from "@/components/admin-sidebar";
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -7,29 +14,11 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { ReactNode } from "react"
-import { requireAdmin } from "@/app/data/admin/require-admin"
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
-    // This will redirect non-admin users to /not-admin
-    await requireAdmin();
-
+export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
-        <SidebarProvider
-            style={
-                {
-                    "--sidebar-width": "calc(var(--spacing) * 60)",
-                    "--header-height": "calc(var(--spacing) * 16)",
-                } as React.CSSProperties
-            }
-        >
-            <AppSidebar variant="inset" userType="admin" />
+        <SidebarProvider>
+            <AdminSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
@@ -37,23 +26,17 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                         <Separator orientation="vertical" className="mr-2 h-4" />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="/admin">
-                                        Admin
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Overview</BreadcrumbPage>
+                                    <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                <div className="flex flex-1 flex-col gap-4 p-4">
                     {children}
                 </div>
             </SidebarInset>
         </SidebarProvider>
-    )
+    );
 }

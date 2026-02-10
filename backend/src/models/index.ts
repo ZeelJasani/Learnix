@@ -7,3 +7,5 @@ export { Enrollment, IEnrollment, EnrollmentStatus } from './Enrollment';
 export { LessonProgress, ILessonProgress } from './LessonProgress';
 export { Activity, IActivity, ActivityType } from './Activity';
 export { ActivityCompletion, IActivityCompletion } from './ActivityCompletion';
+export { Quiz, IQuiz, IQuestion, QuestionType } from './Quiz';
+export { QuizAttempt, IQuizAttempt, IQuestionResult } from './QuizAttempt';

@@ -2,7 +2,7 @@ import { adminGetDashboardStats } from "@/app/data/admin/admin-get-dashboard-sta
 import { adminGetRecentCourses } from "@/app/data/admin/admin-get-recent-courses";
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import { AdminCourseCard } from "../courses/_components/AdminCourseCard";
-import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
+// import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, ShoppingCart, Users, AlignLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -79,12 +79,12 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
       </div>
 
       {/* Charts & Activity */}
-      <div className="grid gap-4 md:grid-cols-1">
+      {/* <div className="grid gap-4 md:grid-cols-1">
         <ChartAreaInteractive
           data={stats.statsByDate.map(s => ({ date: s.date, enrollment: s.enrollments }))}
           monthName={new Date(year, month).toLocaleString('default', { month: 'long' })}
         />
-      </div>
+      </div> */}
 
       {/* Recent Courses */}
       <div className="space-y-4">

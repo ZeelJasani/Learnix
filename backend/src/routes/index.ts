@@ -9,6 +9,7 @@ import activityRoutes from './activity.routes';
 import adminRoutes from './admin.routes';
 import webhookRoutes from './webhook.routes';
 import { assignmentRouter } from './assignment.routes';
+import { quizRouter } from './quiz.routes';
 
 const router = Router();
 
@@ -33,5 +34,6 @@ router.use('/activities', activityRoutes);
 router.use('/admin', adminRoutes);
 router.use('/webhooks', webhookRoutes);
 router.use('/assignments', assignmentRouter);
+router.use('/quizzes', quizRouter);
 
 export default router;

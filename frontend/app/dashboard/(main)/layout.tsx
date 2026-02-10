@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { MentorSidebar } from "@/components/mentor-sidebar";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import {
     SidebarInset,
     SidebarProvider,
@@ -9,16 +9,15 @@ import { Separator } from "@/components/ui/separator";
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-export default function MentorLayout({ children }: { children: ReactNode }) {
+export default function MainDashboardLayout({ children }: { children: ReactNode }) {
     return (
         <SidebarProvider>
-            <MentorSidebar />
+            <DashboardSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
@@ -27,7 +26,7 @@ export default function MentorLayout({ children }: { children: ReactNode }) {
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Mentor Dashboard</BreadcrumbPage>
+                                    <BreadcrumbPage>Student Dashboard</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
