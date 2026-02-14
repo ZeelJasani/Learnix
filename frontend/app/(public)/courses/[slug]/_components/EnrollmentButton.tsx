@@ -1,3 +1,22 @@
+/**
+ * EnrollmentButton Component — Course enrollment button with Stripe checkout
+ * EnrollmentButton Component — Course enrollment button with Stripe checkout
+ *
+ * Aa client component chhe je paid course enrollment handle kare chhe
+ * This is a client component that handles paid course enrollment
+ *
+ * Flow:
+ * 1. User "Enroll Now" click kare chhe → enrollInCourseAction server action call thay chhe
+ *    User clicks "Enroll Now" → enrollInCourseAction server action is called
+ * 2. Success par Stripe checkout URL par redirect kare chhe (window.location.href)
+ *    On success redirects to Stripe checkout URL (window.location.href)
+ * 3. Error par toast notification batave chhe — Sonner toast library use kare chhe
+ *    On error shows toast notification — Uses Sonner toast library
+ *
+ * - useTransition hook — Non-blocking pending state management
+ * - tryCatch utility — Error handling wrapper for async operations
+ * - Loading spinner — Loader2 icon during enrollment process
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -15,18 +34,18 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
     function onSubmit() {
         startTransition(async () => {
             // console.log('Starting enrollment process for course:', courseId);
-            
+
             try {
                 const { data: result, error } = await tryCatch(enrollInCourseAction(courseId));
                 // console.log('Enrollment response:', { result, error });
 
                 if (error) {
                     // console.error('Enrollment error:', {
-                        // name: error.name,
-                        // message: error.message,
-                        // stack: error.stack,
-                        // ...(error as any).code && { code: (error as any).code },
-                        // ...(error as any).type && { type: (error as any).type },
+                    // name: error.name,
+                    // message: error.message,
+                    // stack: error.stack,
+                    // ...(error as any).code && { code: (error as any).code },
+                    // ...(error as any).type && { type: (error as any).type },
                     // });
                     toast.error(error.message || "An unexpected error occurred");
                     return;
@@ -35,7 +54,7 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
                 if (result?.status === 'success') {
                     // console.log('Enrollment successful:', result);
                     toast.success(result.message || 'Successfully enrolled in the course!');
-                    
+
                     // If there's a redirect URL, navigate to it
                     if (result.redirectUrl) {
                         window.location.href = result.redirectUrl;
@@ -43,19 +62,19 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
                     }
                 } else if (result?.status === 'error') {
                     // console.error('Enrollment failed with error status:', {
-                        // message: result.message,
-                        // status: result.status,
-                        // result: JSON.stringify(result, null, 2)
+                    // message: result.message,
+                    // status: result.status,
+                    // result: JSON.stringify(result, null, 2)
                     // });
                     toast.error(result.message || 'Failed to enroll in the course');
                 } else {
                     // console.error('Unexpected response format:', result);
                     toast.error('Unexpected response from server');
                 }
-            } catch (unexpectedError) {
+            } catch (_unexpectedError) {
                 // console.error('Unexpected error in enrollment process:', {
-                    // error: unexpectedError,
-                    // stringified: JSON.stringify(unexpectedError, Object.getOwnPropertyNames(unexpectedError))
+                // error: unexpectedError,
+                // stringified: JSON.stringify(unexpectedError, Object.getOwnPropertyNames(unexpectedError))
                 // });
                 toast.error('An unexpected error occurred during enrollment');
             }

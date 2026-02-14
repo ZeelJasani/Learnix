@@ -1,3 +1,5 @@
+// Aa component landing page nu "Start Learning Today" CTA section render kare chhe
+// This component renders the call-to-action section with registration and course browsing buttons
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 

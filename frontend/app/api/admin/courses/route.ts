@@ -1,3 +1,5 @@
+// Aa file admin panel mate badha courses ni list fetch karva API route provide kare chhe
+// This file provides an API route to fetch all courses for the admin panel
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

@@ -1,3 +1,17 @@
+/**
+ * DashboardMonthFilter Component — Dashboard stats mate month filter dropdown
+ * DashboardMonthFilter Component — Month filter dropdown for dashboard stats
+ *
+ * Aa client component chhe je URL search params through month-based filtering provide kare chhe
+ * This is a client component that provides month-based filtering through URL search params
+ *
+ * - Select dropdown — January to December months list
+ * - URL-based state — ?month=X&year=Y format ma search params update kare chhe
+ *   URL-based state — Updates search params in ?month=X&year=Y format
+ * - Default values — Current month/year if no search params present
+ * - router.push — Page ne re-render kare chhe new params sathe (no full reload)
+ *   router.push — Re-renders page with new params (no full reload)
+ */
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

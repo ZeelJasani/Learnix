@@ -1,3 +1,16 @@
+/**
+ * Upload Service / Upload Service
+ *
+ * Aa service S3-compatible storage (AWS S3 / Cloudflare R2) mate file upload ane delete handle kare chhe.
+ * This service handles file upload and delete for S3-compatible storage (AWS S3 / Cloudflare R2).
+ *
+ * Features / Features:
+ * - Presigned URL generation: Client-side direct upload mate secure URL
+ * - Size validation: Image 10MB, Video 100MB limit
+ * - Unique key generation: UUID-based file keys collision prevent kare
+ * - File deletion: S3 bucket thi file remove karvo
+ * - URL generation: File key thi public URL generate karvo
+ */
 import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,12 +32,14 @@ interface PresignedUrlResponse {
 }
 
 export class UploadService {
-    private static readonly MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-    private static readonly MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
-    private static readonly URL_EXPIRY = 3600; // 1 hour
+    // Maximum file size limits / Maximum file size limits
+    private static readonly MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB - Image limit
+    private static readonly MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB - Video limit
+    private static readonly URL_EXPIRY = 3600; // 1 hour - Presigned URL expiry
 
     /**
-     * Generate a presigned URL for direct S3 upload
+     * Client-side direct upload mate presigned URL generate karo
+     * Generate a presigned URL for client-side direct S3 upload
      */
     static async getPresignedUploadUrl(data: UploadRequest): Promise<PresignedUrlResponse> {
         // Validate file size
@@ -66,7 +81,7 @@ export class UploadService {
     }
 
     /**
-     * Delete a file from S3
+     * S3 bucket ma thi file delete karo / Delete a file from S3 bucket
      */
     static async deleteFile(key: string): Promise<boolean> {
         if (!key) {
@@ -87,7 +102,7 @@ export class UploadService {
     }
 
     /**
-     * Get file URL from key
+     * File key thi public URL generate karo / Get public URL from file key
      */
     static getFileUrl(key: string): string {
         if (!key) return '';

@@ -1,3 +1,20 @@
+/**
+ * DeleteCourseClient Component — Course delete confirmation card with destructive action
+ * DeleteCourseClient Component — Course delete confirmation card with destructive action
+ *
+ * Aa client component chhe je course delete karva mate confirmation UI provide kare chhe
+ * This is a client component that provides confirmation UI for deleting a course
+ *
+ * Features:
+ * - Warning card — AlertTriangle icon sathe permanent delete warning message
+ *   Warning card — Permanent delete warning message with AlertTriangle icon
+ * - deleteCourse server action — Arcjet-protected course deletion
+ * - Cancel link — /admin/courses par back navigate
+ *   Cancel link — Navigates back to /admin/courses
+ * - Loading state — Loader2 spinner while delete in progress
+ * - Toast feedback — Success message + redirect to courses list
+ * - tryCatch wrapper — Error handling for server action
+ */
 "use client";
 
 import { tryCatch } from "@/hooks/try-catch";

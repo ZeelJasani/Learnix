@@ -1,3 +1,21 @@
+/**
+ * Navbar Component — Public pages nu main navigation bar
+ * Navbar Component — Main navigation bar for public pages
+ *
+ * Aa client component chhe je sticky header navigation provide kare chhe
+ * This is a client component that provides sticky header navigation
+ *
+ * Features:
+ * - Learnix logo ane branding — Home page par navigate kare chhe
+ *   Learnix logo and branding — Navigates to home page
+ * - Navigation links — Home, Courses, Dashboard
+ * - ThemeToggle — Dark/light mode switch
+ * - Clerk auth state:
+ *   - SignedIn → UserDropdown (avatar, profile, admin, sign-out)
+ *   - SignedOut → Login ane Register buttons
+ * - Responsive — Desktop nav hidden on mobile (md: breakpoint)
+ * - backdrop-blur effect — Semi-transparent background with blur
+ */
 "use client";
 
 import Image from "next/image";

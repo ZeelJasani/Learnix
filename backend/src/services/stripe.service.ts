@@ -1,21 +1,38 @@
-
+/**
+ * Stripe Service / Stripe Service
+ *
+ * Aa service Stripe payment gateway sathe integrate kare chhe.
+ * This service integrates with the Stripe payment gateway.
+ *
+ * Functionality / Functionality:
+ * - Stripe product create/update (course mate)
+ * - Stripe price create (course pricing mate)
+ * - INR currency default chhe
+ *
+ * Security / Security:
+ * - STRIPE_SECRET_KEY na vagar server start nahi thay
+ * - Server won't start without STRIPE_SECRET_KEY
+ */
 import Stripe from 'stripe';
-import dotenv from 'dotenv';
 import { ApiError } from '../utils/apiError';
+import { logger } from '../utils/logger';
+import { env } from '../config/env';
 
-dotenv.config();
-
-if (!process.env.STRIPE_SECRET_KEY) {
+// Stripe secret key validate karo - aa na hoy to server start nahi thay
+// Validate Stripe secret key - server won't start without it
+if (!env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is not defined');
 }
 
 export class StripeService {
-    private static stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    // Stripe client instance - singleton pattern
+    private static stripe = new Stripe(env.STRIPE_SECRET_KEY!, {
         apiVersion: '2024-06-20',
     });
 
     /**
-     * Create a new product in Stripe
+     * Stripe ma navo product create karo (course mate)
+     * Create a new product in Stripe (for a course)
      */
     static async createProduct(name: string, description: string, image?: string): Promise<Stripe.Product> {
         try {
@@ -28,15 +45,16 @@ export class StripeService {
                 },
             });
         } catch (error) {
-            console.error('Stripe createProduct error:', error);
+            logger.error('Stripe createProduct error:', error);
             throw new ApiError(500, 'Failed to create Stripe product');
         }
     }
 
     /**
-     * Create a price for a product
+     * Product mate price create karo (smallest currency unit ma, e.g., paise for INR)
+     * Create a price for a product (in smallest currency unit, e.g., paise for INR)
      * @param productId Stripe Product ID
-     * @param amount Amount in smallest currency unit (e.g., paise for INR)
+     * @param amount Amount in smallest currency unit
      */
     static async createPrice(productId: string, amount: number): Promise<Stripe.Price> {
         try {
@@ -46,13 +64,14 @@ export class StripeService {
                 currency: 'inr',
             });
         } catch (error) {
-            console.error('Stripe createPrice error:', error);
+            logger.error('Stripe createPrice error:', error);
             throw new ApiError(500, 'Failed to create Stripe price');
         }
     }
 
     /**
-     * Update a product in Stripe
+     * Stripe product update karo (name, description, image, default price)
+     * Update a Stripe product (name, description, image, default price)
      */
     static async updateProduct(productId: string, data: { name?: string; description?: string; image?: string, default_price?: string }): Promise<Stripe.Product> {
         try {
@@ -63,7 +82,7 @@ export class StripeService {
                 ...(data.default_price && { default_price: data.default_price }),
             });
         } catch (error) {
-            console.error('Stripe updateProduct error:', error);
+            logger.error('Stripe updateProduct error:', error);
             throw new ApiError(500, 'Failed to update Stripe product');
         }
     }

@@ -1,3 +1,22 @@
+/**
+ * Edit Course Page — Course editing mate tabbed interface with 3 sections
+ * Edit Course Page — Tabbed interface for course editing with 3 sections
+ *
+ * Aa server component chhe je admin/mentor ne course edit karva mate 3-tab layout provide kare chhe
+ * This is a server component that provides a 3-tab layout for admin/mentor to edit courses
+ *
+ * Tabs:
+ * 1. Basic Info — EditCourseForm (title, slug, description, thumbnail, category, level, etc.)
+ * 2. Structure — CourseStructure (chapters + lessons CRUD ane reordering)
+ *    Structure — CourseStructure (chapters + lessons CRUD and reordering)
+ * 3. Activities — CourseActivities (activities, assignments, quizzes management)
+ *
+ * Features:
+ * - requireAdminOrMentor() — Server-side role guard
+ * - adminGetCourse(courseId) — Full course data fetch including chapters, lessons
+ * - Dynamic route — params.courseId thi course identify kare chhe
+ *   Dynamic route — Identifies course from params.courseId
+ */
 import { adminGetCourse } from "@/app/data/admin/admin-get-course";
 import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";

@@ -1,7 +1,10 @@
+// Aa file admin lesson update mate server action provide kare chhe (Zod validation + cache revalidation sathe)
+// This file provides a server action for updating admin lessons with Zod validation and cache revalidation
 "use server";
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { ApiResponse } from "@/lib/types";
 import { lessonSchema, lessonSchemaType } from "@/lib/zodSchemas";
 import { revalidatePath } from "next/cache";

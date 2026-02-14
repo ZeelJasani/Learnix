@@ -1,3 +1,5 @@
+// Aa file specific course na badha quizzes fetch karva mate admin API route provide kare chhe
+// This file provides an admin API route to fetch all quizzes for a specific course
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

@@ -1,5 +1,7 @@
+// Aa component admin panel mate sidebar navigation render kare chhe (Dashboard, Users, Mentors, Courses, Activities)
+// This component renders the admin panel sidebar with grouped navigation links and user footer
 import * as React from "react"
-import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen, Activity, GraduationCap, User } from "lucide-react"
+import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen, Activity, GraduationCap, Video } from "lucide-react"
 
 import { SearchForm } from "@/components/search-form"
 import {
@@ -28,6 +30,11 @@ const data = {
                     url: "/admin/dashboard",
                     icon: LayoutDashboard,
                 },
+                {
+                    title: "Analytics",
+                    url: "/admin/analytics",
+                    icon: Activity,
+                },
             ],
         },
         {
@@ -52,6 +59,11 @@ const data = {
                     title: "Activities",
                     url: "/admin/activities",
                     icon: Activity,
+                },
+                {
+                    title: "Live Sessions",
+                    url: "/admin/live-sessions",
+                    icon: Video,
                 },
             ],
         },

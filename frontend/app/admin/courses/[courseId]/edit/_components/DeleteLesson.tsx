@@ -1,3 +1,20 @@
+/**
+ * DeleteLesson Component — Lesson delete karva mate confirmation AlertDialog
+ * DeleteLesson Component — Confirmation AlertDialog for deleting a lesson
+ *
+ * Aa component chhe je CourseStructure ma lesson ni baaju ma Trash2 icon button provide kare chhe
+ * This component provides a Trash2 icon button next to the lesson in CourseStructure
+ *
+ * Features:
+ * - AlertDialog — "Are you absolutely sure?" confirmation popup
+ * - deleteLesson server action — Backend API thi lesson permanently delete kare chhe
+ *   deleteLesson server action — Permanently deletes lesson via backend API
+ * - Props: chapterId, courseId, lessonId — Lesson identify karva mate required
+ *   Props: chapterId, courseId, lessonId — Required to identify the lesson
+ * - tryCatch wrapper — Server action error handling
+ * - Loading state — "Deleting..." text while pending
+ * - Revalidates admin + mentor course edit paths
+ */
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { tryCatch } from "@/hooks/try-catch";
@@ -62,8 +79,8 @@ export function DeleteLesson({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-          <Button 
-            onClick={onSubmit} 
+          <Button
+            onClick={onSubmit}
             disabled={pending}
             variant="destructive"
           >

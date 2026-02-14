@@ -1,3 +1,17 @@
+/**
+ * Quiz Results Page — Quiz attempt nu detailed result display kare chhe
+ * Quiz Results Page — Displays detailed results of a quiz attempt
+ *
+ * Aa client component chhe je specific quiz attempt na results QuizResults component thi render kare chhe
+ * This is a client component that renders specific quiz attempt results via QuizResults component
+ *
+ * Features:
+ * - Dynamic routing — /dashboard/{slug}/quiz/{quizId}/results/{attemptId}
+ * - QuizResults component — Score, answers, pass/fail status display
+ * - Back navigation — ArrowLeft link to /dashboard/{slug}
+ * - useParams() — slug, quizId, attemptId extract kare chhe from URL
+ *   useParams() — Extracts slug, quizId, attemptId from URL
+ */
 "use client";
 
 import { useParams } from "next/navigation";

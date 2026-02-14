@@ -1,3 +1,21 @@
+/**
+ * CourseProgress Component — Course nu detailed progress tracking with SVG chart ane milestones
+ * CourseProgress Component — Detailed course progress tracking with SVG chart and milestones
+ *
+ * Aa client component chhe je student ni course progress ne visual ane detail ma display kare chhe
+ * This is a client component that displays student's course progress visually and in detail
+ *
+ * Sections:
+ * 1. Overall Progress — Circular SVG donut chart (strokeDasharray/Offset) with percentage
+ * 2. Chapter Progress — Per-chapter progress bar with lesson-by-lesson completion checklist
+ * 3. Milestones — 4 achievement badges (25%, 50%, 75%, 100%) with color-coded icons
+ *
+ * Features:
+ * - SVG circular progress — Animated donut chart with transition-all duration-500
+ * - Lesson completion icons — CheckCircle2 (complete) vs bordered circle (pending)
+ * - Milestone badges — Getting Started, Halfway There, Almost Done, Course Complete
+ * - Color-coded milestones — yellow (25%), blue (50%), purple (75%), green (100%)
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

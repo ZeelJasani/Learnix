@@ -1,3 +1,20 @@
+/**
+ * QuizListItem Component — Individual quiz item card with edit/delete actions
+ * QuizListItem Component — Individual quiz item card with edit/delete actions
+ *
+ * Aa client component chhe je single quiz ni details display kare chhe
+ * This is a client component that displays single quiz details
+ *
+ * Features:
+ * - Title + status badge — Quiz name with Published/Draft status
+ * - Description — Optional truncated description (line-clamp-2)
+ * - Question count — HelpCircle icon sathe total questions
+ *   Question count — Total questions with HelpCircle icon
+ * - Time limit — Clock icon sathe quiz duration (minutes)
+ *   Time limit — Quiz duration in minutes with Clock icon
+ * - Edit button — Ghost button for quiz editing (onEdit callback)
+ * - Delete button — Destructive ghost button with Trash2 icon (onDelete callback)
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";

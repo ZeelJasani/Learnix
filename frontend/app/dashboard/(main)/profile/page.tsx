@@ -1,3 +1,18 @@
+/**
+ * Student Profile Page — Student ni profile information ane account details page
+ * Student Profile Page — Student's profile information and account details page
+ *
+ * Aa server component chhe je current logged-in student ni profile details display kare chhe
+ * This server component displays profile details of the current logged-in student
+ *
+ * Features:
+ * - requireUser() — Authentication guard (student must be logged in)
+ * - Avatar with initials fallback — User image or name-based initials
+ * - Stats cards — Enrolled courses count, Account status, Member since date
+ * - Account details — Name, Email, Account ID, Email verification status
+ * - "Edit Profile" link — Redirects to Clerk accounts page
+ * - Responsive layout — Grid adapts from 1 to 2/3 columns
+ */
 import { requireUser } from "@/app/data/user/require-user";
 import { getEnrolledCourses } from "@/app/data/user/get-enrolled-courses";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

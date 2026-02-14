@@ -1,6 +1,9 @@
+// Aa file admin panel mate badha courses ni list fetch kare chhe (MongoDB ID mapping sathe)
+// This file fetches all courses for the admin panel with MongoDB _id to id mapping
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 export interface AdminCourseType {
     id: string;

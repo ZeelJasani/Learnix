@@ -1,3 +1,5 @@
+// Aa file student mate course slug dwara quizzes fetch karva API route provide kare chhe
+// This file provides an API route for students to fetch quizzes by course slug
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

@@ -1,3 +1,18 @@
+/**
+ * Chapter Service / Chapter Service
+ *
+ * Aa service course chapters nu CRUD ane reordering handle kare chhe.
+ * This service handles CRUD and reordering of course chapters.
+ *
+ * Features / Features:
+ * - Auto-position: Navo chapter last position par create thay chhe
+ * - Cascade delete: Chapter delete karta badha lessons pan delete thay chhe
+ * - Bulk reorder: Drag-and-drop mate bulkWrite operation use thay chhe
+ *
+ * Auto-position: New chapter is created at the last position
+ * Cascade delete: Deleting a chapter also deletes all its lessons
+ * Bulk reorder: Uses bulkWrite for efficient drag-and-drop reordering
+ */
 import mongoose from 'mongoose';
 import { Chapter, IChapter } from '../models/Chapter';
 import { Lesson } from '../models/Lesson';
@@ -18,19 +33,21 @@ interface ReorderChapterData {
 }
 
 export class ChapterService {
-    // Get all chapters for a course
+    // Course na badha chapters position pramane sorted return karo
+    // Get all chapters for a course sorted by position
     static async getByCourseId(courseId: string): Promise<IChapter[]> {
         return Chapter.find({ courseId })
             .sort({ position: 1 })
             .lean() as unknown as IChapter[];
     }
 
-    // Get chapter by ID
+    // ID thi chapter shodhvo / Get chapter by ID
     static async getById(id: string): Promise<IChapter | null> {
         return Chapter.findById(id);
     }
 
-    // Create a new chapter - SIMPLE VERSION
+    // Navo chapter create karo - position auto-calculate thay chhe
+    // Create a new chapter - position is auto-calculated
     static async create(data: CreateChapterData): Promise<IChapter> {
         // Get the next position
         const lastChapter = await Chapter.findOne({ courseId: data.courseId })
@@ -50,12 +67,13 @@ export class ChapterService {
         return chapter;
     }
 
-    // Update a chapter
+    // Chapter update karo / Update a chapter
     static async update(id: string, data: UpdateChapterData): Promise<IChapter | null> {
         return Chapter.findByIdAndUpdate(id, data, { new: true });
     }
 
-    // Delete a chapter and all its lessons
+    // Chapter ane tena badha lessons delete karo (cascade delete)
+    // Delete a chapter and all its lessons (cascade delete)
     static async delete(id: string): Promise<boolean> {
         const chapter = await Chapter.findById(id);
         if (!chapter) return false;
@@ -73,7 +91,8 @@ export class ChapterService {
         return true;
     }
 
-    // Reorder chapters
+    // Chapters ni position reorder karo (drag-and-drop mate)
+    // Reorder chapter positions (for drag-and-drop)
     static async reorder(courseId: string, items: ReorderChapterData[]): Promise<void> {
         // Validate inputs
         if (!courseId || !items) return;

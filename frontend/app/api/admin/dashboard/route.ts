@@ -1,3 +1,5 @@
+// Aa file admin dashboard statistics fetch karva mate API route provide kare chhe (CORS support sathe)
+// This file provides an API route for fetching admin dashboard stats with CORS support
 import { NextResponse } from 'next/server';
 import { adminGetDashboardStats } from '@/app/data/admin/admin-get-dashboard-state';
 import { requireAdmin } from "@/app/data/admin/require-admin";

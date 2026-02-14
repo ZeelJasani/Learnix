@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QuizAttempt, QuizAPI, Quiz } from "@/lib/quiz-api";
-import { Loader2, CheckCircle, XCircle, Trophy, Clock, RotateCcw } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Trophy, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 interface QuizResultsProps {
@@ -25,36 +25,36 @@ export function QuizResults({ attemptId, quizId, courseSlug }: QuizResultsProps)
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                const token = await getToken();
+                if (!token) {
+                    toast.error("Authentication required");
+                    return;
+                }
+
+                const [attemptResponse, quizResponse] = await Promise.all([
+                    QuizAPI.getAttempt(attemptId, token),
+                    QuizAPI.getQuizById(quizId, token),
+                ]);
+
+                if (attemptResponse.success && attemptResponse.data) {
+                    setAttempt(attemptResponse.data);
+                }
+
+                if (quizResponse.success && quizResponse.data) {
+                    setQuiz(quizResponse.data);
+                }
+            } catch (error) {
+                console.error("Error fetching results:", error);
+                toast.error("Failed to load quiz results");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         fetchResults();
-    }, [attemptId, quizId]);
-
-    const fetchResults = async () => {
-        try {
-            const token = await getToken();
-            if (!token) {
-                toast.error("Authentication required");
-                return;
-            }
-
-            const [attemptResponse, quizResponse] = await Promise.all([
-                QuizAPI.getAttempt(attemptId, token),
-                QuizAPI.getQuizById(quizId, token),
-            ]);
-
-            if (attemptResponse.success && attemptResponse.data) {
-                setAttempt(attemptResponse.data);
-            }
-
-            if (quizResponse.success && quizResponse.data) {
-                setQuiz(quizResponse.data);
-            }
-        } catch (error) {
-            console.error("Error fetching results:", error);
-            toast.error("Failed to load quiz results");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    }, [attemptId, quizId, getToken]);
 
     if (isLoading) {
         return (
@@ -73,13 +73,6 @@ export function QuizResults({ attemptId, quizId, courseSlug }: QuizResultsProps)
             </Card>
         );
     }
-
-    const formatTime = (seconds: number | null) => {
-        if (!seconds) return "N/A";
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}m ${secs}s`;
-    };
 
     return (
         <div className="space-y-6">

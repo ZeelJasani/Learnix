@@ -1,3 +1,23 @@
+/**
+ * Course Detail Page — Individual course ni detail page (slug-based)
+ * Course Detail Page — Individual course detail page (slug-based)
+ *
+ * Aa server component chhe je specific course ni full details display kare chhe
+ * This is a server component that displays full details of a specific course
+ *
+ * Features:
+ * - Course thumbnail (S3 image) — Hero image with gradient overlay
+ * - Course metadata — Title, description, level, category, duration badges
+ * - Rich text description — JSON parsed course description render kare chhe
+ *   Rich text description — Renders JSON parsed course description
+ * - Curriculum section — Collapsible chapters with lessons list
+ * - Pricing sidebar (sticky) — Price, course features, enrollment options
+ * - Enrollment logic:
+ *   - Already enrolled → "Watch Course" button (dashboard link)
+ *   - Free course → FreeEnrollModal with free enrollment
+ *   - Paid course → EnrollmentButton (Stripe checkout)
+ * - "What you get" list — Lifetime access, mobile access, certificate
+ */
 import { env } from "@/lib/env";
 import Image from "next/image";
 import Link from "next/link";

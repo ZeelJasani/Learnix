@@ -1,3 +1,5 @@
+// Aa file Stripe webhook handler chhe jo payment events verify kari ne backend ne forward kare chhe
+// This file handles Stripe webhooks by verifying signatures and forwarding events to the backend
 import { env } from "@/lib/env";
 import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";

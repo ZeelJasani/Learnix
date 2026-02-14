@@ -1,3 +1,17 @@
+/**
+ * Admin Layout — Admin panel nu main layout with sidebar navigation
+ * Admin Layout — Main layout for admin panel with sidebar navigation
+ *
+ * Aa layout admin section mate sidebar + header + breadcrumb structure provide kare chhe
+ * This layout provides sidebar + header + breadcrumb structure for the admin section
+ *
+ * Components:
+ * - SidebarProvider — Global sidebar state management
+ * - AdminSidebar — Admin navigation sidebar (courses, users, mentors, etc.)
+ * - SidebarTrigger — Sidebar toggle button (mobile/desktop)
+ * - Breadcrumb — "Admin Dashboard" breadcrumb navigation
+ * - SidebarInset — Main content area with header and children
+ */
 import { ReactNode } from "react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import {

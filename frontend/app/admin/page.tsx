@@ -1,38 +1,17 @@
+/**
+ * Admin Root Page — /admin route nu redirect page
+ * Admin Root Page — Redirect page for /admin route
+ *
+ * Aa page /admin par access kare tyare automatically /admin/dashboard par redirect kare chhe
+ * This page automatically redirects to /admin/dashboard when accessing /admin
+ *
+ * Note: RenderRecentCourses ane skeleton functions unused/legacy code chhe
+ * Note: RenderRecentCourses and skeleton functions are unused/legacy code
+ */
 import { redirect } from "next/navigation";
 
 export default function AdminPage() {
   redirect("/admin/dashboard");
 }
-async function RenderRecentCourses() {
-  const data = await adminGetRecentCourses()
 
-  if (data.length === 0) {
-    return (
-      <EmptyState
-        buttonText="Create new Course"
-        description="You don't have any courses. Create some to see them here."
-        title="You don't have any courses yet!"
-        href="/admin/courses/create"
-      />
-    )
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {data.map((course) => (
-        <AdminCourseCard key={course.id} data={course} />
-      ))}
-    </div>
-  )
-}
-
-function RenderRecentCoursesSkeletonLayout() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {Array.from({ length: 2 }).map((_, index) => (
-        <AdminCourseCardSkeleton key={index} />
-      ))}
-    </div>
-  )
-}
 

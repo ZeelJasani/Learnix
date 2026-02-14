@@ -1,3 +1,5 @@
+// Aa file session cookies ane Clerk auth state debug karva mate API route provide kare chhe
+// This file provides a debug API route to inspect session cookies and Clerk auth state
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 

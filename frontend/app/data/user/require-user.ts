@@ -1,3 +1,5 @@
+// Aa file user authentication guard chhe (haal commented out chhe, future use mate)
+// This file provides user authentication verification guard (currently commented out for future use)
 // import "server-only";
 
 // import { auth } from "@/lib/auth";

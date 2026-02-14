@@ -1,3 +1,16 @@
+/**
+ * Activity Service / Activity Service
+ *
+ * Aa service course activities (assignments, quizzes, etc.) nu CRUD ane completion tracking handle kare chhe.
+ * This service handles CRUD and completion tracking for course activities.
+ *
+ * Features / Features:
+ * - Enrolled user mate activities completion status sathe return thay
+ * - Slug ane ID banne sathe course resolve thay chhe
+ * - Activity complete/uncomplete toggle karvo
+ * - Enrollment verification before completion
+ * - Idempotent completion: Re-complete karta error nathi aaptu
+ */
 import mongoose from 'mongoose';
 import { Activity, IActivity, ActivityType } from '../models/Activity';
 import { ActivityCompletion, IActivityCompletion } from '../models/ActivityCompletion';
@@ -23,7 +36,8 @@ interface UpdateActivityData {
 
 export class ActivityService {
     /**
-     * Get activities for enrolled courses
+     * Enrolled user mate activities completion status sathe return karo
+     * Get activities for enrolled user with completion status
      */
     static async getForUser(userId: string): Promise<IActivity[]> {
         // Get user's enrolled courses
@@ -62,7 +76,8 @@ export class ActivityService {
     }
 
     /**
-     * Get activities for a course (admin)
+     * Course ni activities return karo (admin/mentor mate)
+     * Get activities for a course (for admin/mentor)
      */
     static async getByCourseId(courseIdOrSlug: string): Promise<IActivity[]> {
         let courseId = courseIdOrSlug;
@@ -88,7 +103,26 @@ export class ActivityService {
     }
 
     /**
-     * Create a new activity
+     * Badhi activities return karo (admin dashboard mate)
+     * Get all activities (for admin dashboard)
+     */
+    static async getAll(): Promise<IActivity[]> {
+        const activities = await Activity.find()
+            .sort({ createdAt: -1 })
+            .populate('courseId', 'title slug')
+            .lean();
+
+        return activities.map(activity => ({
+            ...activity,
+            id: (activity as any)._id.toString(),
+            course: activity.courseId, // Populate frontend expected 'course' field
+            _count: { completions: 0 }
+        })) as unknown as IActivity[];
+    }
+
+    /**
+     * Nayi activity create karo (slug thi courseId resolve thay chhe)
+     * Create a new activity (resolves courseId from slug)
      */
     static async create(data: CreateActivityData): Promise<IActivity> {
         let courseId = data.courseId;
@@ -115,7 +149,7 @@ export class ActivityService {
     }
 
     /**
-     * Update an activity
+     * Activity update karo / Update an activity
      */
     static async update(id: string, data: UpdateActivityData): Promise<IActivity | null> {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -126,7 +160,8 @@ export class ActivityService {
     }
 
     /**
-     * Delete an activity
+     * Activity ane tena completions delete karo (cascade)
+     * Delete an activity and its completions (cascade)
      */
     static async delete(id: string): Promise<boolean> {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -141,7 +176,8 @@ export class ActivityService {
     }
 
     /**
-     * Mark activity as complete
+     * Activity complete mark karo (enrollment verify pachhi, idempotent)
+     * Mark activity as complete (after enrollment verification, idempotent)
      */
     static async complete(activityId: string, userId: string): Promise<IActivityCompletion> {
         if (!mongoose.Types.ObjectId.isValid(activityId)) {
@@ -187,7 +223,8 @@ export class ActivityService {
     }
 
     /**
-     * Uncomplete an activity (remove completion)
+     * Activity completion remove karo (toggle mate)
+     * Remove activity completion (for toggle functionality)
      */
     static async uncomplete(activityId: string, userId: string): Promise<boolean> {
         const result = await ActivityCompletion.deleteOne({

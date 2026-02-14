@@ -1,3 +1,5 @@
+// Aa file specific quiz ne delete karva mate admin API route provide kare chhe
+// This file provides an admin API route to delete a specific quiz by its ID
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

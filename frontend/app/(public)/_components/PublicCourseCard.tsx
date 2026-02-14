@@ -1,3 +1,24 @@
+/**
+ * PublicCourseCard Component — Course listing card with hover effects
+ * PublicCourseCard Component — Course listing card with hover effects
+ *
+ * Aa client component chhe je public course grid ma individual course card display kare chhe
+ * This is a client component that displays individual course cards in the public course grid
+ *
+ * Features:
+ * - Course thumbnail (S3 URL) — Hover zoom effect (scale-105)
+ * - Level badge (BEGINNER/INTERMEDIATE/ADVANCED) — Color-coded overlay
+ * - Category badge — Color-coded tag with dark mode support
+ * - Mentor info — Avatar ane name display kare chhe (conditional)
+ *   Mentor info — Displays avatar and name (conditional)
+ * - Course meta — Duration, chapter count icons
+ * - Price display — INR format ma price batave chhe
+ *   Price display — Shows price in INR format
+ * - "Enroll Now" CTA button — Course detail page par navigate kare chhe
+ *   "Enroll Now" CTA button — Navigates to course detail page
+ *
+ * PublicCourseCardSkeleton — Loading state skeleton component
+ */
 "use client";
 
 import { PublicCourseType } from "@/app/data/course/get-all-courses";

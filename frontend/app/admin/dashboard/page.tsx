@@ -1,3 +1,20 @@
+/**
+ * Admin Dashboard Page — Platform overview ane statistics page
+ * Admin Dashboard Page — Platform overview and statistics page
+ *
+ * Aa server component chhe je admin dashboard display kare chhe month-based filtering sathe
+ * This is a server component that displays the admin dashboard with month-based filtering
+ *
+ * Features:
+ * - requireAdmin() — Admin access guard
+ * - DashboardMonthFilter — URL search params based month/year filter
+ * - Stats grid (4 cards) — Total Signups, Customers, Courses, Lessons
+ *   — StatsCard helper component — Clickable card je admin sub-page par navigate kare chhe
+ *   — StatsCard helper component — Clickable card that navigates to admin sub-pages
+ * - Recent courses section — adminGetRecentCourses() thi latest courses display kare chhe
+ *   Recent courses section — Displays latest courses via adminGetRecentCourses()
+ * - Parallel data fetching — Promise.all for stats + recentCourses
+ */
 import { adminGetDashboardStats } from "@/app/data/admin/admin-get-dashboard-state";
 import { adminGetRecentCourses } from "@/app/data/admin/admin-get-recent-courses";
 import { requireAdmin } from "@/app/data/admin/require-admin";

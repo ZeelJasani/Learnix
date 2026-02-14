@@ -1,3 +1,5 @@
+// Aa file user ne admin ya user role assign karva mate API route provide kare chhe (placeholder)
+// This file provides an API route to assign admin/user roles (placeholder, needs backend implementation)
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

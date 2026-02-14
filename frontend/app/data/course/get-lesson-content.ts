@@ -1,5 +1,8 @@
+// Aa file enrolled user mate lesson content (video, description, completion status) fetch kare chhe
+// This file fetches a lesson's full content for enrolled users with authentication
 import "server-only";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { notFound } from "next/navigation";
 
 export interface LessonContentType {

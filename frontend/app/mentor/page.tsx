@@ -1,6 +1,7 @@
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { requireUser } from "@/app/data/user/require-user";
-import { BookOpen, DollarSign, Users } from "lucide-react";
+import { BookOpen, DollarSign, Users, LucideIcon } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ export default async function MentorDashboard() {
     const token = await getAuthToken();
 
     // Handle both direct user object and wrapped {synced, user} structure
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user = ('user' in userData ? (userData as any).user : userData);
 
     // Fetch mentor stats
@@ -38,7 +40,7 @@ export default async function MentorDashboard() {
                 <div className="space-y-1">
                     <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
                     <p className="text-muted-foreground">
-                        Welcome back, {user.name}! Here's your performance overview.
+                        Welcome back, {user.name}! Here&apos;s your performance overview.
                     </p>
                 </div>
             </div>
@@ -79,7 +81,7 @@ function StatsCard({
     title: string;
     value: string | number;
     description: string;
-    icon: any;
+    icon: LucideIcon;
 }) {
     return (
         <Card>

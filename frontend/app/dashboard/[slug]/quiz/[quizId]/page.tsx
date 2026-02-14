@@ -1,3 +1,22 @@
+/**
+ * Quiz Taking Page — Student ne quiz attempt karva mate interface provide kare chhe
+ * Quiz Taking Page — Provides interface for students to attempt a quiz
+ *
+ * Aa client component chhe je quiz data fetch kari ne eligibility check kare chhe before quiz start
+ * This is a client component that fetches quiz data and checks eligibility before quiz start
+ *
+ * Features:
+ * - Parallel API fetch — QuizAPI.getQuizForTaking + QuizAPI.canTakeQuiz simultaneously
+ * - Eligibility check — canTake.allowed false hoy to reason display kare chhe with attempt count
+ *   Eligibility check — Displays reason with attempt count when canTake.allowed is false
+ * - QuizTakingInterface — Quiz start thay tyare interactive quiz-taking component render thay chhe
+ *   QuizTakingInterface — Renders interactive quiz-taking component when quiz starts
+ * - Loading state — Centered Loader2 spinner while fetching quiz data
+ * - Not found state — FileQuestion icon + "Quiz Not Found" message
+ * - Back navigation — ArrowLeft link to /dashboard/{slug}
+ * - Clerk auth — getToken() thi Bearer token for quiz API authentication
+ *   Clerk auth — Bearer token via getToken() for quiz API authentication
+ */
 "use client";
 
 import { useEffect, useState } from "react";

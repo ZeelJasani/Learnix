@@ -1,3 +1,16 @@
+/**
+ * Auth Layout — Authentication pages nu shared layout
+ * Auth Layout — Shared layout for authentication pages
+ *
+ * Aa layout auth pages (login, register, SSO callback) ne center ma render kare chhe
+ * This layout renders auth pages (login, register, SSO callback) centered on screen
+ *
+ * Features:
+ * - "Back to home" button (top-left) — Home page par redirect kare chhe
+ * - Learnix logo ane branding — App identity display kare chhe
+ * - Terms of Service ane Privacy Policy links — Legal compliance batave chhe
+ * - Responsive min-h-svh centering — Badha screen sizes par center alignment
+ */
 
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";

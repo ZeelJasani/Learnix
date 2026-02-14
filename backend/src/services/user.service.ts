@@ -1,8 +1,27 @@
+/**
+ * User Service / User Service
+ *
+ * Aa service user management ane Clerk authentication integration handle kare chhe.
+ * This service handles user management and Clerk authentication integration.
+ *
+ * Clerk Integration / Clerk Integration:
+ * - Clerk webhook thi user data sync thay chhe
+ * - ADMIN_EMAILS env var ma hoy to auto-admin assign thay chhe
+ * - Email-based user matching for existing accounts
+ *
+ * Methods / Methods:
+ * - getOrCreateFromClerk: Clerk ID thi user shodhvo ke create karvo
+ * - syncFromClerkData: Clerk webhook data thi user sync karvo
+ * - getById/getByClerkId: User lookup methods
+ * - getAll: Paginated user list (admin)
+ * - banUser/unbanUser: User moderation
+ */
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import { User, IUser } from '../models/User';
 import { env } from '../config/env';
 import { ApiError } from '../utils/apiError';
 import { logger } from '../utils/logger';
+import { LiveSessionService } from './live-session.service';
 
 interface ClerkUserData {
     id: string;
@@ -14,6 +33,7 @@ interface ClerkUserData {
 
 export class UserService {
     /**
+     * Clerk ID thi user shodhvo ke navo create karvo
      * Get or create a user from Clerk data
      */
     static async getOrCreateFromClerk(clerkId: string): Promise<IUser> {
@@ -49,7 +69,11 @@ export class UserService {
     }
 
     /**
+     * Clerk webhook ke API thi user data sync karvo
      * Sync user data from Clerk webhook or API
+     *
+     * Admin auto-detection: ADMIN_EMAILS env var ma email hoy to admin role assign thay chhe
+     * Admin auto-detection: assigns admin role if email is in ADMIN_EMAILS env var
      */
     static async syncFromClerkData(clerkData: ClerkUserData): Promise<IUser> {
         const email = clerkData.emailAddresses?.[0]?.emailAddress;
@@ -83,6 +107,16 @@ export class UserService {
             }
             // Don't change role if it's already set (preserve mentor, admin, etc.)
             await user.save();
+
+            // Sync user to Stream.io / Sync user to Stream.io
+            await LiveSessionService.syncUser({
+                id: user.clerkId,
+                name: user.name,
+                email: user.email,
+                image: user.image || undefined,
+                role: user.role || undefined
+            });
+
             return user;
         }
 
@@ -101,6 +135,16 @@ export class UserService {
             }
             // Don't change role if it's already set (preserve mentor, admin, etc.)
             await user.save();
+
+            // Sync user to Stream.io / Sync user to Stream.io
+            await LiveSessionService.syncUser({
+                id: user.clerkId,
+                name: user.name,
+                email: user.email,
+                image: user.image || undefined,
+                role: user.role || undefined
+            });
+
             return user;
         }
 
@@ -115,25 +159,36 @@ export class UserService {
         });
 
         await user.save();
+
+        // Sync user to Stream.io / Sync user to Stream.io
+        await LiveSessionService.syncUser({
+            id: user.clerkId,
+            name: user.name,
+            email: user.email,
+            image: user.image || undefined,
+            role: user.role || undefined
+        });
+
         return user;
     }
 
     /**
-     * Get user by ID
+     * ID thi user shodhvo / Get user by ID
      */
     static async getById(id: string): Promise<IUser | null> {
         return User.findById(id);
     }
 
     /**
-     * Get user by Clerk ID
+     * Clerk ID thi user shodhvo / Get user by Clerk ID
      */
     static async getByClerkId(clerkId: string): Promise<IUser | null> {
         return User.findOne({ clerkId });
     }
 
     /**
-     * Get all users (admin)
+     * Badha users ni paginated list (admin only)
+     * Get all users with pagination (admin only)
      */
     static async getAll(options: { page?: number; limit?: number } = {}): Promise<{
         users: IUser[];
@@ -156,7 +211,7 @@ export class UserService {
     }
 
     /**
-     * Update user's Stripe customer ID
+     * User nu Stripe customer ID update karvo / Update user's Stripe customer ID
      */
     static async updateStripeCustomerId(userId: string, stripeCustomerId: string): Promise<IUser | null> {
         return User.findByIdAndUpdate(
@@ -167,14 +222,15 @@ export class UserService {
     }
 
     /**
-     * Get user by Stripe customer ID
+     * Stripe customer ID thi user shodhvo / Get user by Stripe customer ID
      */
     static async getByStripeCustomerId(stripeCustomerId: string): Promise<IUser | null> {
         return User.findOne({ stripeCustomerId });
     }
 
     /**
-     * Ban a user
+     * User ne ban karvo (reason ane optional expiry sathe)
+     * Ban a user (with reason and optional expiry)
      */
     static async banUser(userId: string, reason: string, expires?: Date): Promise<IUser | null> {
         return User.findByIdAndUpdate(
@@ -189,7 +245,7 @@ export class UserService {
     }
 
     /**
-     * Unban a user
+     * User ne unban karvo / Unban a user
      */
     static async unbanUser(userId: string): Promise<IUser | null> {
         return User.findByIdAndUpdate(

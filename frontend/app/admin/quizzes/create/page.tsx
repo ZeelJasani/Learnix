@@ -1,3 +1,15 @@
+/**
+ * Create Quiz Page — Specific course mate navi quiz create karva mate page
+ * Create Quiz Page — Page for creating new quiz for a specific course
+ *
+ * Aa server component chhe je courseId search param thi course-specific quiz creation form render kare chhe
+ * This is a server component that renders a course-specific quiz creation form from courseId search param
+ *
+ * Features:
+ * - courseId validation — courseId search param na hoy to /admin/courses par redirect
+ *   courseId validation — Redirects to /admin/courses if courseId search param is missing
+ * - QuizCreationForm — Shared quiz form component (from @/components/quiz)
+ */
 import { QuizCreationForm } from "@/components/quiz/quiz-creation-form";
 import { redirect } from "next/navigation";
 

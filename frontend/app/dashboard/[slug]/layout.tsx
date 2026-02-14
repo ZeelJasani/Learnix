@@ -1,3 +1,18 @@
+/**
+ * Course Layout — Course-specific sidebar + header + content area layout
+ * Course Layout — Course-specific layout with sidebar + header + content area
+ *
+ * Aa server component chhe je individual course pages ne CourseSidebar ane breadcrumb header sathe render kare chhe
+ * This server component renders individual course pages with CourseSidebar and breadcrumb header
+ *
+ * Features:
+ * - getCourseSidebarData(slug) — Course data (chapters, lessons, progress) fetch kare chhe
+ *   getCourseSidebarData(slug) — Fetches course data (chapters, lessons, progress)
+ * - CourseSidebar — Chapter/lesson navigation tree with progress indicators
+ * - SidebarInset + header — SidebarTrigger + Breadcrumb navigation bar
+ * - "Course not found" fallback — jya data na hoy tyare display thay chhe
+ *   "Course not found" fallback — Displayed when course data is unavailable
+ */
 import { ReactNode } from "react";
 import { CourseSidebar } from "@/components/course-sidebar";
 import { getCourseSidebarData } from "@/app/data/course/get-course-sidebar-data";

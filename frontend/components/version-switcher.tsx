@@ -1,3 +1,5 @@
+// Aa component sidebar ma version switcher dropdown render kare chhe
+// This component renders a version switcher dropdown in the sidebar header
 "use client"
 
 import * as React from "react"

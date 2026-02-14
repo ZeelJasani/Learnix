@@ -1,13 +1,37 @@
+/**
+ * Quiz Service / Quiz Service
+ *
+ * Aa service quiz CRUD, attempt management, auto-grading, ane instructor statistics handle kare chhe.
+ * This service handles quiz CRUD, attempt management, auto-grading, and instructor statistics.
+ *
+ * Grading Flow / Grading Flow:
+ * - auto-grade: Multiple choice ane true/false answers ne auto-grade kare chhe
+ * - score calculation: Total marks ane percentage calculate thay chhe
+ * - attempt limits: Quiz dith max attempts limit enforce thay chhe
+ *
+ * Answer Types / Answer Types:
+ * - multiple-choice: Exact string match (case-insensitive)
+ * - true-false: Boolean comparison
+ * - short-answer: Lowercase normalized string match
+ * - essay: Manual grading (currently auto-awarded)
+ *
+ * Permissions / Permissions:
+ * - Create/Update/Delete: Course mentor ke admin
+ * - Attempt: Enrolled students (attempt limit check)
+ * - Stats: Course mentor ke admin
+ */
 import mongoose from 'mongoose';
 import { Quiz, IQuiz, IQuestion } from '../models/Quiz';
 import { QuizAttempt, IQuizAttempt } from '../models/QuizAttempt';
 import { Course } from '../models/Course';
 import { ApiError } from '../utils/apiError';
+import { Enrollment } from '../models/Enrollment';
 import { CreateQuizInput, UpdateQuizInput, SubmitQuizInput } from '../validations/quiz.validation';
 
 export class QuizService {
     /**
-     * Create a new quiz
+     * Navo quiz create karo (course mate)
+     * Create a new quiz (for a course)
      */
     static async createQuiz(data: CreateQuizInput, userId: string): Promise<IQuiz> {
         // Verify course exists
@@ -26,7 +50,7 @@ export class QuizService {
     }
 
     /**
-     * Update an existing quiz
+     * Quiz update karo / Update a quiz
      */
     static async updateQuiz(quizId: string, data: UpdateQuizInput, userId: string): Promise<IQuiz> {
         const quiz = await Quiz.findById(quizId);
@@ -45,7 +69,7 @@ export class QuizService {
     }
 
     /**
-     * Delete a quiz
+     * Quiz delete karo / Delete a quiz
      */
     static async deleteQuiz(quizId: string, userId: string): Promise<void> {
         const quiz = await Quiz.findById(quizId);
@@ -114,7 +138,7 @@ export class QuizService {
     }
 
     /**
-     * Get all quizzes for a course
+     * Course na badha quizzes return karo / Get all quizzes for a course
      */
     static async getQuizzesByCourse(courseId: string, userId?: string, includeUnpublished = false): Promise<any[]> {
         const filter: any = { courseId };
@@ -190,7 +214,8 @@ export class QuizService {
     }
 
     /**
-     * Submit quiz attempt and grade it
+     * Quiz attempt submit karo ane auto-grade karo (attempt limit check sathe)
+     * Submit a quiz attempt and auto-grade it (with attempt limit check)
      */
     static async submitQuizAttempt(
         attemptId: string,
@@ -242,7 +267,11 @@ export class QuizService {
     }
 
     /**
-     * Grade a quiz
+     * Quiz grade karo - answers check karo ane score calculate karo
+     * Grade a quiz - check answers and calculate score
+     *
+     * Supported types: multiple-choice, true-false, short-answer, essay
+     * Essay type manually grade thay - currently auto-awarded
      */
     private static gradeQuiz(quiz: IQuiz, answers: Record<string, any>): {
         score: number;
@@ -278,7 +307,8 @@ export class QuizService {
     }
 
     /**
-     * Check if an answer is correct
+     * Individual answer check karo (question type pramane comparison)
+     * Check individual answer (comparison based on question type)
      */
     private static checkAnswer(question: IQuestion, userAnswer: any): boolean {
         if (userAnswer === null || userAnswer === undefined) {
@@ -305,7 +335,7 @@ export class QuizService {
     }
 
     /**
-     * Get user's attempt history for a quiz
+     * User ni quiz attempt history return karo / Get user's quiz attempt history
      */
     static async getAttemptHistory(quizId: string, userId: string): Promise<any[]> {
         const attempts = await QuizAttempt.find({
@@ -336,7 +366,8 @@ export class QuizService {
     }
 
     /**
-     * Check if user can take a quiz
+     * User quiz le sake chhe ke nahi check karo (attempt limit validation)
+     * Check if a user can take a quiz (attempt limit validation)
      */
     static async canUserTakeQuiz(quizId: string, userId: string): Promise<{
         allowed: boolean;
@@ -368,7 +399,8 @@ export class QuizService {
     }
 
     /**
-     * Get quiz statistics (for instructors)
+     * Instructor mate quiz statistics return karo (attempts, avg score, pass rate)
+     * Get quiz statistics for instructor (attempts, avg score, pass rate)
      */
     static async getQuizStatistics(quizId: string): Promise<any> {
         const quiz = await Quiz.findById(quizId);

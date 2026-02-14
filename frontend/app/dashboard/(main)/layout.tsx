@@ -1,3 +1,16 @@
+/**
+ * Main Dashboard Layout — Sidebar + header + content area sathe student dashboard layout
+ * Main Dashboard Layout — Student dashboard layout with sidebar + header + content area
+ *
+ * Aa layout component chhe je (main) route group na pages ne sidebar ane breadcrumb header sathe render kare chhe
+ * This layout renders pages in the (main) route group with sidebar and breadcrumb header
+ *
+ * Features:
+ * - SidebarProvider + DashboardSidebar — Collapsible navigation sidebar
+ * - SidebarInset — Main content area adjacent to sidebar
+ * - Header — SidebarTrigger + Separator + Breadcrumb ("Student Dashboard")
+ * - Responsive — Sidebar collapses to icon mode on small screens
+ */
 import { ReactNode } from "react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import {

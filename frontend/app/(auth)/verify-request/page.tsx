@@ -1,3 +1,16 @@
+/**
+ * Verify Request Page — Email verification redirect (DEPRECATED)
+ * Verify Request Page — Email verification redirect (DEPRECATED)
+ *
+ * Aa page hve deprecated chhe — Clerk migration pachhi OTP verification ni jarur nathi
+ * This page is now deprecated — OTP verification not needed after Clerk migration
+ *
+ * Juno code commented out chhe — Pahela authClient email OTP verification handle karto hato
+ * Old code is commented out — Previously handled authClient email OTP verification
+ *
+ * Haal ma /login par redirect kare chhe — Clerk ni built-in verification use thay chhe
+ * Currently redirects to /login — Uses Clerk's built-in verification
+ */
 // "use client";
 
 // import { Button } from "@/components/ui/button";

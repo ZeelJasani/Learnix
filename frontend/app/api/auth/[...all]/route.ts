@@ -1,3 +1,5 @@
+// Aa file legacy auth route chhe jo Clerk migration pachhi disabled chhe (410 Gone return kare chhe)
+// This file is a legacy auth catch-all route, disabled after migration to Clerk (returns 410 Gone)
 // /* eslint-disable @typescript-eslint/no-unused-vars */
 // // import { auth } from "@lib/auth";
 

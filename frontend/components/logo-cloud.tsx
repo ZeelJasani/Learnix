@@ -1,5 +1,8 @@
+// Aa component partner logos nu infinite slider display kare chhe (fade edges sathe)
+// This component displays an infinite scrolling partner logo cloud with progressive blur edges
 import { InfiniteSlider } from '@/components/ui/infinite-slider'
 import { ProgressiveBlur } from '@/components/ui/progressive-blur'
+import Image from 'next/image'
 
 
 export default function LogoCloud() {
@@ -16,77 +19,85 @@ export default function LogoCloud() {
                             speed={40}
                             gap={112}>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
+                                    src="https://cdn.simpleicons.org/nvidia/000000"
                                     alt="Nvidia Logo"
-                                    height="20"
-                                    width="auto"
+                                    height={20}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
 
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/column.svg"
+                                    src="https://cdn.simpleicons.org/googlecloud/000000"
                                     alt="Column Logo"
-                                    height="16"
-                                    width="auto"
+                                    height={16}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/github.svg"
+                                    src="https://cdn.simpleicons.org/github/000000"
                                     alt="GitHub Logo"
-                                    height="16"
-                                    width="auto"
+                                    height={16}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nike.svg"
+                                    src="https://cdn.simpleicons.org/nike/000000"
                                     alt="Nike Logo"
-                                    height="20"
-                                    width="auto"
+                                    height={20}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
+                                    src="https://cdn.simpleicons.org/lemonsqueezy/000000"
                                     alt="Lemon Squeezy Logo"
-                                    height="20"
-                                    width="auto"
+                                    height={20}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/laravel.svg"
+                                    src="https://cdn.simpleicons.org/laravel/000000"
                                     alt="Laravel Logo"
-                                    height="16"
-                                    width="auto"
+                                    height={16}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-7 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lilly.svg"
+                                    src="https://cdn.simpleicons.org/vercel/000000"
                                     alt="Lilly Logo"
-                                    height="28"
-                                    width="auto"
+                                    height={28}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
 
                             <div className="flex">
-                                <img
+                                <Image
                                     className="mx-auto h-6 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/openai.svg"
+                                    src="https://cdn.simpleicons.org/openai/000000"
                                     alt="OpenAI Logo"
-                                    height="24"
-                                    width="auto"
+                                    height={24}
+                                    width={100}
+                                    style={{ width: 'auto' }}
                                 />
                             </div>
                         </InfiniteSlider>

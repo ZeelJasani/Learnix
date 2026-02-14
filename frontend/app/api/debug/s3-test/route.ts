@@ -1,3 +1,5 @@
+// Aa file S3 connection ane upload test karva mate debug API route provide kare chhe
+// This file provides a debug API route to test S3 connection and upload functionality
 import { NextResponse } from "next/server";
 import { S3, checkS3Connection, testS3Upload } from "@/lib/S3Client";
 
@@ -5,7 +7,7 @@ export async function GET() {
     try {
         // Check S3 connection
         const connection = await checkS3Connection();
-        
+
         if (!connection.connected) {
             return NextResponse.json({
                 success: false,

@@ -1,6 +1,9 @@
+// Aa file admin mate last 30 days na enrollment statistics fetch kare chhe (chart data mate)
+// This file fetches enrollment statistics for the last 30 days for admin dashboard charts
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 interface EnrollmentDayData {
     date: string;

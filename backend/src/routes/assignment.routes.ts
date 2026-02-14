@@ -1,3 +1,22 @@
+// ============================================================================
+// Learnix LMS - Assignment Routes (એસાઇનમેન્ટ રાઉટ્સ)
+// ============================================================================
+// Aa file assignment ane peer review API routes define kare chhe.
+// This file defines assignment and peer review API routes.
+//
+// Base path: /api/assignments
+//
+// રાઉટ્સ / Routes:
+// GET  /lesson/:lessonId/my-submission     - Potani submission kadho
+// POST /lesson/:lessonId/submit            - Assignment submit karo
+// GET  /lesson/:lessonId/reviews/pending   - Review mate submissions kadho
+// POST /reviews/:submissionId              - Peer review submit karo
+// GET  /lesson/:lessonId/reviews/received  - Malela reviews kadho
+//
+// 🔒 Badha routes authenticated chhe (verifyClerkToken + requireUser)
+// 🔒 All routes are authenticated (verifyClerkToken + requireUser)
+// ============================================================================
+
 import express from 'express';
 import { AssignmentController } from '../controllers/assignment.controller';
 import { verifyClerkToken } from '../middleware/auth';
@@ -5,23 +24,23 @@ import { requireUser } from '../middleware/requireUser';
 
 const router = express.Router();
 
-// Apply auth middleware to all routes
+// Global middleware - badha routes mate auth jaruri / Auth required for all routes
 router.use(verifyClerkToken);
 router.use(requireUser);
 
-// Get my submission for a lesson
+// Potani submission kadho / Get my submission for a lesson
 router.get('/lesson/:lessonId/my-submission', AssignmentController.getMySubmission);
 
-// Submit an assignment
+// Assignment submit karo / Submit an assignment
 router.post('/lesson/:lessonId/submit', AssignmentController.submitAssignment);
 
-// Get peer assignments to review
+// Peer review mate available assignments kadho / Get peer assignments available for review
 router.get('/lesson/:lessonId/reviews/pending', AssignmentController.getAssignmentsToReview);
 
-// Submit a peer review
+// Peer review submit karo / Submit a peer review
 router.post('/reviews/:submissionId', AssignmentController.submitReview);
 
-// Get reviews received for my submission
+// Malela reviews kadho / Get reviews received for my submission
 router.get('/lesson/:lessonId/reviews/received', AssignmentController.getReviewsReceived);
 
 export const assignmentRouter = router;

@@ -1,3 +1,5 @@
+// Aa file admin activities mate CRUD API routes provide kare chhe (GET, POST, DELETE)
+// This file provides CRUD API routes for admin activities management (list, create, delete)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

@@ -179,6 +179,8 @@
 
 
 
+// Aa component student testimonials nu marquee carousel render kare chhe (verified badges sathe)
+// This component renders a marquee-style testimonials carousel with student reviews and verified badges
 "use client";
 
 import {

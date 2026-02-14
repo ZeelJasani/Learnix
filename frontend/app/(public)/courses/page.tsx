@@ -1,7 +1,23 @@
+/**
+ * Public Courses Page — Badha courses ni listing page
+ * Public Courses Page — Listing page for all courses
+ *
+ * Aa page public users mate available courses grid ma display kare chhe
+ * This page displays available courses in a grid for public users
+ *
+ * - force-dynamic — Har request par fresh data fetch kare chhe (ISR/cache nahi)
+ *   force-dynamic — Fetches fresh data on every request (no ISR/cache)
+ * - Suspense + skeleton loading — Data load thai rahu chhe tyare loading state batave chhe
+ *   Suspense + skeleton loading — Shows loading state while data is loading
+ * - RenderCourses — Async component je getAllCourses() thi data fetch kare chhe
+ *   RenderCourses — Async component that fetches data via getAllCourses()
+ * - Empty state — "No courses available" message with BookOpen icon
+ * - Responsive grid — 1 col (mobile), 2 cols (md), 3 cols (xl)
+ */
 import { getAllCourses } from "@/app/data/course/get-all-courses";
 import { PublicCourseCard, PublicCourseCardSkeleton } from "../_components/PublicCourseCard";
 import { Suspense } from "react";
-import { TrendingUp, Flame, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 

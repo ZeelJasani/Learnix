@@ -1,3 +1,22 @@
+/**
+ * SignInForm Component — User sign-in form with Clerk authentication
+ * SignInForm Component — User sign-in form with Clerk authentication
+ *
+ * Aa client component chhe je email/password ane OAuth (Google, GitHub) sign-in handle kare chhe
+ * This is a client component that handles email/password and OAuth (Google, GitHub) sign-in
+ *
+ * Features:
+ * - Email/password sign-in — Clerk useSignIn hook vade credential-based login
+ *   Email/password sign-in — Credential-based login via Clerk useSignIn hook
+ * - OAuth sign-in (Google, GitHub) — authenticateWithRedirect thi SSO callback par redirect
+ *   OAuth sign-in (Google, GitHub) — Redirects to SSO callback via authenticateWithRedirect
+ * - Error handling — User-friendly error messages batave chhe
+ *   Error handling — Shows user-friendly error messages
+ * - Loading states — Submit ane OAuth buttons par loading indicators
+ *   Loading states — Loading indicators on submit and OAuth buttons
+ * - Register page nu link — New users mate sign-up par navigate kare chhe
+ *   Link to register page — Navigate to sign-up for new users
+ */
 "use client";
 
 import * as React from "react";

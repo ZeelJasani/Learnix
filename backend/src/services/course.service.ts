@@ -1,9 +1,25 @@
+/**
+ * Course Service / Course Service
+ *
+ * Aa service course CRUD operations, search, ane Stripe product sync handle kare chhe.
+ * This service handles course CRUD operations, search, and Stripe product sync.
+ *
+ * Stripe Integration / Stripe Integration:
+ * - Free courses mate dummy IDs generate thay chhe
+ * - Paid courses mate Stripe product/price create thay chhe
+ * - Price update par new Stripe price create thay chhe
+ *
+ * Slug Resolution / Slug Resolution:
+ * - ID ke slug banne sathe course retrieve thay chhe
+ * - Both ID and slug can be used to retrieve courses
+ */
 import mongoose from 'mongoose';
 import { Course, ICourse, CourseStatus } from '../models/Course';
 import { Chapter } from '../models/Chapter';
 import { Lesson } from '../models/Lesson';
 import { LessonProgress } from '../models/LessonProgress';
 import { ApiError } from '../utils/apiError';
+import { logger } from '../utils/logger';
 
 interface CreateCourseData {
     title: string;
@@ -36,6 +52,8 @@ interface UpdateCourseData {
 
 export class CourseService {
 
+    // Badha published courses ne chapter count ane mentor info sathe return karo
+    // Return all published courses with chapter count and mentor info
     static async getAllPublished(): Promise<ICourse[]> {
         const courses = await Course.find({ status: 'PUBLISHED' })
             .sort({ createdAt: -1 })
@@ -64,6 +82,8 @@ export class CourseService {
     }
 
 
+    // Slug ke ID thi course shodhvo (chapters, lessons, ane progress sathe)
+    // Find course by slug or ID (with chapters, lessons, and progress)
     static async getBySlug(slug: string, userId?: string): Promise<any> {
         const query = mongoose.Types.ObjectId.isValid(slug)
             ? { $or: [{ _id: slug }, { slug }], status: 'PUBLISHED' }
@@ -134,6 +154,8 @@ export class CourseService {
     }
 
 
+    // Admin mate badha courses (published + unpublished) return karo
+    // Return all courses (published + unpublished) for admin
     static async getAll(): Promise<ICourse[]> {
         const courses = await Course.find()
             .sort({ createdAt: -1 })
@@ -225,19 +247,24 @@ export class CourseService {
 
         const imageUrl = `https://${env.S3_BUCKET_NAME}.t3.storageapi.dev/${data.fileKey}`;
 
-        console.log('CourseService.create called with:', JSON.stringify(data, null, 2));
+        // Course creation data log karo / Log course creation data
+        logger.debug('CourseService.create called with:', JSON.stringify(data, null, 2));
 
         let stripeProductId: string;
         let stripePriceId: string;
 
         if (data.price === 0) {
-            console.log('Creating FREE course. Generating dummy IDs.');
+            // Free course mate dummy Stripe IDs generate karo
+            // Generate dummy Stripe IDs for free course
+            logger.debug('Creating FREE course. Generating dummy IDs.');
             const dummyId = new mongoose.Types.ObjectId().toString();
             stripeProductId = `free_prod_${dummyId}`;
             stripePriceId = `free_price_${dummyId}`;
-            console.log('Generated IDs:', { stripeProductId, stripePriceId });
+            logger.debug('Generated IDs:', { stripeProductId, stripePriceId });
         } else {
-            console.log('Creating PAID course. Calling Stripe.');
+            // Paid course mate Stripe product/price create karo
+            // Create Stripe product/price for paid course
+            logger.debug('Creating PAID course. Calling Stripe.');
 
             const { StripeService } = await import('./stripe.service');
             const plainDescription = CourseService.getTextFromDescription(data.description);
@@ -374,6 +401,8 @@ export class CourseService {
         return true;
     }
 
+    // Course search karo title, description, ke smallDescription ma
+    // Search courses by title, description, or smallDescription
     static async search(query: string, category?: string): Promise<ICourse[]> {
         const searchFilter: any = {
             status: 'PUBLISHED',
@@ -447,6 +476,8 @@ export class CourseService {
         return Course.findByIdAndUpdate(courseId, { status }, { new: true });
     }
 
+    // Rich text description ma thi plain text extract karo (Stripe mate)
+    // Extract plain text from rich text description (for Stripe)
     private static getTextFromDescription(desc: string): string {
         try {
             if (desc && desc.trim().startsWith('{') && desc.includes('"type":"doc"')) {

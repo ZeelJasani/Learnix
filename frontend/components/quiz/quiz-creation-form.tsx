@@ -10,13 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QuestionBuilder } from "./question-builder";
-import { QuizAPI, Question } from "@/lib/quiz-api";
+import { QuizAPI, Question, Quiz } from "@/lib/quiz-api";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 interface QuizCreationFormProps {
     courseId: string;
-    initialData?: any;
+    initialData?: Partial<Quiz>;
     isEdit?: boolean;
 }
 
@@ -29,17 +29,28 @@ export function QuizCreationForm({
     const { getToken } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        title: string;
+        description: string;
+        passingScore: number;
+        timeLimit: number | null;
+        allowedAttempts: number;
+        shuffleQuestions: boolean;
+        showCorrectAnswers: boolean;
+        isPublished: boolean;
+        startDate: string | null;
+        dueDate: string | null;
+    }>({
         title: initialData?.title || "",
         description: initialData?.description || "",
         passingScore: initialData?.passingScore || 70,
         timeLimit: initialData?.timeLimit || null,
         allowedAttempts: initialData?.allowedAttempts || 0,
         shuffleQuestions: initialData?.shuffleQuestions || false,
-        showCorrectAnswers: initialData?.showCorrectAnswers || true,
+        showCorrectAnswers: initialData?.showCorrectAnswers ?? true,
         isPublished: initialData?.isPublished || false,
-        startDate: initialData?.startDate || null,
-        dueDate: initialData?.dueDate || null,
+        startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().slice(0, 16) : null,
+        dueDate: initialData?.dueDate ? new Date(initialData.dueDate).toISOString().slice(0, 16) : null,
     });
 
     const [questions, setQuestions] = useState<Question[]>(
@@ -88,6 +99,8 @@ export function QuizCreationForm({
 
             const quizData = {
                 ...formData,
+                startDate: formData.startDate ? new Date(formData.startDate) : null,
+                dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
                 courseId,
                 questions,
             };

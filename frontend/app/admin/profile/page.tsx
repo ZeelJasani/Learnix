@@ -1,3 +1,17 @@
+/**
+ * Admin Profile Page — Admin user ni profile ane statistics page
+ * Admin Profile Page — Admin user profile and statistics page
+ *
+ * Aa server component chhe je admin user ni profile information ane platform stats display kare chhe
+ * This is a server component that displays admin user profile information and platform stats
+ *
+ * Features:
+ * - requireAdmin() — Admin role verification (non-admin ne redirect kare chhe)
+ *   requireAdmin() — Admin role verification (redirects non-admin users)
+ * - Profile card — Avatar, name, email, "Administrator" badge, Clerk profile link
+ * - Stats grid — Total Courses, Students, Lessons, Member Since
+ * - Account details — Name, email, role, email verified status
+ */
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import { adminGetDashboardStats } from "@/app/data/admin/admin-get-dashboard-state";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

@@ -1,3 +1,5 @@
+// Aa file current user na enrolled courses list fetch karva mate API route provide kare chhe
+// This file provides an API route to fetch the current user's enrolled courses list
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 

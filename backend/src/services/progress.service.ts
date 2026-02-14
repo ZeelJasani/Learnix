@@ -1,3 +1,20 @@
+/**
+ * Progress Service / Progress Service
+ *
+ * Aa service user ni lesson ane course progress tracking handle kare chhe.
+ * This service handles user lesson and course progress tracking.
+ *
+ * Features / Features:
+ * - Lesson complete/incomplete mark karvo (upsert)
+ * - Course-level progress percentage calculate karvo
+ * - Chapter-wise progress breakdown
+ * - Course progress reset karvo
+ * - Slug ane ID banne sathe course resolve thay chhe
+ *
+ * Enrollment Verification / Enrollment Verification:
+ * - Progress mark karta pahela enrollment check thay chhe
+ * - Progress is only tracked for enrolled users
+ */
 import mongoose from 'mongoose';
 import { LessonProgress, ILessonProgress } from '../models/LessonProgress';
 import { Lesson } from '../models/Lesson';
@@ -7,7 +24,8 @@ import { ApiError } from '../utils/apiError';
 
 export class ProgressService {
     /**
-     * Mark lesson as complete/incomplete
+     * Lesson ne complete ke incomplete mark karo (enrollment verify pachhi)
+     * Mark lesson as complete/incomplete (after verifying enrollment)
      */
     static async markLessonComplete(
         userId: string,
@@ -53,7 +71,7 @@ export class ProgressService {
     }
 
     /**
-     * Get progress for a specific lesson
+     * Specific lesson ni progress shodhvo / Get progress for a specific lesson
      */
     static async getLessonProgress(userId: string, lessonId: string): Promise<ILessonProgress | null> {
         return LessonProgress.findOne({
@@ -63,7 +81,8 @@ export class ProgressService {
     }
 
     /**
-     * Get course progress for a user
+     * User ni course progress chapter-wise breakdown sathe return karo
+     * Get course progress for a user with chapter-wise breakdown
      */
     static async getCourseProgress(
         userId: string,
@@ -151,7 +170,8 @@ export class ProgressService {
     }
 
     /**
-     * Reset course progress for a user
+     * User ni course progress reset karo (badhi lesson progress delete thay)
+     * Reset course progress for a user (deletes all lesson progress)
      */
     static async resetCourseProgress(userId: string, courseIdOrSlug: string): Promise<number> {
         let courseId = courseIdOrSlug;

@@ -1,3 +1,20 @@
+/**
+ * RoleSelect Component — User role change mate inline dropdown select
+ * RoleSelect Component — Inline dropdown select for user role change
+ *
+ * Aa client component chhe je admin/mentors table ma inline role change provide kare chhe
+ * This is a client component that provides inline role change in admin/mentors table
+ *
+ * Features:
+ * - Select dropdown — user / mentor / admin options
+ * - Color-coded trigger — Role-wise color (red=admin, blue=mentor, slate=user)
+ * - updateUserRole() server action — Backend ma role update kare chhe
+ *   updateUserRole() server action — Updates role in the backend
+ * - Optimistic update — UI ne turant update kare, error par rollback
+ *   Optimistic update — Updates UI immediately, rolls back on error
+ * - Loading state — Select disabled while request pending
+ * - Toast notifications — Success/error messages via sonner
+ */
 "use client";
 
 import {
@@ -30,11 +47,13 @@ export function RoleSelect({ userId, currentRole }: RoleSelectProps) {
                 toast.success("User role updated successfully");
             } else {
                 setRole(role);
-                toast.error("Failed to update role");
+                console.error("Role update failed:", result.message);
+                toast.error(result.message || "Failed to update role");
             }
         } catch (error) {
             setRole(role);
-            toast.error("An error occurred");
+            console.error("Role update error:", error);
+            toast.error("An error occurred while updating role");
         } finally {
             setIsLoading(false);
         }

@@ -1,3 +1,5 @@
+// Aa component course content sidebar render kare chhe (expandable chapters ane lessons sathe)
+// This component renders the course content sidebar with expandable chapter groups and lesson links
 "use client"
 
 import * as React from "react"
@@ -22,10 +24,9 @@ interface CourseSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 const DEFAULT_VISIBLE = 3
 
-function ChapterGroup({ chapter, courseSlug, index }: {
+function ChapterGroup({ chapter, courseSlug }: {
     chapter: SidebarCourse["chapter"][number];
     courseSlug: string;
-    index: number;
 }) {
     const [open, setOpen] = useState(false)
     const [showAll, setShowAll] = useState(false)
@@ -105,12 +106,21 @@ export function CourseSidebar({ course, ...props }: CourseSidebarProps) {
             </SidebarHeader>
 
             <SidebarContent className="pt-3 gap-1">
+                <div className="px-3 mb-2">
+                    <Link
+                        href={`/dashboard/${course.slug}`}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors font-medium"
+                    >
+                        <GalleryVerticalEnd className="size-4" />
+                        <span className="text-sm">Course Overview</span>
+                    </Link>
+                </div>
+
                 {course.chapter.map((chapter, index) => (
                     <ChapterGroup
                         key={chapter.id}
                         chapter={chapter}
                         courseSlug={course.slug}
-                        index={index}
                     />
                 ))}
             </SidebarContent>

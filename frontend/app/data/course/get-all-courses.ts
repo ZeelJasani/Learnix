@@ -1,3 +1,5 @@
+// Aa file public courses page mate badha published courses ni list fetch kare chhe
+// This file fetches all published courses for the public course catalog page
 import "server-only";
 
 import { api } from "@/lib/api-client";

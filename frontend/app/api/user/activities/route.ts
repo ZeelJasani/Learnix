@@ -1,3 +1,5 @@
+// Aa file user ni enrolled courses ni activities fetch ane complete mark karva mate API routes provide kare chhe
+// This file provides API routes for user activities (GET enrolled course activities, POST mark as completed)
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
