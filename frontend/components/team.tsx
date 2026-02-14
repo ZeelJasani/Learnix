@@ -1,6 +1,9 @@
+// Aa component team section render kare chhe (Leadership, Engineering, Mentors groups sathe)
+// This component renders the team section with member cards grouped by Leadership, Engineering, and Mentors
 import { TwitterVerifiedBadge } from "@/components/ui/TwitterVerifiedBadge";
-import { AvatarCircles } from "@/components/ui/avatar-circles";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
+
+
 
 interface Member {
     name: string;
@@ -84,14 +87,14 @@ const TeamCard = ({ member }: { member: Member }) => (
             {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-40" /> */}
 
             <div className="relative rounded-full p-1 transition-transform duration-300 group-hover:scale-105">
-                <img
-                    className="h-20 w-20 rounded-full object-cover border-2 border-border/50 group-hover:border-foreground/50 transition-colors"
-                    src={member.avatar}
-                    alt={member.name}
-                    height="80"
-                    width="80"
-                    loading="lazy"
-                />
+                <div className="h-20 w-20 relative rounded-full overflow-hidden border-2 border-border/50 group-hover:border-foreground/50 transition-colors">
+                    <Image
+                        src={member.avatar}
+                        alt={member.name}
+                        fill
+                        className="object-cover"
+                    />
+                </div>
             </div>
         </div>
 

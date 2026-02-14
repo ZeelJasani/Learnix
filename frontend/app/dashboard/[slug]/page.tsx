@@ -1,3 +1,15 @@
+/**
+ * Course Dashboard Page — Selected course nu overview/dashboard display kare chhe
+ * Course Dashboard Page — Displays selected course overview/dashboard
+ *
+ * Aa server component chhe je slug thi course data fetch kari ne CourseDashboardClient render kare chhe
+ * This server component fetches course data by slug and renders CourseDashboardClient
+ *
+ * Features:
+ * - getCourseSidebarData(slug) — Course + chapters + lessons + progress data fetch
+ * - CourseDashboardClient — Tabbed interface (Overview, Lessons, Live, Quizzes, Progress)
+ * - "Course not found" fallback — Centered error message with description
+ */
 import { getCourseSidebarData } from "@/app/data/course/get-course-sidebar-data";
 import { CourseDashboardClient } from "./_components/CourseDashboardClient";
 

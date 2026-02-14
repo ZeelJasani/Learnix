@@ -61,6 +61,7 @@ export function FreeEnrollModal({ courseId, courseTitle, courseSlug, children }:
                 toast.error(response.message || "Failed to enroll");
             }
         } catch (error) {
+            console.error("Enrollment error:", error);
             toast.error("Something went wrong");
         } finally {
             setIsLoading(false);

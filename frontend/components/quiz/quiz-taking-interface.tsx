@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -33,8 +33,10 @@ export function QuizTakingInterface({ quiz, courseSlug }: QuizTakingInterfacePro
     const router = useRouter();
     const { getToken } = useAuth();
 
+    type AnswerValue = string | boolean | string[];
+
     const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
-    const [answers, setAnswers] = useState<Record<string, any>>({});
+    const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
@@ -72,7 +74,7 @@ export function QuizTakingInterface({ quiz, courseSlug }: QuizTakingInterfacePro
         }
     };
 
-    const handleAnswer = (questionId: string, answer: any) => {
+    const handleAnswer = (questionId: string, answer: AnswerValue) => {
         setAnswers((prev) => ({
             ...prev,
             [questionId]: answer,
@@ -216,7 +218,7 @@ export function QuizTakingInterface({ quiz, courseSlug }: QuizTakingInterfacePro
                     {/* Multiple Choice */}
                     {currentQuestion.type === "multiple_choice" && currentQuestion.options && (
                         <RadioGroup
-                            value={answers[currentQuestion._id!] || ""}
+                            value={(answers[currentQuestion._id!] as string) || ""}
                             onValueChange={(value) => handleAnswer(currentQuestion._id!, value)}
                         >
                             {currentQuestion.options.map((option, index) => (
@@ -250,7 +252,7 @@ export function QuizTakingInterface({ quiz, courseSlug }: QuizTakingInterfacePro
                     {/* Fill in the Blank */}
                     {currentQuestion.type === "fill_blank" && (
                         <Input
-                            value={answers[currentQuestion._id!] || ""}
+                            value={(answers[currentQuestion._id!] as string) || ""}
                             onChange={(e) => handleAnswer(currentQuestion._id!, e.target.value)}
                             placeholder="Enter your answer..."
                         />
@@ -259,7 +261,7 @@ export function QuizTakingInterface({ quiz, courseSlug }: QuizTakingInterfacePro
                     {/* One Choice Answer */}
                     {currentQuestion.type === "one_choice_answer" && currentQuestion.options && (
                         <RadioGroup
-                            value={answers[currentQuestion._id!] || ""}
+                            value={(answers[currentQuestion._id!] as string) || ""}
                             onValueChange={(value) => handleAnswer(currentQuestion._id!, value)}
                         >
                             {currentQuestion.options.map((option, index) => (

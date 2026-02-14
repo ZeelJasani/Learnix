@@ -1,9 +1,12 @@
+// Aa file navo course create karva mate server action provide kare chhe (Arcjet bot/rate-limit + Zod validation sathe)
+// This file provides a server action for creating new courses with Arcjet bot/rate-limit protection and Zod validation
 "use server";
 
 import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
-import { api, getAuthToken } from "@/lib/api-client";
-import { stripe } from "@/lib/stripe";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
+
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";

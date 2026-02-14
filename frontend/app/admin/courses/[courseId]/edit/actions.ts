@@ -1,9 +1,12 @@
+// Aa file admin course edit mate server actions provide kare chhe (course update, chapter/lesson CRUD, reorder — Arcjet + Zod sathe)
+// This file provides server actions for admin course editing: update course, create/delete/reorder chapters & lessons with Arcjet and Zod
 "use server";
 
 import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import { ApiResponse } from "@/lib/types";
 import { ChapterSchemaType, CourseSchemaType, chapterSchema, courseSchema, lessonSchema } from "@/lib/zodSchemas";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";

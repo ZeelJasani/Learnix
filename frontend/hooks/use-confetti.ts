@@ -1,14 +1,29 @@
+// ============================================================================
+// Learnix LMS - Confetti Hook (કોન્ફેટી હુક)
+// ============================================================================
+// Aa hook celebration confetti animation trigger kare chhe.
+// This hook triggers celebration confetti animation.
+//
+// Course complete, quiz pass, achievement unlock jeva events mate use thay chhe.
+// Used for events like course completion, quiz pass, achievement unlock.
+// ============================================================================
+
 "use client";
 
 import confetti from 'canvas-confetti'
 
+// Confetti hook - celebration animation mate / Confetti hook - for celebration animation
 export const useConfetti = () => {
+    // Confetti trigger karo alag alag particle patterns sathe
+    // Trigger confetti with different particle patterns
     const triggerConfetti = () => {
         const count = 200;
         const defaults = {
             origin: { y: 0.7 }
         };
 
+        // Particle burst fire karo custom settings sathe
+        // Fire particle burst with custom settings
         function fire(particleRatio: number, opts: Record<string, unknown>) {
             confetti({
                 ...defaults,
@@ -17,6 +32,8 @@ export const useConfetti = () => {
             });
         }
 
+        // Multiple bursts alag alag spread ane velocity sathe
+        // Multiple bursts with different spread and velocity
         fire(0.25, {
             spread: 26,
             startVelocity: 55,

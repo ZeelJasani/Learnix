@@ -1,8 +1,27 @@
+/**
+ * CreateCourseClient2 Component — Course creation form nu client-side implementation
+ * CreateCourseClient2 Component — Client-side implementation of course creation form
+ *
+ * Aa client component chhe je admin/mentor mate full course creation form provide kare chhe
+ * This is a client component that provides a full course creation form for admin/mentor
+ *
+ * Features:
+ * - react-hook-form + Zod validation — courseSchema based form validation
+ * - Form fields — Title, Slug (auto-generate), Small Description, Description (RichTextEditor),
+ *   Thumbnail (Uploader), Category, Level, Duration, Price, Status
+ * - slugify() — Title thi automatic slug generate kare chhe
+ *   slugify() — Generates automatic slug from title
+ * - CreateCourse server action — Arcjet protected course creation
+ * - useConfetti — Success par confetti animation trigger kare chhe
+ *   useConfetti — Triggers confetti animation on success
+ * - useTransition — Non-blocking form submission with loading state
+ * - basePath prop — Admin/Mentor path support ("/admin/courses" default)
+ */
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { courseCategories, courseLevels, courseSchema, CourseSchemaType, courseStatus } from "@/lib/zodSchemas";
+import { courseCategories, courseLevels, courseSchema, courseStatus } from "@/lib/zodSchemas";
 import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";

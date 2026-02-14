@@ -1,3 +1,17 @@
+/**
+ * Dashboard Home Page — Student na enrolled courses nu grid display
+ * Dashboard Home Page — Grid display of student's enrolled courses
+ *
+ * Aa server component chhe je student na enrolled courses fetch kari ne CourseProgressCard grid ma display kare chhe
+ * This server component fetches student's enrolled courses and displays them in CourseProgressCard grid
+ *
+ * Features:
+ * - getEnrolledCourses() — Server-side enrolled courses data fetch
+ * - Responsive grid — 1/2/3 columns (mobile/md/xl breakpoints)
+ * - EmptyState — "No courses purchased" fallback with "Browse Courses" link
+ * - CourseProgressCard — Progress bar sathe course cards
+ *   CourseProgressCard — Course cards with progress bar
+ */
 import { getEnrolledCourses } from "../../data/user/get-enrolled-courses";
 import { EmptyState } from "@/components/general/EmptyState";
 import { CourseProgressCard } from "../_components/CourseProgressCard";

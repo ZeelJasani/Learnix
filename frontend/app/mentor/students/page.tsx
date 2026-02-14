@@ -1,4 +1,5 @@
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { requireUser } from "@/app/data/user/require-user";
 
 export const dynamic = 'force-dynamic';
@@ -32,7 +33,7 @@ interface Student {
 }
 
 export default async function MentorStudentsPage() {
-    const userData = await requireUser();
+    await requireUser();
     const token = await getAuthToken();
 
     // Handle both direct user object and wrapped {synced, user} structure

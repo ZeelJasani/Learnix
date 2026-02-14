@@ -1,3 +1,5 @@
+// Aa component blue verified tick badge SVG render kare chhe (team member cards mate)
+// This component renders a blue verified tick badge SVG icon
 const VerifiedTick = () => (
     <span className="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full bg-[#1DA1F2]">
         <svg

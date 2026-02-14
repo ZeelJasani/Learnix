@@ -1,3 +1,19 @@
+/**
+ * Admin Lessons Page — Badha lessons nu course/chapter wise grouped view
+ * Admin Lessons Page — All lessons grouped by course/chapter view
+ *
+ * Aa server component chhe je badha courses, chapters, ane lessons hierarchically display kare chhe
+ * This is a server component that displays all courses, chapters, and lessons hierarchically
+ *
+ * Features:
+ * - force-dynamic — Har request par fresh data fetch kare chhe
+ *   force-dynamic — Fetches fresh data on every request
+ * - Course cards — Title, status badge, mentor info with avatar
+ * - Chapter sections — LayoutList icon sathe chapter title
+ *   Chapter sections — Chapter title with LayoutList icon
+ * - Lesson items — Type badge (VIDEO), duration, free/locked status badge
+ * - Empty states — "No courses found" / "No chapters" / "No lessons" messages
+ */
 import { adminGetCoursesWithContent } from "@/app/data/admin/admin-get-lessons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

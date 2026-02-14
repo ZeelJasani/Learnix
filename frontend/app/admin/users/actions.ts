@@ -1,3 +1,5 @@
+// Aa file Clerk thi database ma users sync karva mate admin server action provide kare chhe
+// This file provides an admin server action to sync users from Clerk to the database
 "use server";
 
 import { requireAdmin } from "@/app/data/admin/require-admin";

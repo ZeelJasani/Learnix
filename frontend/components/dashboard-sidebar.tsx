@@ -1,5 +1,7 @@
+// Aa component student dashboard mate sidebar render kare chhe (Dashboard, Courses, My Learning)
+// This component renders the student dashboard sidebar with navigation links and user footer
 import * as React from "react"
-import { GalleryVerticalEnd, LayoutDashboard, Compass, BookOpen, User } from "lucide-react"
+import { GalleryVerticalEnd, LayoutDashboard, Compass, BookOpen } from "lucide-react"
 
 import { SearchForm } from "@/components/search-form"
 import {

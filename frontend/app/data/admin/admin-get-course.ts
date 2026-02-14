@@ -1,6 +1,9 @@
+// Aa file admin panel mate ek course ni full details (chapters/lessons sathe) fetch kare chhe
+// This file fetches a single course with full chapter/lesson structure for admin editing
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { notFound } from "next/navigation";
 
 export interface AdminLesson {

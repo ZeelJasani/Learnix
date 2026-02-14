@@ -1,3 +1,22 @@
+/**
+ * CourseLessons Component — Course lessons ni searchable ane collapsible chapter-wise list
+ * CourseLessons Component — Searchable and collapsible chapter-wise list of course lessons
+ *
+ * Aa client component chhe je student ne course na lessons browse karva ane access karva de chhe
+ * This is a client component that allows students to browse and access course lessons
+ *
+ * Features:
+ * - Search filter — Lesson title/description search with Search icon input
+ * - Collapsible chapters — ChevronDown/Right toggle per chapter (all open by default)
+ * - Chapter progress — Per-chapter completion count ane Progress bar
+ *   Chapter progress — Per-chapter completion count and Progress bar
+ * - Lesson completion status — CheckCircle2 (completed) vs Circle (pending) icons
+ * - "Completed" badge — Lesson complete hoy tyare badge display thay chhe
+ *   "Completed" badge — Badge displayed when lesson is complete
+ * - Lesson links — /dashboard/{slug}/{lessonId} par navigate kare chhe
+ *   Lesson links — Navigates to /dashboard/{slug}/{lessonId}
+ * - Summary card — Total lessons count at bottom
+ */
 "use client";
 
 import { useState } from "react";

@@ -1,6 +1,8 @@
-// app/data/course/get-course-sidebar-data.ts
+// Aa file course sidebar mate chapters, lessons, ane user progress data fetch kare chhe
+// This file fetches course sidebar navigation data with chapters, lessons, and user progress
 import "server-only";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { notFound } from "next/navigation";
 
 export interface SidebarLesson {

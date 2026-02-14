@@ -1,3 +1,23 @@
+/**
+ * UserDropdown Component — Authenticated user nu avatar dropdown menu
+ * UserDropdown Component — Avatar dropdown menu for authenticated users
+ *
+ * Aa client component chhe je signed-in users mate profile dropdown batave chhe
+ * This is a client component that shows profile dropdown for signed-in users
+ *
+ * Features:
+ * - User avatar — Clerk se image URL, fallback initials
+ * - User info — Name ane email display kare chhe
+ *   User info — Displays name and email
+ * - Navigation links:
+ *   - Dashboard — /dashboard page
+ *   - Admin Dashboard — Only if isAdmin (useUserRole hook)
+ *   - Profile — /profile page
+ * - Sign out — Clerk signOut() call karya pachhi home page par redirect
+ *   Sign out — Redirects to home page after Clerk signOut() call
+ * - Accessible — Focus ring ane keyboard navigation support
+ *   Accessible — Focus ring and keyboard navigation support
+ */
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
@@ -12,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User, Settings, LayoutDashboard, Shield } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Shield } from "lucide-react";
 import Link from "next/link";
 import { useUserRole } from "@/hooks/use-user-role";
 

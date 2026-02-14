@@ -1,3 +1,5 @@
+// Aa component platform ni key features display kare chhe (Courses, Analytics, Community)
+// This component displays the key platform features section with icon cards
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { BookOpen, BarChart3, Users } from 'lucide-react'
 import { ReactNode } from 'react'

@@ -1,3 +1,5 @@
+// Aa component site footer render kare chhe (navigation links ane copyright sathe)
+// This component renders the site footer with navigation links and copyright notice
 import Link from 'next/link'
 
 const links = [

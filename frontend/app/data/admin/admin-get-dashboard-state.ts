@@ -1,6 +1,9 @@
+// Aa file admin dashboard mate statistics (signups, courses, users, etc.) fetch kare chhe
+// This file fetches admin dashboard statistics with optional month/year filtering
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 type DashboardStats = {
   totalSignups: number;

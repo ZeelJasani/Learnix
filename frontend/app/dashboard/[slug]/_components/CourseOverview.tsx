@@ -1,3 +1,24 @@
+/**
+ * CourseOverview Component — Course dashboard nu "Overview" tab with progress ane stats
+ * CourseOverview Component — Course dashboard "Overview" tab with progress and stats
+ *
+ * Aa client component chhe je course nu high-level overview display kare chhe
+ * This is a client component that displays a high-level overview of the course
+ *
+ * Sections:
+ * 1. Course Header — Title + category/level/duration badges
+ * 2. Progress Card — Overall completion percentage + lessons/chapters stats
+ * 3. Continue Learning — Next incomplete lesson with "Continue Learning" button
+ * 4. Quick Stats — Total Lessons, Completed, Progress percentage (3-col grid)
+ * 5. Course Structure — Chapter-wise progress bars with completion counts
+ *
+ * Features:
+ * - Auto-detect next lesson — First incomplete lesson automatically find kare chhe
+ *   Auto-detect next lesson — Automatically finds first incomplete lesson
+ * - Gradient card — "Continue Learning" card with primary color gradient background
+ * - All complete fallback — All lessons complete hoy to first lesson "Review" mate display thay
+ *   All complete fallback — When all lessons complete, shows first lesson for "Review"
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

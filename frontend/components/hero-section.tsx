@@ -1,3 +1,5 @@
+// Aa component landing page nu hero section render kare chhe (animated text ane CTA buttons sathe)
+// This component renders the landing page hero section with animated text effects and call-to-action buttons
 import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'

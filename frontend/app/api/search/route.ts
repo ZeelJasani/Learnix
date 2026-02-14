@@ -1,3 +1,5 @@
+// Aa file course search mate API route provide kare chhe (query parameter dwara backend search call kare chhe)
+// This file provides an API route for course search, proxying search queries to the backend
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';

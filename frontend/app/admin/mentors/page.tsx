@@ -1,3 +1,16 @@
+/**
+ * Admin Mentors Page — Platform na mentors ni management page
+ * Admin Mentors Page — Mentor management page for the platform
+ *
+ * Aa server component chhe je badha mentors ne table format ma display kare chhe
+ * This is a server component that displays all mentors in table format
+ *
+ * Features:
+ * - force-dynamic — Fresh data on every request
+ * - Table columns — Avatar, Name, Email, Courses count, Students count, Role, Joined date
+ * - RoleSelect component — Inline role change dropdown (mentor → admin/user)
+ * - Empty state — "No mentors found" message
+ */
 import { adminGetMentors } from "@/app/data/admin/admin-get-mentors";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RoleSelect } from "../users/_components/RoleSelect";

@@ -120,6 +120,27 @@
 
 
 
+/**
+ * CourseContent Component — Lesson nu video player + description + "Mark as Complete" functionality
+ * CourseContent Component — Lesson video player + description + "Mark as Complete" functionality
+ *
+ * Aa client component chhe je individual lesson content display kare chhe with video ane progress tracking
+ * This is a client component that displays individual lesson content with video and progress tracking
+ *
+ * Features:
+ * - VideoPlayer — Video player with poster thumbnail (mp4/webm/ogg support)
+ *   BookIcon fallback — Video na hoy tyare "no video yet" placeholder display thay chhe
+ *   BookIcon fallback — Shows "no video yet" placeholder when video unavailable
+ * - Mark as Complete — markLessonComplete server action + confetti animation + toast feedback
+ * - Completed state — Green "Completed" button (disabled) jyare progress recorded hoy
+ *   Completed state — Green "Completed" button (disabled) when progress is recorded
+ * - RenderDescription — Rich text content rendered with Tiptap/ProseMirror
+ * - useConstructUrl — Cloudinary URLs construct kare chhe video/thumbnail keys thi
+ *   useConstructUrl — Constructs Cloudinary URLs from video/thumbnail keys
+ *
+ * Note: File ma top par commented-out legacy code chhe (lines 1-116), active code line 122+ thi start thay chhe
+ * Note: File contains commented-out legacy code at top (lines 1-116), active code starts from line 122+
+ */
 "use client";
 
 import { LessonContentType } from "@/app/data/course/get-lesson-content";

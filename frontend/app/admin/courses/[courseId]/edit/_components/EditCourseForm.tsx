@@ -1,3 +1,22 @@
+/**
+ * EditCourseForm Component — Existing course nu basic info edit karva mate form
+ * EditCourseForm Component — Form for editing existing course basic info
+ *
+ * Aa client component chhe je course ni basic information update karva mate react-hook-form based form provide kare chhe
+ * This is a client component that provides a react-hook-form based form for updating course basic information
+ *
+ * Features:
+ * - react-hook-form + Zod validation — courseSchema based validation
+ * - Pre-filled form — Existing course data thi form pre-populate thay chhe
+ *   Pre-filled form — Form pre-populates with existing course data
+ * - Form fields — Title, Slug (auto-generate), Small Description, Description (RichTextEditor),
+ *   Thumbnail (Uploader), Category, Level, Duration, Price, Status
+ * - editCourse server action — Arcjet-protected course update
+ * - slugify() — Title thi automatic slug generate kare chhe
+ *   slugify() — Generates automatic slug from title
+ * - Toast feedback + redirect — Success par /admin/courses par navigate kare chhe
+ *   Toast feedback + redirect — Navigates to /admin/courses on success
+ */
 "use client";
 
 import { Uploader } from "@/components/file-uploader/Uploader";

@@ -1,3 +1,20 @@
+/**
+ * CourseActivities Component — Course-specific activities ane quizzes management tab
+ * CourseActivities Component — Course-specific activities and quizzes management tab
+ *
+ * Aa client component chhe je edit page na "Activities" tab ma activities + quizzes manage kare chhe
+ * This is a client component that manages activities + quizzes in the edit page "Activities" tab
+ *
+ * Features:
+ * - Activities CRUD — CreateActivityDialog + ActivityListItem (fetch/create/delete)
+ * - Quizzes display — QuizListItem component used for quiz items (edit/delete)
+ * - AlertDialog — Delete confirmation popup for both activities ane quizzes
+ *   AlertDialog — Delete confirmation popup for both activities and quizzes
+ * - Parallel data fetching — /api/admin/activities + backend quizzes API
+ * - _id → id mapping — Backend response normalization for quizzes
+ * - Empty state — "No content yet" with BookOpen icon
+ * - Loading state — "Loading content..." text display
+ */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -63,7 +80,6 @@ export function CourseActivities({ data }: { data: Course }) {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            console.log("Fetching activities and quizzes...");
 
             // Fetch activities
             const activitiesRes = await fetch(`/api/admin/activities?courseId=${data.id}`);
@@ -76,7 +92,8 @@ export function CourseActivities({ data }: { data: Course }) {
 
             // Fetch quizzes - direct backend call
             const quizzesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quizzes/course/${data.id}`);
-            let quizzesData = { data: [] }; // Default structure
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let quizzesData: { data: any[] } = { data: [] }; // Default structure
 
             if (quizzesRes.ok) {
                 const rawData = await quizzesRes.json();
@@ -88,16 +105,14 @@ export function CourseActivities({ data }: { data: Course }) {
                 } else if (rawData.quizzes && Array.isArray(rawData.quizzes)) {
                     quizzesData = { data: rawData.quizzes };
                 } else {
-                    // Fallback if data is directly the object but not array (unlikely for list)
-                    console.warn("Unexpected quiz data structure:", rawData);
+                    // Unexpected structure — fallback to empty
+                    // Unexpected structure hoy to empty array use karo
                     quizzesData = { data: [] };
                 }
             } else {
                 console.error("Failed to fetch quizzes:", quizzesRes.status);
             }
 
-            console.log("Parsed Activities:", activitiesData);
-            console.log("Parsed Quizzes:", quizzesData);
 
             setActivities(activitiesData.activities || []);
             // Map _id to id if necessary and ensure array

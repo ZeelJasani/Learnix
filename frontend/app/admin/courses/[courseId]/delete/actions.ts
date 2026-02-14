@@ -1,8 +1,11 @@
+// Aa file admin course delete mate server action provide kare chhe (Arcjet bot detection + rate limiting sathe)
+// This file provides a server action for deleting admin courses with Arcjet bot detection and rate limiting
 "use server";
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { ApiResponse } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { request } from "@arcjet/next";

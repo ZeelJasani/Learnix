@@ -1,3 +1,5 @@
+// Aa file Learnix logo na different variants export kare chhe (Logo, LogoIcon, LogoStroke)
+// This file exports Learnix logo variants in different sizes for use across the app
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 

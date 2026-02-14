@@ -1,3 +1,16 @@
+/**
+ * Courses Layout — Course browsing pages nu sidebar layout
+ * Courses Layout — Sidebar layout for course browsing pages
+ *
+ * Aa layout sidebar + header + breadcrumb structure provide kare chhe courses section mate
+ * This layout provides sidebar + header + breadcrumb structure for the courses section
+ *
+ * Components:
+ * - DashboardSidebar — Navigation sidebar with collapsible support
+ * - SidebarTrigger — Mobile/desktop sidebar toggle button
+ * - Breadcrumb — "Browse Courses" breadcrumb navigation
+ * - SidebarInset — Main content area with header and children rendering
+ */
 import { ReactNode } from "react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import {
@@ -11,7 +24,6 @@ import {
     BreadcrumbItem,
     BreadcrumbList,
     BreadcrumbPage,
-    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
 export default function CoursesLayout({ children }: { children: ReactNode }) {

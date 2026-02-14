@@ -1,5 +1,8 @@
+// Aa file logged-in user na enrolled courses ane lesson-level progress data fetch kare chhe
+// This file fetches the current user's enrolled courses with lesson-level progress tracking
 import "server-only";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 export interface LessonProgress {
     id: string;

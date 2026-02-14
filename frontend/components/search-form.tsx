@@ -1,3 +1,5 @@
+// Aa component sidebar ni search form render kare chhe (search icon sathe)
+// This component renders the sidebar search form with an accessible search input
 import { Search } from "lucide-react"
 
 import { Label } from "@/components/ui/label"

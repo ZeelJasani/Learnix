@@ -77,7 +77,7 @@ const TestimonialAvatarImg = React.forwardRef<
     HTMLDivElement,
     TestimonialAvatarImgProps
 >(({ src, alt = "Avatar", className, ...props }, ref) => (
-    <Avatar ref={ref} className={cn("size-10", className)}>
+    <Avatar ref={ref} className={cn("size-10", className)} {...props}>
         <AvatarImage src={src} alt={alt} loading="lazy" />
         <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
             {alt?.[0]?.toUpperCase() || "?"}

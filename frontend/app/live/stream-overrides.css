@@ -1,0 +1,52 @@
+/* Stream Video SDK UI tweaks to better match Learnix */
+.str-video__call-stats {
+  max-width: 500px;
+  position: relative;
+}
+
+.str-video__speaker-layout__wrapper {
+  max-height: 700px;
+}
+
+.str-video__participant-details,
+.str-video__menu-container,
+.str-video__notification {
+  color: var(--foreground);
+}
+
+.str-video__participant-list {
+  background-color: var(--card);
+  padding: 10px;
+  border-radius: 12px;
+  color: var(--foreground);
+  height: 100%;
+  border: 1px solid var(--border);
+}
+
+.str-video__call-controls__button {
+  height: 40px;
+}
+
+.live-glass {
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.show-block {
+  width: 100%;
+  max-width: 350px;
+  display: block;
+  animation: show 0.7s forwards linear;
+}
+
+@keyframes show {
+  0% {
+    animation-timing-function: ease-in;
+    width: 0%;
+  }
+  100% {
+    animation-timing-function: ease-in;
+    width: 100%;
+  }
+}

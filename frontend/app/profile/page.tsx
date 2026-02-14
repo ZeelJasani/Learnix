@@ -1,11 +1,12 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Calendar, Mail, Shield, GraduationCap, Award, Clock, FileText, Video, CheckCircle2, Circle } from "lucide-react";
+import { BookOpen, Shield, GraduationCap, Award, Clock, FileText, Video, CheckCircle2, Circle } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
@@ -321,12 +322,14 @@ export default function ProfilePage() {
                                                                 <div className="flex h-full">
                                                                     <div className="w-48 sm:w-56 bg-muted shrink-0 relative min-h-[140px]">
                                                                         {enrollment.Course?.fileKey ? (
-                                                                            <img
-                                                                                src={`https://utfs.io/f/${enrollment.Course.fileKey}`}
-                                                                                alt={enrollment.Course?.title}
-                                                                                className="absolute inset-0 h-full w-full object-cover"
-                                                                            />
-                                                                        ) : (
+                                                                            <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                                                                                <Image
+                                                                                    src={`https://utfs.io/f/${enrollment.Course.fileKey}`}
+                                                                                    alt={enrollment.Course.title}
+                                                                                    fill
+                                                                                    className="object-cover"
+                                                                                />
+                                                                            </div>) : (
                                                                             <div className="h-full w-full flex items-center justify-center">
                                                                                 <BookOpen className="h-8 w-8 text-muted-foreground/50" />
                                                                             </div>

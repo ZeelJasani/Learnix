@@ -1,3 +1,15 @@
+/**
+ * About Page — Learnix vishe mahiti (About Learnix)
+ * About Page — Information about Learnix
+ *
+ * Aa page Learnix platform ni overview ane mission batave chhe
+ * This page shows the Learnix platform overview and mission
+ *
+ * - HeroHeader ane Footer sections include kare chhe — Consistent navigation
+ * - Platform description — Practical, project-based courses
+ * - Get Started CTA (commented out) — Future enhancement mate rakhyu chhe
+ *   Get Started CTA (commented out) — Kept for future enhancement
+ */
 import { HeroHeader } from "@/components/header";
 import FooterSection from "@/components/footer";
 
@@ -22,7 +34,7 @@ export default function AboutPage() {
                         </p>
 
                         <p>
-                            Whether you're starting your journey or advancing your career, Learnix
+                            Whether you&apos;re starting your journey or advancing your career, Learnix
                             provides the tools and community to help you grow.
                         </p>
                     </div>

@@ -1,3 +1,5 @@
+// Aa component general app sidebar render kare chhe (version switcher ane docs navigation sathe, sample data)
+// This component renders the general app sidebar with version switcher and documentation navigation (sample data)
 import * as React from "react"
 
 import { SearchForm } from "@/components/search-form"

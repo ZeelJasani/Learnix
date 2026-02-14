@@ -1,6 +1,9 @@
+// Aa file admin dashboard mate recently added courses (limit 2) fetch kare chhe
+// This file fetches the most recent courses (limit 2) for the admin dashboard overview
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 export interface RecentCourseType {
   id: string;

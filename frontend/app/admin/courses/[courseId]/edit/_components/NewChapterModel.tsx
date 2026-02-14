@@ -1,3 +1,19 @@
+/**
+ * NewChapterModel Component — Course ma navo chapter create karva mate dialog
+ * NewChapterModel Component — Dialog for creating new chapter in a course
+ *
+ * Aa component chhe je CourseStructure ma "New Chapter" button click par dialog open kare chhe
+ * This component opens a dialog when "New Chapter" button is clicked in CourseStructure
+ *
+ * Features:
+ * - react-hook-form + Zod validation — chapterSchema based form
+ * - createChapter server action — Backend API thi chapter create kare chhe
+ *   createChapter server action — Creates chapter via backend API
+ * - Dialog state management — Open/close with form reset on close
+ * - Loading state — Loader2 spinner while creating
+ * - tryCatch wrapper — Error handling for server action
+ * - Toast feedback — Success/error messages via sonner
+ */
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { chapterSchema, ChapterSchemaType } from "@/lib/zodSchemas";

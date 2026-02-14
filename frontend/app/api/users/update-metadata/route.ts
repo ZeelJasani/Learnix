@@ -1,3 +1,5 @@
+// Aa file Clerk user ni publicMetadata ma role update karva mate API route provide kare chhe
+// This file provides an API route to update a Clerk user's role in publicMetadata
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 

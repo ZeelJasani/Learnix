@@ -1,3 +1,19 @@
+/**
+ * Course Creation Page — Navu course create karva mate server-guarded page
+ * Course Creation Page — Server-guarded page for creating new courses
+ *
+ * Aa server component chhe je admin/mentor ne course creation form render kare chhe
+ * This is a server component that renders the course creation form for admin/mentor
+ *
+ * Features:
+ * - requireAdminOrMentor() — Server-side role guard (admin OR mentor only)
+ * - force-dynamic — Fresh rendering on every request
+ * - CreateCourseClient — Client component je actual form render kare chhe
+ *   CreateCourseClient — Client component that renders the actual form
+ *
+ * Note: File ma commented-out legacy form code chhe (original inline implementation)
+ * Note: File contains commented-out legacy form code (original inline implementation)
+ */
 import { requireAdminOrMentor } from "@/app/data/admin/require-admin";
 import CreateCourseClient from "./CreateCourseClient2";
 

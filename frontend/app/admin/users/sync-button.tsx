@@ -1,3 +1,17 @@
+/**
+ * SyncUsersButton Component — Clerk thi database ma users sync karva mate button
+ * SyncUsersButton Component — Button to sync users from Clerk to database
+ *
+ * Aa client component chhe je admin ne manually Clerk users database ma sync karva de chhe
+ * This is a client component that allows admin to manually sync Clerk users to database
+ *
+ * Features:
+ * - syncUsersFromClerk() server action call — Last 100 Clerk users sync kare chhe
+ *   syncUsersFromClerk() server action call — Syncs last 100 Clerk users
+ * - useTransition — Non-blocking async operation with loading state
+ * - Loading spinner — RefreshCw icon animate-spin while syncing
+ * - Toast feedback — Success (count) / error messages via sonner
+ */
 "use client";
 
 import { useTransition } from "react";

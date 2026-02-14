@@ -1,3 +1,5 @@
+// Aa component responsive header/navbar render kare chhe
+// This component renders the responsive header/navbar with role-based navigation (Admin, Mentor, User)
 'use client'
 import Link from 'next/link'
 import { Logo } from '@/components/logo'
@@ -41,7 +43,7 @@ export const HeroHeader = () => {
                                 <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
                             </button>
 
-                            <div className="hidden lg:block">
+                            <div className="hidden lg:block" suppressHydrationWarning>
                                 <ul className="flex gap-8 text-sm">
                                     {baseMenuItems.map((item, index) => (
                                         <li key={index}>

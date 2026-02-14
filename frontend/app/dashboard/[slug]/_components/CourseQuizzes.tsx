@@ -1,3 +1,21 @@
+/**
+ * CourseQuizzes Component — Course na quizzes ni list with stats ane attempt history
+ * CourseQuizzes Component — Course quizzes list with stats and attempt history
+ *
+ * Aa client component chhe je course na available quizzes display kare chhe with attempt tracking
+ * This is a client component that displays available course quizzes with attempt tracking
+ *
+ * Features:
+ * - Stats cards — Total Quizzes, Completed (attempted), Passed count (3-col grid)
+ * - Quiz cards — Title, description, question count, time limit, passing score
+ * - Attempt history — Latest score with pass/fail badge ane attempt count
+ *   Attempt history — Latest score with pass/fail badge and attempt count
+ * - Actions — Start Quiz (new), View Results + Retake (attempted)
+ * - API calls — /courses/{slug} (GET course ID) + /quizzes/course/{courseId} (GET quizzes)
+ * - Clerk auth — useAuth() thi Bearer token for authenticated quiz data
+ *   Clerk auth — Bearer token via useAuth() for authenticated quiz data
+ * - Empty state — "No Quizzes Available" with FileQuestion icon
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,9 +75,8 @@ export function CourseQuizzes({ slug }: CourseQuizzesProps) {
 
                 if (response.ok) {
                     const result = await response.json();
-                    console.log("Student quiz data:", result);
 
-                    // Handle response structure
+                    // Response structure handle karo / Handle response structure
                     let quizList = [];
                     if (result.success && Array.isArray(result.data)) {
                         quizList = result.data;

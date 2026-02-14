@@ -1,7 +1,10 @@
+// Aa file admin/mentor role authorization guard chhe (Clerk metadata + DB fallback sathe)
+// This file provides requireAdmin, requireAdminOrMentor, and isAdmin guards with Clerk metadata caching
 import "server-only";
 import { redirect } from "next/navigation";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { headers } from "next/headers";
 
 interface UserProfile {

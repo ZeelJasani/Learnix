@@ -1,3 +1,21 @@
+/**
+ * CourseProgressCard Component — Enrolled course ni progress card with thumbnail ane progress bar
+ * CourseProgressCard Component — Enrolled course progress card with thumbnail and progress bar
+ *
+ * Aa client component chhe je dashboard page par enrolled course ni details ane progress display kare chhe
+ * This is a client component that displays enrolled course details and progress on dashboard page
+ *
+ * Features:
+ * - Course thumbnail — useConstructUrl() thi S3 image URL construct kare chhe
+ *   Course thumbnail — Constructs S3 image URL via useConstructUrl()
+ * - useCourseProgress hook — Total/completed lessons ane percentage calculate kare chhe
+ *   useCourseProgress hook — Calculates total/completed lessons and percentage
+ * - Level badge — Color-coded (BEGINNER=green, INTERMEDIATE=amber, ADVANCED=rose)
+ * - Progress bar — shadcn Progress component with percentage display
+ * - "Watch Course" button — Course detail page par navigate kare chhe
+ *   "Watch Course" button — Navigates to course detail page
+ * - Hover effect — Image scale-up animation on card hover
+ */
 "use client";
 
 

@@ -1,10 +1,12 @@
+// Aa file course enrollment mate server action provide kare chhe (Stripe checkout session + Arcjet rate limiting sathe)
+// This file provides a server action for course enrollment with Stripe checkout session creation and Arcjet rate limiting
 "use server";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { stripe } from "@/lib/stripe";
 import { env } from "@/lib/env";
 import { requireUser } from "@/app/data/user/require-user";
-import { User } from "@/lib/types/user";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { headers } from "next/headers";
@@ -51,7 +53,7 @@ async function getBaseUrl(): Promise<string> {
 export async function enrollInCourseAction(courseId: string): Promise<ApiResponse> {
   try {
     // 1. Authentication and Rate Limiting
-    const user = await requireUser() as User;
+    const user = await requireUser();
 
     const req = await request();
     const decision = await aj.protect(req, { fingerprint: user.id });
@@ -127,12 +129,12 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
     }
 
     // 6. Create pending enrollment via API
-    const enrollmentResponse = await api.post<{ id: string }>('/enrollments', {
+    const enrollmentResponse = await api.post<{ _id: string }>('/enrollments', {
       courseId,
       amount: course.price,
     }, token);
 
-    const enrollmentId = enrollmentResponse.data?.id;
+    const enrollmentId = enrollmentResponse.data?._id;
 
     // 7. Create Checkout Session
     const baseUrl = await getBaseUrl();
@@ -140,7 +142,7 @@ export async function enrollInCourseAction(courseId: string): Promise<ApiRespons
       customer: stripeCustomerId,
       line_items: [{ price: course.stripePriceId, quantity: 1 }],
       mode: 'payment',
-      success_url: `${baseUrl}/payment/success`,
+      success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/payment/cancel`,
       metadata: {
         userId: user.id,

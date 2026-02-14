@@ -1,3 +1,25 @@
+/**
+ * SSO Callback Page — OAuth redirect handler
+ * SSO Callback Page — OAuth redirect handler
+ *
+ * Aa client component chhe je Google/GitHub OAuth sign-in/sign-up pachhi redirect handle kare chhe
+ * This is a client component that handles redirects after Google/GitHub OAuth sign-in/sign-up
+ *
+ * Flow:
+ * 1. Clerk loaded chhe ke nahi te check kare chhe — signIn ane signUp hooks ready thay te pahela wait kare chhe
+ *    Checks if Clerk is loaded — Waits until signIn and signUp hooks are ready
+ * 2. Transferable sign-in handle kare chhe — Existing account ne new sign-up ma transfer kare chhe
+ *    Handles transferable sign-in — Transfers existing account to new sign-up
+ * 3. Regular OAuth callback process kare chhe — Sign-in redirect complete kare chhe
+ *    Processes regular OAuth callback — Completes sign-in redirect
+ * 4. Sign-up callback fallback kare chhe — Navo user sign-up flow handle kare chhe
+ *    Falls back to sign-up callback — Handles new user sign-up flow
+ * 5. Error par /login par redirect kare chhe — Graceful error recovery
+ *    Redirects to /login on error — Graceful error recovery
+ *
+ * Loading indicator batave chhe jabsudhi process complete thay — Loader2 spinning icon
+ * Shows loading indicator while process completes — Loader2 spinning icon
+ */
 "use client";
 
 import { useEffect } from "react";

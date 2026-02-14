@@ -1,10 +1,31 @@
+/**
+ * Enrollment Service / Enrollment Service
+ *
+ * Aa service course enrollment ane Stripe payment integration handle kare chhe.
+ * This service handles course enrollment and Stripe payment integration.
+ *
+ * Payment Flow / Payment Flow:
+ * - Free courses: Direct enrollment, koi payment nahi
+ * - Paid courses: Stripe Checkout Session create thay, payment complete thya pachhi enrollment
+ * - Webhook: Stripe webhook thi enrollment auto-create thay chhe
+ *
+ * Status Lifecycle / Status Lifecycle:
+ * - Active: Enrollment successful (free ke paid)
+ * - Cancelled: Server-side cancellation
+ *
+ * Duplicate Prevention / Duplicate Prevention:
+ * - userId + courseId compound unique index duplicate enrollment rokke chhe
+ */
 import mongoose from 'mongoose';
+import Stripe from 'stripe';
 import { Enrollment, IEnrollment, EnrollmentStatus } from '../models/Enrollment';
 import { Course } from '../models/Course';
 import { Chapter } from '../models/Chapter';
 import { Lesson } from '../models/Lesson';
 import { LessonProgress } from '../models/LessonProgress';
+import { User } from '../models/User';
 import { ApiError } from '../utils/apiError';
+import { env } from '../config/env';
 
 interface CreateEnrollmentData {
     userId: string;
@@ -14,6 +35,10 @@ interface CreateEnrollmentData {
 }
 
 export class EnrollmentService {
+    /**
+     * User enrolled chhe ke nahi check karo (courseId ke slug banne chale)
+     * Check if user is enrolled (works with both courseId and course slug)
+     */
     static async isEnrolled(userId: string, courseIdOrSlug: string): Promise<{ enrolled: boolean; status?: string }> {
         let courseId;
 
@@ -40,6 +65,10 @@ export class EnrollmentService {
         return { enrolled: enrollment.status === 'Active', status: enrollment.status };
     }
 
+    /**
+     * User na badha enrollments course details sathe return karo
+     * Get enrollments for a user with course details populated
+     */
     static async getEnrolledCourses(userId: string): Promise<any[]> {
         const enrollments = await Enrollment.find({
             userId: new mongoose.Types.ObjectId(userId),
@@ -106,6 +135,13 @@ export class EnrollmentService {
         return coursesWithProgress;
     }
 
+    /**
+     * Course mate Stripe Checkout Session create karo
+     * Create a Stripe checkout session for a course
+     *
+     * Free course hoy to sidhu enrollment create thay, paid course hoy to Stripe redirect thay
+     * Free courses create direct enrollment, paid courses redirect to Stripe
+     */
     static async create(data: CreateEnrollmentData): Promise<IEnrollment> {
         let courseId;
 
@@ -145,6 +181,10 @@ export class EnrollmentService {
         return enrollment;
     }
 
+    /**
+     * Payment success pachhi enrollment handle karo (Stripe webhook thi call thay)
+     * Handle successful enrollment after payment (called by Stripe webhook)
+     */
     static async activate(enrollmentId: string, userId: string, courseId: string, amount?: number): Promise<IEnrollment | null> {
         const result = await Enrollment.findOneAndUpdate(
             {
@@ -163,6 +203,10 @@ export class EnrollmentService {
         return result;
     }
 
+    /**
+     * Course na badha enrollments user details sathe return karo
+     * Get enrollments for a course with user details populated
+     */
     static async cancel(enrollmentId: string): Promise<IEnrollment | null> {
         if (!mongoose.Types.ObjectId.isValid(enrollmentId)) {
             throw ApiError.badRequest('Invalid enrollment ID');
@@ -175,6 +219,10 @@ export class EnrollmentService {
         );
     }
 
+    /**
+     * Pending enrollment delete karo
+     * Delete a pending enrollment
+     */
     static async deletePending(enrollmentId: string, userId: string, courseId: string): Promise<boolean> {
         const result = await Enrollment.deleteOne({
             _id: new mongoose.Types.ObjectId(enrollmentId),
@@ -249,6 +297,85 @@ export class EnrollmentService {
             paymentId: `free_${Date.now()}`,
         });
 
+        return enrollment;
+    }
+
+    /**
+     * Session ID thi payment verify karo ane enrollment activate karo
+     * Verify payment using Session ID and activate enrollment
+     */
+    static async verifyPayment(sessionId: string, authenticatedUserId?: string): Promise<IEnrollment> {
+        const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        console.log('[VerifyPayment] Session:', JSON.stringify({
+            id: session.id,
+            payment_status: session.payment_status,
+            metadata: session.metadata,
+            amount_total: session.amount_total
+        }, null, 2));
+
+        if (session.payment_status !== 'paid') {
+            throw ApiError.badRequest('Payment not completed');
+        }
+
+        const { enrollmentId, userId, courseId } = session.metadata || {};
+        const amount = session.amount_total ? Number(session.amount_total) / 100 : 0;
+
+        // Use authenticated user ID as fallback if metadata userId is missing
+        const finalUserId = userId || authenticatedUserId;
+
+        if (!finalUserId || !courseId) {
+            console.error('[VerifyPayment] Missing metadata:', { userId, authenticatedUserId, courseId, metadata: session.metadata });
+            throw ApiError.badRequest('Invalid session metadata: Missing User ID or Course ID');
+        }
+
+        let updated: IEnrollment | null = null;
+
+        // Try to activate existing pending enrollment
+        if (enrollmentId) {
+            updated = await this.activate(enrollmentId, finalUserId, courseId, amount);
+        } else {
+            // Fallback: find by user and course if enrollmentId is missing
+            updated = await Enrollment.findOneAndUpdate(
+                {
+                    userId: new mongoose.Types.ObjectId(finalUserId),
+                    courseId: new mongoose.Types.ObjectId(courseId),
+                    status: 'Pending',
+                },
+                {
+                    status: 'Active',
+                    amount: amount,
+                    paymentId: session.payment_intent as string
+                },
+                { new: true }
+            );
+        }
+
+        if (updated) {
+            return updated;
+        }
+
+        // Check if already active (idempotency)
+        const existing = await Enrollment.findOne({
+            userId: new mongoose.Types.ObjectId(finalUserId),
+            courseId: new mongoose.Types.ObjectId(courseId),
+            status: 'Active'
+        });
+
+        if (existing) {
+            return existing;
+        }
+
+        // Create new active enrollment if not found
+        const enrollment = new Enrollment({
+            userId: new mongoose.Types.ObjectId(finalUserId),
+            courseId: new mongoose.Types.ObjectId(courseId),
+            amount: amount,
+            status: 'Active',
+        });
+
+        await enrollment.save();
         return enrollment;
     }
 }

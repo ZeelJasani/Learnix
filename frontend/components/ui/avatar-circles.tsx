@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import Image from "next/image"
 
 interface Avatar {
   imageUrl: string
@@ -37,7 +38,7 @@ export const AvatarCircles = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <Image
                   key={index}
                   className={cn(
                     "h-10 w-10 rounded-full border-2 border-white object-cover dark:border-gray-800",

@@ -1,6 +1,9 @@
+// Aa file admin panel mate badha mentors ni list (avatar, bio, social links sathe) fetch kare chhe
+// This file fetches all mentors with profile details for the admin mentor management page
 "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 
 export interface MentorType {
     id: string;

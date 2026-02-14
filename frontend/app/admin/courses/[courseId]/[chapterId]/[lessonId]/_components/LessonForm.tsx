@@ -1,3 +1,21 @@
+/**
+ * LessonForm Component — Lesson configuration edit form with video/thumbnail upload
+ * LessonForm Component — Lesson configuration edit form with video/thumbnail upload
+ *
+ * Aa client component chhe je admin/mentor ne lesson ni details update karva de chhe
+ * This is a client component that allows admin/mentor to update lesson details
+ *
+ * Features:
+ * - react-hook-form + Zod validation — lessonSchema based form
+ * - Pre-filled form — Existing lesson data thi form pre-populate thay chhe
+ *   Pre-filled form — Form pre-populates with existing lesson data
+ * - Form fields — Lesson Name, Description (RichTextEditor), Thumbnail (Uploader), Video (Uploader)
+ * - updateLesson server action — Backend API thi lesson update kare chhe
+ *   updateLesson server action — Updates lesson via backend API
+ * - Admin/Mentor path auto-detect — pathname based basePath for "Go Back" link
+ * - Loading state — Loader2 spinner while saving
+ * - Toast feedback — Success/error messages via sonner
+ */
 "use client";
 
 import { AdminLessonType } from "@/app/data/admin/admin-get-lesson";

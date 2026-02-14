@@ -1,3 +1,15 @@
+/**
+ * Mentor Service / Mentor Service
+ *
+ * Aa service mentor dashboard, courses, students, ane profile management handle kare chhe.
+ * This service handles mentor dashboard, courses, students, and profile management.
+ *
+ * Features / Features:
+ * - Dashboard stats: Course count, student count, total revenue
+ * - My courses: Mentor na courses list
+ * - My students: Mentor na courses ma enrolled students
+ * - Mentor profile: Stats + courses sathe complete profile
+ */
 import mongoose from 'mongoose';
 import { Course } from '../models/Course';
 import { Enrollment } from '../models/Enrollment';
@@ -5,7 +17,8 @@ import { User } from '../models/User';
 
 export class MentorService {
     /**
-     * Get dashboard statistics for a mentor
+     * Mentor mate dashboard statistics calculate karo (courses, students, revenue)
+     * Calculate dashboard statistics for a mentor (courses, students, revenue)
      */
     static async getDashboardStats(mentorId: string) {
         const mentorObjectId = new mongoose.Types.ObjectId(mentorId);
@@ -49,7 +62,7 @@ export class MentorService {
     }
 
     /**
-     * Get all courses created by a mentor
+     * Mentor na badha courses return karo / Get all courses created by a mentor
      */
     static async getMyCourses(mentorId: string) {
         const mentorObjectId = new mongoose.Types.ObjectId(mentorId);
@@ -66,6 +79,7 @@ export class MentorService {
     }
 
     /**
+     * Mentor na courses ma enrolled badha students return karo
      * Get all students enrolled in mentor's courses
      */
     static async getMyStudents(mentorId: string) {
@@ -103,7 +117,8 @@ export class MentorService {
     }
 
     /**
-     * Get mentor profile by ID
+     * Mentor nu complete profile stats ane courses sathe return karo
+     * Get mentor's complete profile with stats and courses
      */
     static async getMentorProfile(mentorId: string) {
         const mentor = await User.findById(mentorId)

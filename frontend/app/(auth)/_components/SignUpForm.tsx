@@ -1,3 +1,30 @@
+/**
+ * SignUpForm Component — New user registration form with Clerk
+ * SignUpForm Component — New user registration form with Clerk
+ *
+ * Aa client component chhe je nava user nu registration ane email verification handle kare chhe
+ * This is a client component that handles new user registration and email verification
+ *
+ * Two-step flow:
+ * Step 1 — Registration form:
+ * - First name, last name, email, password fields — User details collect kare chhe
+ *   First name, last name, email, password fields — Collects user details
+ * - OAuth sign-up (Google, GitHub) — Social provider thi quick registration
+ *   OAuth sign-up (Google, GitHub) — Quick registration via social providers
+ *
+ * Step 2 — Email verification:
+ * - 6-digit verification code input — Clerk dwara email par mokalayo chhe
+ *   6-digit verification code input — Sent to email by Clerk
+ * - Code verify karya pachhi session set thay chhe — User automatically logged in thay chhe
+ *   After code verification session is set — User is automatically logged in
+ *
+ * - Error handling — Registration ane verification banne mate error messages
+ *   Error handling — Error messages for both registration and verification
+ * - Loading states — Submit buttons par loading indicators
+ *   Loading states — Loading indicators on submit buttons
+ * - Login page nu link — Existing users mate sign-in par navigate kare chhe
+ *   Link to login page — Navigate to sign-in for existing users
+ */
 "use client";
 
 import * as React from "react";

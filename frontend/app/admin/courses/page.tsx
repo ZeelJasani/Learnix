@@ -1,3 +1,21 @@
+/**
+ * Admin Courses Page — Admin mate badha courses ni listing page
+ * Admin Courses Page — All courses listing page for admin
+ *
+ * Aa server component chhe je admin na badha courses grid layout ma display kare chhe
+ * This is a server component that displays all admin courses in grid layout
+ *
+ * Features:
+ * - requireAdmin() — Admin access guard
+ * - force-dynamic — Fresh data on every request
+ * - "Create Course" button — /admin/courses/create page par navigate
+ *   "Create Course" button — Navigates to /admin/courses/create page
+ * - Suspense + skeleton loading — AdminCourseCardSkeletonLayout
+ * - RenderCourses — Async component je adminGetCourses() thi data fetch kare chhe
+ *   RenderCourses — Async component that fetches data via adminGetCourses()
+ * - EmptyState — "No course found" with CTA to create course
+ * - Responsive grid — 1 col (mobile), 2 cols (md), 3 cols (xl)
+ */
 // {@ts-expect-error Server Component }
 
 import { requireAdmin } from "@/app/data/admin/require-admin";

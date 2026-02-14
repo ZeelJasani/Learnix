@@ -1,3 +1,27 @@
+/**
+ * AdminCourseCard Component — Admin panel ma course card with edit/delete actions
+ * AdminCourseCard Component — Course card with edit/delete actions in admin panel
+ *
+ * Aa client component chhe je admin course grid ma individual course card display kare chhe
+ * This is a client component that displays individual course cards in the admin course grid
+ *
+ * Features:
+ * - Course thumbnail (S3 URL via useConstructUrl hook) — Hover zoom effect
+ * - Level badge (BEGINNER/INTERMEDIATE/ADVANCED) — Color-coded overlay
+ * - DropdownMenu — Edit Course, Preview, Delete course actions
+ *   — Admin/Mentor path auto-detect (pathname based basePath)
+ * - Category badge — Color-coded with dark mode support
+ * - Mentor info — Avatar + name display (conditional)
+ * - Meta info — Duration ane chapter count
+ *   Meta info — Duration and chapter count
+ * - Price display — INR format ma price
+ *   Price display — Price in INR format
+ * - "Edit Course" CTA button — Course edit page par navigate
+ *   "Edit Course" CTA button — Navigates to course edit page
+ *
+ * AdminCourseCardSkeleton — Loading state skeleton component export kare chhe
+ * AdminCourseCardSkeleton — Exports loading state skeleton component
+ */
 "use client";
 
 import { AdminCourseType } from "@/app/data/admin/admin-get-courses";

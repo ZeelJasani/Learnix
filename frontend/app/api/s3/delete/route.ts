@@ -1,3 +1,5 @@
+// Aa file S3 bucket mathi file delete karva mate API route provide kare chhe (Arcjet rate limiting sathe)
+// This file provides an API route to delete files from S3 bucket with Arcjet bot/rate-limit protection
 import { env } from "@/lib/env";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";

@@ -1,6 +1,9 @@
+// Aa file admin panel mate ek lesson ni details (video, thumbnail, description) fetch kare chhe
+// This file fetches a single lesson's details for admin editing (video, thumbnail, description)
 import "server-only";
 
-import { api, getAuthToken } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/server-auth";
 import { notFound } from "next/navigation";
 
 export interface AdminLessonType {

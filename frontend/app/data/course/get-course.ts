@@ -1,3 +1,5 @@
+// Aa file ek specific course ni public details (mentor, chapters, price) fetch kare chhe
+// This file fetches a single course's public details including mentor info, chapters, and pricing
 import "server-only";
 
 import { api } from "@/lib/api-client";

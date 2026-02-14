@@ -1,3 +1,5 @@
+// Aa component sidebar ma user info ane sign-out dropdown render kare chhe (Clerk sathe)
+// This component renders the sidebar user profile dropdown with avatar, name, email, and sign-out action
 "use client"
 
 import {

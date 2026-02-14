@@ -1,3 +1,5 @@
+// Aa file Clerk webhook handler chhe jo user.created/updated events par user ne database ma sync kare chhe (Svix signature verification sathe)
+// This file handles Clerk webhooks to sync users to the database on user.created/updated events with Svix signature verification
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 
