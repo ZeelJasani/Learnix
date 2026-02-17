@@ -1,26 +1,10 @@
-/**
- * CourseActivities Component — Course-specific activities ane quizzes management tab
- * CourseActivities Component — Course-specific activities and quizzes management tab
- *
- * Aa client component chhe je edit page na "Activities" tab ma activities + quizzes manage kare chhe
- * This is a client component that manages activities + quizzes in the edit page "Activities" tab
- *
- * Features:
- * - Activities CRUD — CreateActivityDialog + ActivityListItem (fetch/create/delete)
- * - Quizzes display — QuizListItem component used for quiz items (edit/delete)
- * - AlertDialog — Delete confirmation popup for both activities ane quizzes
- *   AlertDialog — Delete confirmation popup for both activities and quizzes
- * - Parallel data fetching — /api/admin/activities + backend quizzes API
- * - _id → id mapping — Backend response normalization for quizzes
- * - Empty state — "No content yet" with BookOpen icon
- * - Loading state — "Loading content..." text display
- */
 "use client";
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, BookOpen, Clock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, BookOpen, FileQuestion, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { CreateActivityDialog } from "@/app/admin/activities/_components/create-activity-dialog";
 import { ActivityListItem } from "@/app/admin/activities/_components/activity-list-item";
@@ -70,7 +54,6 @@ export function CourseActivities({ data }: { data: Course }) {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
     const [itemToDelete, setItemToDelete] = useState<{ id: string; type: 'activity' | 'quiz' } | null>(null);
 
     useEffect(() => {
@@ -80,24 +63,16 @@ export function CourseActivities({ data }: { data: Course }) {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-
-            // Fetch activities
             const activitiesRes = await fetch(`/api/admin/activities?courseId=${data.id}`);
             let activitiesData = { activities: [] };
             if (activitiesRes.ok) {
                 activitiesData = await activitiesRes.json();
-            } else {
-                console.error("Failed to fetch activities:", activitiesRes.status);
             }
 
-            // Fetch quizzes - direct backend call
             const quizzesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quizzes/course/${data.id}`);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let quizzesData: { data: any[] } = { data: [] }; // Default structure
-
+            let quizzesData: { data: any[] } = { data: [] };
             if (quizzesRes.ok) {
                 const rawData = await quizzesRes.json();
-                // Handle different response structures (e.g. { data: [...] } or [...])
                 if (Array.isArray(rawData)) {
                     quizzesData = { data: rawData };
                 } else if (rawData.data && Array.isArray(rawData.data)) {
@@ -105,26 +80,18 @@ export function CourseActivities({ data }: { data: Course }) {
                 } else if (rawData.quizzes && Array.isArray(rawData.quizzes)) {
                     quizzesData = { data: rawData.quizzes };
                 } else {
-                    // Unexpected structure — fallback to empty
-                    // Unexpected structure hoy to empty array use karo
                     quizzesData = { data: [] };
                 }
-            } else {
-                console.error("Failed to fetch quizzes:", quizzesRes.status);
             }
 
-
             setActivities(activitiesData.activities || []);
-            // Map _id to id if necessary and ensure array
             const mappedQuizzes = (quizzesData.data || []).map((q: any) => ({
                 ...q,
-                id: q.id || q._id, // Handle both id and _id
-                title: q.title || "Untitled Quiz", // Fallback title
-                isPublished: q.isPublished === true || q.isPublished === "true" // Ensure boolean
+                id: q.id || q._id,
+                title: q.title || "Untitled Quiz",
+                isPublished: q.isPublished === true || q.isPublished === "true"
             }));
-
             setQuizzes(mappedQuizzes);
-
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error("Failed to load course content");
@@ -135,17 +102,14 @@ export function CourseActivities({ data }: { data: Course }) {
 
     const deleteItem = async () => {
         if (!itemToDelete) return;
-
         try {
             const endpoint = itemToDelete.type === 'activity'
                 ? `/api/admin/activities?id=${itemToDelete.id}`
-                : `/api/admin/quizzes/${itemToDelete.id}`; // Ensure correct delete endpoint
-
+                : `/api/admin/quizzes/${itemToDelete.id}`;
             const res = await fetch(endpoint, { method: "DELETE" });
             if (!res.ok) throw new Error("Failed to delete");
-
             toast.success(`${itemToDelete.type === 'activity' ? 'Activity' : 'Quiz'} deleted`);
-            fetchData(); // Reload data
+            fetchData();
         } catch {
             toast.error(`Failed to delete ${itemToDelete.type}`);
         } finally {
@@ -153,49 +117,60 @@ export function CourseActivities({ data }: { data: Course }) {
         }
     };
 
+    const totalContent = quizzes.length + activities.length;
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-end mb-4">
+        <div className="space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    {totalContent > 0 && (
+                        <span className="text-xs text-muted-foreground">{totalContent} items</span>
+                    )}
+                </div>
                 <div className="flex gap-2">
                     <Button
                         onClick={() => window.location.href = `/admin/quizzes/create?courseId=${data.id}`}
                         variant="outline"
-                        className="flex items-center gap-2"
+                        size="sm"
                     >
-                        <Plus className="h-4 w-4" />
+                        <FileQuestion className="h-3.5 w-3.5 mr-1.5" />
                         Create Quiz
                     </Button>
-                    <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
+                    <Button onClick={() => setIsDialogOpen(true)} size="sm">
+                        <Plus className="h-3.5 w-3.5 mr-1.5" />
                         New Activity
                     </Button>
                 </div>
             </div>
 
             {isLoading ? (
-                <div className="text-center py-12 text-muted-foreground">Loading content...</div>
-            ) : (activities.length === 0 && quizzes.length === 0) ? (
-                <Card className="border-dashed">
-                    <CardContent className="text-center py-12 flex flex-col items-center justify-center">
-                        <BookOpen className="h-10 w-10 text-muted-foreground/50 mb-3" />
-                        <h3 className="font-semibold mb-1">No content yet</h3>
-                        <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                            Create your first activity or quiz for this course.
-                        </p>
-                    </CardContent>
-                </Card>
+                <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+            ) : totalContent === 0 ? (
+                <div className="text-center py-16 border border-dashed border-border/60 rounded-lg">
+                    <div className="p-3 rounded-lg bg-muted w-fit mx-auto mb-3">
+                        <BookOpen className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <h3 className="font-medium text-sm mb-1">No content yet</h3>
+                    <p className="text-xs text-muted-foreground">Create your first activity or quiz</p>
+                </div>
             ) : (
-                <div className="space-y-6">
+                <div className="space-y-5">
                     {quizzes.length > 0 && (
-                        <div>
-                            <h4 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Quizzes</h4>
-                            <div className="grid gap-4">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Quizzes</h4>
+                                <span className="text-[10px] text-muted-foreground">{quizzes.length}</span>
+                            </div>
+                            <div className="space-y-1.5">
                                 {quizzes.map(quiz => (
                                     <QuizListItem
                                         key={quiz.id}
                                         quiz={quiz}
-                                        onEdit={(id) => window.location.href = `/admin/quizzes/${id}/edit`}
-                                        onDelete={(id) => setItemToDelete({ id, type: 'quiz' })}
+                                        basePath="/admin"
+                                        onDelete={() => setItemToDelete({ id: quiz.id, type: 'quiz' })}
                                     />
                                 ))}
                             </div>
@@ -203,14 +178,17 @@ export function CourseActivities({ data }: { data: Course }) {
                     )}
 
                     {activities.length > 0 && (
-                        <div>
-                            <h4 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Assignments & Tasks</h4>
-                            <div className="grid gap-4">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Activities</h4>
+                                <span className="text-[10px] text-muted-foreground">{activities.length}</span>
+                            </div>
+                            <div className="space-y-1.5">
                                 {activities.map(activity => (
                                     <ActivityListItem
                                         key={activity.id}
                                         activity={activity}
-                                        onDelete={(id) => setItemToDelete({ id, type: 'activity' })}
+                                        onDelete={() => setItemToDelete({ id: activity.id, type: 'activity' })}
                                     />
                                 ))}
                             </div>
@@ -222,9 +200,9 @@ export function CourseActivities({ data }: { data: Course }) {
             <CreateActivityDialog
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
-                courseId={data.id}
-                courseTitle={data.title}
-                onSuccess={fetchData}
+                availableCourses={[{ _id: data.id, title: data.title }]}
+                preSelectedCourseId={data.id}
+                onCreated={fetchData}
             />
 
             <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
@@ -232,12 +210,14 @@ export function CourseActivities({ data }: { data: Course }) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the {itemToDelete?.type} and remove it from our servers.
+                            This action cannot be undone. This will permanently delete the {itemToDelete?.type}.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={deleteItem} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                        <AlertDialogAction onClick={deleteItem} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Delete
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

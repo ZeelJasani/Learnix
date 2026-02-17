@@ -1,16 +1,3 @@
-/**
- * Admin Users Page — Platform na badha users ni management page
- * Admin Users Page — All users management page for the platform
- *
- * Aa server component chhe je badha users ne table format ma display kare chhe
- * This is a server component that displays all users in table format
- *
- * Features:
- * - Table columns — Avatar, Name, Email, Role (with RoleSelect), Joined date
- * - RoleSelect component — Inline role change dropdown (user ↔ mentor ↔ admin)
- * - getAllUsers() — Backend thi badha users fetch kare chhe
- *   getAllUsers() — Fetches all users from backend
- */
 import { getAllUsers } from "@/app/data/admin/get-all-users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RoleSelect } from "./_components/RoleSelect";
@@ -25,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { SearchUsers } from "./_components/SearchUsers";
 import { UserActions } from "./_components/UserActions";
+import { Users } from "lucide-react";
 
 interface AdminUsersPageProps {
     searchParams: {
@@ -38,65 +26,75 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
     const users = await getAllUsers(search);
 
     return (
-        <div className="p-6">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-                    <p className="text-muted-foreground">
-                        Manage and view all users in the system.
-                    </p>
+        <div className="p-6 md:p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-muted">
+                        <Users className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-semibold tracking-tight">Users</h1>
+                        <p className="text-sm text-muted-foreground">{users.length} total users</p>
+                    </div>
+                </div>
+                <div className="w-full sm:w-72">
+                    <SearchUsers />
                 </div>
             </div>
 
-            <div className="mb-4">
-                <SearchUsers />
-            </div>
-
-            <div className="rounded-md border">
+            <div className="rounded-lg border border-border/60 overflow-hidden">
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[80px]">Avatar</TableHead>
-                            <TableHead>Name</TableHead>
+                        <TableRow className="bg-muted/30 hover:bg-muted/30">
+                            <TableHead className="w-[260px]">User</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead className="w-[140px]">Role</TableHead>
+                            <TableHead className="w-[100px]">Status</TableHead>
+                            <TableHead className="text-right w-[80px]">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell>
-                                    <Avatar>
-                                        <AvatarImage src={user.image || ""} />
-                                        <AvatarFallback>
-                                            {user.name?.slice(0, 2).toUpperCase() || "??"}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </TableCell>
-                                <TableCell className="font-medium">{user.name || "N/A"}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>
-                                    <RoleSelect
-                                        userId={user.id}
-                                        currentRole={user.role || "user"}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    {user.banned ? (
-                                        <Badge variant="destructive">Banned</Badge>
-                                    ) : (
-                                        <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
-                                            Active
-                                        </Badge>
-                                    )}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <UserActions userId={user.id} isBanned={!!user.banned} />
+                        {users.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center h-32 text-muted-foreground">
+                                    No users found.
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            users.map((user) => (
+                                <TableRow key={user.id} className="group">
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={user.image || ""} />
+                                                <AvatarFallback className="text-xs">
+                                                    {user.name?.slice(0, 2).toUpperCase() || "??"}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <span className="font-medium text-sm">{user.name || "N/A"}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{user.email}</TableCell>
+                                    <TableCell>
+                                        <RoleSelect
+                                            userId={user.id}
+                                            currentRole={user.role || "user"}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className={`h-2 w-2 rounded-full ${user.banned ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                                            <span className="text-xs text-muted-foreground">
+                                                {user.banned ? "Banned" : "Active"}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <UserActions userId={user.id} isBanned={!!user.banned} />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </div>

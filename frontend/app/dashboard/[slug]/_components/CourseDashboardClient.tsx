@@ -1,21 +1,3 @@
-/**
- * CourseDashboardClient Component — Course nu tabbed dashboard with 5 tabs
- * CourseDashboardClient Component — Course tabbed dashboard with 5 tabs
- *
- * Aa client component chhe je course ni detailed view ne 5 tabs ma organize kare chhe
- * This is a client component that organizes course detailed view into 5 tabs
- *
- * Tabs:
- * 1. Overview (LayoutDashboard) — CourseOverview — Progress, stats, continue learning
- * 2. Lessons (BookOpen) — CourseLessons — Searchable chapter/lesson list with completion
- * 3. Live (Video) — CourseLiveSessions — Live/upcoming/past sessions with join/manage
- * 4. Quizzes (FileQuestion) — CourseQuizzes — Quiz list with attempt/results
- * 5. Progress (TrendingUp) — CourseProgress — Detailed chapter-wise progress chart
- *
- * Features:
- * - Responsive tabs grid — 2/3/5 columns per breakpoint
- * - Icon-only tabs on mobile (sm:inline text hidden)
- */
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,27 +23,27 @@ interface CourseDashboardClientProps {
 export function CourseDashboardClient({ course, slug }: CourseDashboardClientProps) {
     return (
         <div className="h-full overflow-auto">
-            <div className="container max-w-7xl mx-auto p-6 pb-16">
+            <div className="max-w-5xl mx-auto px-8 py-8">
                 <Tabs defaultValue="overview" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:w-auto lg:inline-grid">
-                        <TabsTrigger value="overview" className="flex items-center gap-2">
-                            <LayoutDashboard className="h-4 w-4" />
+                    <TabsList className="h-9 gap-1 bg-muted/50 p-1">
+                        <TabsTrigger value="overview" className="text-xs gap-1.5 px-3">
+                            <LayoutDashboard className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Overview</span>
                         </TabsTrigger>
-                        <TabsTrigger value="lessons" className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4" />
+                        <TabsTrigger value="lessons" className="text-xs gap-1.5 px-3">
+                            <BookOpen className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Lessons</span>
                         </TabsTrigger>
-                        <TabsTrigger value="live" className="flex items-center gap-2">
-                            <Video className="h-4 w-4" />
+                        <TabsTrigger value="live" className="text-xs gap-1.5 px-3">
+                            <Video className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Live</span>
                         </TabsTrigger>
-                        <TabsTrigger value="quizzes" className="flex items-center gap-2">
-                            <FileQuestion className="h-4 w-4" />
+                        <TabsTrigger value="quizzes" className="text-xs gap-1.5 px-3">
+                            <FileQuestion className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Quizzes</span>
                         </TabsTrigger>
-                        <TabsTrigger value="progress" className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4" />
+                        <TabsTrigger value="progress" className="text-xs gap-1.5 px-3">
+                            <TrendingUp className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Progress</span>
                         </TabsTrigger>
                     </TabsList>

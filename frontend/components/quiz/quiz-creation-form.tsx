@@ -8,11 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuestionBuilder } from "./question-builder";
 import { QuizAPI, Question, Quiz } from "@/lib/quiz-api";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Clock, Target, HelpCircle } from "lucide-react";
 
 interface QuizCreationFormProps {
     courseId: string;
@@ -65,7 +65,6 @@ export function QuizCreationForm({
             return;
         }
 
-        // Validate questions
         for (let i = 0; i < questions.length; i++) {
             const q = questions[i];
             if (!q.question.trim()) {
@@ -128,156 +127,126 @@ export function QuizCreationForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
-                    <CardDescription>
-                        Set up the basic details of your quiz
-                    </CardDescription>
+            <Card className="border-border/60">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-base">Basic Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Quiz Title *</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="title" className="text-xs">Quiz Title *</Label>
                         <Input
                             id="title"
                             value={formData.title}
-                            onChange={(e) =>
-                                setFormData({ ...formData, title: e.target.value })
-                            }
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             placeholder="e.g., JavaScript Basics Quiz"
+                            className="h-9 text-sm"
                             required
                         />
                     </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="description" className="text-xs">Description</Label>
                         <Textarea
                             id="description"
                             value={formData.description || ""}
-                            onChange={(e) =>
-                                setFormData({ ...formData, description: e.target.value })
-                            }
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             placeholder="Describe what this quiz covers..."
-                            rows={3}
+                            rows={2}
+                            className="text-sm resize-none"
                         />
                     </div>
                 </CardContent>
             </Card>
 
             {/* Quiz Settings */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Quiz Settings</CardTitle>
-                    <CardDescription>
-                        Configure how students will take this quiz
-                    </CardDescription>
+            <Card className="border-border/60">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-base">Settings</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="passingScore">Passing Score (%)</Label>
+                <CardContent className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="passingScore" className="text-xs flex items-center gap-1.5">
+                                <Target className="h-3 w-3 text-muted-foreground" />
+                                Passing Score (%)
+                            </Label>
                             <Input
                                 id="passingScore"
                                 type="number"
                                 min={0}
                                 max={100}
                                 value={formData.passingScore}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        passingScore: parseInt(e.target.value) || 70,
-                                    })
-                                }
+                                onChange={(e) => setFormData({ ...formData, passingScore: parseInt(e.target.value) || 70 })}
+                                className="h-9 text-sm"
                                 required
                             />
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="timeLimit" className="text-xs flex items-center gap-1.5">
+                                <Clock className="h-3 w-3 text-muted-foreground" />
+                                Time Limit (min)
+                            </Label>
                             <Input
                                 id="timeLimit"
                                 type="number"
                                 min={1}
                                 value={formData.timeLimit || ""}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        timeLimit: e.target.value ? parseInt(e.target.value) : null,
-                                    })
-                                }
-                                placeholder="Leave empty for no limit"
+                                onChange={(e) => setFormData({ ...formData, timeLimit: e.target.value ? parseInt(e.target.value) : null })}
+                                placeholder="No limit"
+                                className="h-9 text-sm"
                             />
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="allowedAttempts">Allowed Attempts</Label>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="allowedAttempts" className="text-xs flex items-center gap-1.5">
+                                <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                                Attempts
+                            </Label>
                             <Input
                                 id="allowedAttempts"
                                 type="number"
                                 min={0}
                                 value={formData.allowedAttempts}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        allowedAttempts: parseInt(e.target.value) || 0,
-                                    })
-                                }
+                                onChange={(e) => setFormData({ ...formData, allowedAttempts: parseInt(e.target.value) || 0 })}
                                 placeholder="0 = unlimited"
+                                className="h-9 text-sm"
                             />
-                            <p className="text-sm text-muted-foreground">
-                                0 means unlimited attempts
-                            </p>
+                            <p className="text-[10px] text-muted-foreground">0 = unlimited</p>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <Label htmlFor="shuffleQuestions">Shuffle Questions</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    Randomize question order for each attempt
-                                </p>
+                    <div className="border-t border-border/40 pt-4 space-y-3">
+                        <div className="flex items-center justify-between py-2">
+                            <div>
+                                <Label htmlFor="shuffleQuestions" className="text-sm cursor-pointer">Shuffle Questions</Label>
+                                <p className="text-xs text-muted-foreground">Randomize order for each attempt</p>
                             </div>
                             <Switch
                                 id="shuffleQuestions"
                                 checked={formData.shuffleQuestions}
-                                onCheckedChange={(checked) =>
-                                    setFormData({ ...formData, shuffleQuestions: checked })
-                                }
+                                onCheckedChange={(checked) => setFormData({ ...formData, shuffleQuestions: checked })}
                             />
                         </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <Label htmlFor="showCorrectAnswers">Show Correct Answers</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    Display correct answers after submission
-                                </p>
+                        <div className="flex items-center justify-between py-2">
+                            <div>
+                                <Label htmlFor="showCorrectAnswers" className="text-sm cursor-pointer">Show Correct Answers</Label>
+                                <p className="text-xs text-muted-foreground">Display after submission</p>
                             </div>
                             <Switch
                                 id="showCorrectAnswers"
                                 checked={formData.showCorrectAnswers}
-                                onCheckedChange={(checked) =>
-                                    setFormData({ ...formData, showCorrectAnswers: checked })
-                                }
+                                onCheckedChange={(checked) => setFormData({ ...formData, showCorrectAnswers: checked })}
                             />
                         </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <Label htmlFor="isPublished">Publish Quiz</Label>
-                                <p className="text-sm text-muted-foreground">
-                                    Make this quiz available to students
-                                </p>
+                        <div className="flex items-center justify-between py-2">
+                            <div>
+                                <Label htmlFor="isPublished" className="text-sm cursor-pointer">Publish Quiz</Label>
+                                <p className="text-xs text-muted-foreground">Make available to students</p>
                             </div>
                             <Switch
                                 id="isPublished"
                                 checked={formData.isPublished}
-                                onCheckedChange={(checked) =>
-                                    setFormData({ ...formData, isPublished: checked })
-                                }
+                                onCheckedChange={(checked) => setFormData({ ...formData, isPublished: checked })}
                             />
                         </div>
                     </div>
@@ -285,30 +254,27 @@ export function QuizCreationForm({
             </Card>
 
             {/* Questions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Questions</CardTitle>
-                    <CardDescription>
-                        Add questions to your quiz
-                    </CardDescription>
+            <Card className="border-border/60">
+                <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-base">Questions</CardTitle>
+                        {questions.length > 0 && (
+                            <span className="text-xs text-muted-foreground">{questions.length} {questions.length === 1 ? "question" : "questions"}</span>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <QuestionBuilder questions={questions} onChange={setQuestions} />
                 </CardContent>
             </Card>
 
-            {/* Submit Button */}
-            <div className="flex justify-end gap-4">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                    disabled={isSubmitting}
-                >
+            {/* Submit */}
+            <div className="flex justify-end gap-3 sticky bottom-0 bg-background/95 backdrop-blur py-4 border-t border-border/40">
+                <Button type="button" variant="outline" size="sm" onClick={() => router.back()} disabled={isSubmitting}>
                     Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="submit" size="sm" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                     {isEdit ? "Update Quiz" : "Create Quiz"}
                 </Button>
             </div>

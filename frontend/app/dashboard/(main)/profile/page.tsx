@@ -1,25 +1,9 @@
-/**
- * Student Profile Page — Student ni profile information ane account details page
- * Student Profile Page — Student's profile information and account details page
- *
- * Aa server component chhe je current logged-in student ni profile details display kare chhe
- * This server component displays profile details of the current logged-in student
- *
- * Features:
- * - requireUser() — Authentication guard (student must be logged in)
- * - Avatar with initials fallback — User image or name-based initials
- * - Stats cards — Enrolled courses count, Account status, Member since date
- * - Account details — Name, Email, Account ID, Email verification status
- * - "Edit Profile" link — Redirects to Clerk accounts page
- * - Responsive layout — Grid adapts from 1 to 2/3 columns
- */
 import { requireUser } from "@/app/data/user/require-user";
 import { getEnrolledCourses } from "@/app/data/user/get-enrolled-courses";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { BookOpen, Calendar, Mail, User, ExternalLink } from "lucide-react";
+import { BookOpen, Calendar, User, ExternalLink, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -40,128 +24,96 @@ export default async function ProfilePage() {
     });
 
     return (
-        <div className="container mx-auto max-w-4xl space-y-8">
-            {/* Header */}
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold">My Profile</h1>
-                <p className="text-muted-foreground">
-                    View and manage your account information
-                </p>
-            </div>
-
-            {/* Profile Card */}
-            <Card>
-                <CardHeader className="pb-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                        <Avatar className="h-24 w-24 border-4 border-primary/10">
+        <div className="max-w-3xl mx-auto px-8 py-8 space-y-6">
+            {/* Profile Header */}
+            <Card className="border-border/60">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-5">
+                        <Avatar className="h-16 w-16">
                             <AvatarImage src={user.image || ""} alt={user.name || "User"} />
-                            <AvatarFallback className="text-2xl font-semibold">
-                                {initials}
-                            </AvatarFallback>
+                            <AvatarFallback className="text-lg font-medium">{initials}</AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-3">
-                                <CardTitle className="text-2xl">{user.name}</CardTitle>
-                                <Badge variant="secondary">Student</Badge>
-                            </div>
-                            <CardDescription className="flex items-center gap-2">
-                                <Mail className="h-4 w-4" />
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-lg font-semibold">{user.name}</h1>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                                <Mail className="h-3 w-3" />
                                 {user.email}
-                            </CardDescription>
+                            </p>
                         </div>
-                        <Button asChild variant="outline">
+                        <Button asChild variant="outline" size="sm">
                             <Link href="https://accounts.clerk.com/user" target="_blank">
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Edit Profile
+                                <ExternalLink className="h-3 w-3 mr-1.5" />
+                                Edit
                             </Link>
                         </Button>
                     </div>
-                </CardHeader>
+                </CardContent>
             </Card>
 
-            {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+            {/* Stats */}
+            <div className="grid gap-4 grid-cols-3">
+                <Card className="border-border/60">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Enrolled Courses</CardTitle>
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-xs font-medium text-muted-foreground">Courses</CardTitle>
+                        <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{enrolledCourses.length}</div>
-                        <p className="text-xs text-muted-foreground">
-                            courses in your library
-                        </p>
+                        <div className="text-2xl font-semibold">{enrolledCourses.length}</div>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-border/60">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-                        <User className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-xs font-medium text-muted-foreground">Status</CardTitle>
+                        <User className="h-3.5 w-3.5 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-600">Active</div>
-                        <p className="text-xs text-muted-foreground">
-                            your account is verified
-                        </p>
+                        <div className="text-sm font-medium flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                            Active
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-border/60">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Member Since</CardTitle>
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-xs font-medium text-muted-foreground">Member Since</CardTitle>
+                        <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold">{memberSince}</div>
-                        <p className="text-xs text-muted-foreground">
-                            account creation date
-                        </p>
+                        <div className="text-sm font-medium">{memberSince}</div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Account Details */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Account Details</CardTitle>
-                    <CardDescription>Your account information</CardDescription>
+            <Card className="border-border/60">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Account Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">
-                                    Full Name
-                                </label>
-                                <p className="text-sm font-medium">{user.name}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">
-                                    Email Address
-                                </label>
-                                <p className="text-sm font-medium">{user.email}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">
-                                    Account ID
-                                </label>
-                                <p className="text-sm font-mono text-muted-foreground">
-                                    {user.id.slice(0, 16)}...
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">
-                                    Email Verified
-                                </label>
-                                <p className="text-sm font-medium">
-                                    {user.emailVerified ? (
-                                        <span className="text-green-600">✓ Verified</span>
-                                    ) : (
-                                        <span className="text-yellow-600">Pending</span>
-                                    )}
-                                </p>
-                            </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Full Name</p>
+                            <p className="text-sm">{user.name}</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Email</p>
+                            <p className="text-sm">{user.email}</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Account ID</p>
+                            <p className="text-xs font-mono text-muted-foreground">{user.id.slice(0, 16)}...</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Verified</p>
+                            <p className="text-sm">
+                                {user.emailVerified ? (
+                                    <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Verified</span>
+                                ) : (
+                                    <span className="text-yellow-600">Pending</span>
+                                )}
+                            </p>
                         </div>
                     </div>
                 </CardContent>

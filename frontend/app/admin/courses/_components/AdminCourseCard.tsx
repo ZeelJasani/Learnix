@@ -1,27 +1,3 @@
-/**
- * AdminCourseCard Component — Admin panel ma course card with edit/delete actions
- * AdminCourseCard Component — Course card with edit/delete actions in admin panel
- *
- * Aa client component chhe je admin course grid ma individual course card display kare chhe
- * This is a client component that displays individual course cards in the admin course grid
- *
- * Features:
- * - Course thumbnail (S3 URL via useConstructUrl hook) — Hover zoom effect
- * - Level badge (BEGINNER/INTERMEDIATE/ADVANCED) — Color-coded overlay
- * - DropdownMenu — Edit Course, Preview, Delete course actions
- *   — Admin/Mentor path auto-detect (pathname based basePath)
- * - Category badge — Color-coded with dark mode support
- * - Mentor info — Avatar + name display (conditional)
- * - Meta info — Duration ane chapter count
- *   Meta info — Duration and chapter count
- * - Price display — INR format ma price
- *   Price display — Price in INR format
- * - "Edit Course" CTA button — Course edit page par navigate
- *   "Edit Course" CTA button — Navigates to course edit page
- *
- * AdminCourseCardSkeleton — Loading state skeleton component export kare chhe
- * AdminCourseCardSkeleton — Exports loading state skeleton component
- */
 "use client";
 
 import { AdminCourseType } from "@/app/data/admin/admin-get-courses";
@@ -31,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import { ArrowRight, Eye, MoreVertical, Pencil, Clock, Users, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Eye, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,202 +17,115 @@ interface iAppProps {
     data: AdminCourseType;
 }
 
-// Map levels to colors
-const levelColors: Record<string, string> = {
-    BEGINNER: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400",
-    INTERMEDIATE: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400",
-    ADVANCED: "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400",
-};
-
-// Map categories to colors
-const categoryColors: Record<string, string> = {
-    Development: "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
-    Design: "border-purple-200 bg-purple-50 text-purple-600 dark:border-purple-900 dark:bg-purple-950/50 dark:text-purple-400",
-    Business: "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-400",
-    Marketing: "border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900 dark:bg-orange-950/50 dark:text-orange-400",
-};
-
 export function AdminCourseCard({ data }: iAppProps) {
     const pathname = usePathname();
     const isMentor = pathname?.startsWith("/mentor");
     const basePath = isMentor ? "/mentor" : "/admin";
 
     const CourseImage = useConstructUrl(data.fileKey);
-    const levelClass = levelColors[data.level] || levelColors.BEGINNER;
-    const categoryClass = categoryColors[data.category] || "border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400";
     const editLink = `${basePath}/courses/${data.id}/edit`;
 
     return (
-        <Card className="group relative overflow-hidden py-0 gap-0 hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20">
-            {/* Image Container */}
+        <Card className="group overflow-hidden py-0 gap-0 border-border/60 hover:border-border transition-all duration-200">
+            {/* Image */}
             <div className="relative overflow-hidden">
-                {/* Level Badge */}
-                <Badge className={`absolute top-3 left-3 z-10 ${levelClass} border-0 shadow-sm`}>
+                <Badge
+                    variant="secondary"
+                    className="absolute top-3 left-3 z-10 text-[10px] uppercase font-semibold tracking-wider"
+                >
                     {data.level}
                 </Badge>
 
-                {/* Admin Dropdown Menu */}
                 <div className="absolute top-3 right-3 z-10">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="bg-black/40 hover:bg-black/60 border-none text-white shadow-lg">
-                                <MoreVertical className="size-4" />
+                            <Button variant="secondary" size="icon" className="h-7 w-7 bg-black/40 hover:bg-black/60 border-none text-white">
+                                <MoreVertical className="size-3.5" />
                             </Button>
                         </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                            align="end"
-                            className="w-48 bg-[#2D2D2D] border-gray-700 text-gray-200"
-                        >
-                            <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
+                        <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem asChild className="cursor-pointer">
                                 <Link href={editLink}>
-                                    <Pencil className="size-4 mr-2" />
+                                    <Pencil className="size-3.5 mr-2" />
                                     Edit Course
                                 </Link>
                             </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild className="cursor-pointer hover:!bg-gray-700 focus:!bg-gray-700 hover:!text-white">
+                            <DropdownMenuItem asChild className="cursor-pointer">
                                 <Link href={`/courses/${data.slug || data.id}`}>
-                                    <Eye className="size-4 mr-2" />
+                                    <Eye className="size-3.5 mr-2" />
                                     Preview
                                 </Link>
                             </DropdownMenuItem>
-
-                            <DropdownMenuSeparator className="bg-gray-700" />
-
-                            <DropdownMenuItem asChild className="cursor-pointer text-red-400 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400">
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
                                 <Link href={`${basePath}/courses/${data.id}/delete`}>
-                                    <Trash2 className="size-4 mr-2" />
-                                    Delete course
+                                    <Trash2 className="size-3.5 mr-2" />
+                                    Delete
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
 
-                {/* Image with hover zoom */}
-                <div className="overflow-hidden">
-                    <Image
-                        width={600}
-                        height={400}
-                        className="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
-                        src={CourseImage}
-                        alt={data.title}
-                    />
-                </div>
-
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Image
+                    width={600}
+                    height={400}
+                    className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    src={CourseImage}
+                    alt={data.title}
+                />
             </div>
 
-            <CardContent className="p-5">
-                {/* Category Tag & Mentor Info */}
-                <div className="flex items-center justify-between mb-3">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${categoryClass}`}>
-                        {data.category}
-                    </span>
-
+            <CardContent className="p-4 space-y-3">
+                {/* Category + Mentor */}
+                <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">{data.category}</span>
                     {data.mentor && (
-                        <div className="flex items-center gap-2" title={data.mentor.name}>
-                            <span className="text-xs text-muted-foreground hidden lg:inline-block max-w-[100px] truncate">
-                                {data.mentor.name}
-                            </span>
-                            <Avatar className="h-6 w-6">
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-muted-foreground truncate max-w-[80px]">{data.mentor.name}</span>
+                            <Avatar className="h-5 w-5">
                                 <AvatarImage src={data.mentor.image} alt={data.mentor.name} />
-                                <AvatarFallback>{data.mentor.name?.substring(0, 2).toUpperCase() || "ME"}</AvatarFallback>
+                                <AvatarFallback className="text-[8px]">
+                                    {data.mentor.name?.substring(0, 2).toUpperCase() || "ME"}
+                                </AvatarFallback>
                             </Avatar>
                         </div>
                     )}
                 </div>
 
                 {/* Title */}
-                <Link
-                    href={editLink}
-                    className="font-semibold text-lg line-clamp-2 hover:text-primary transition-colors block mb-2 group-hover:text-primary"
-                >
-                    {data.title}
+                <Link href={editLink} className="block">
+                    <h3 className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors leading-snug">
+                        {data.title}
+                    </h3>
                 </Link>
 
-                {/* Description */}
-                <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed mb-4">
-                    {data.smallDescription}
-                </p>
-
-                {/* Meta Info */}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-1.5">
-                        <Clock className="size-4" />
-                        <span>{data.duration}h</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <Users className="size-4" />
-                        <span>{data.chapterCount || 0} chapters</span>
-                    </div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-border/50 pt-4 flex items-center justify-between">
-                    {/* Price */}
-                    <div>
-                        <span className="text-2xl font-bold text-primary">
-                            ₹{data.price}
-                        </span>
-                    </div>
-
-                    {/* CTA Button */}
-                    <Link
-                        href={editLink}
-                        className={buttonVariants({
-                            variant: "default",
-                            size: "sm",
-                            className: "group/btn gap-1"
-                        })}
-                    >
-                        Edit Course
-                        <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
-                    </Link>
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-2 border-t border-border/40">
+                    <span className="text-base font-semibold">₹{data.price}</span>
+                    <span className="text-xs text-muted-foreground">{data.chapterCount || 0} chapters • {data.duration}h</span>
                 </div>
             </CardContent>
         </Card>
     );
 }
 
-
-
 export function AdminCourseCardSkeleton() {
     return (
-        <Card className="group relative py-0 gap-0 overflow-hidden">
-            <div className="relative">
-                <div className="absolute top-3 left-3 z-10">
-                    <Skeleton className="h-6 w-20 rounded-full" />
+        <Card className="overflow-hidden py-0 gap-0">
+            <Skeleton className="w-full aspect-video" />
+            <CardContent className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-5 w-5 rounded-full" />
                 </div>
-                <div className="absolute top-3 right-3 z-10">
-                    <Skeleton className="size-8 rounded-md" />
-                </div>
-                <Skeleton className="w-full aspect-video" />
-            </div>
-
-            <CardContent className="p-5">
-                <Skeleton className="h-5 w-20 rounded-full mb-3" />
-
-                <div className="space-y-2 mb-4">
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-3/4" />
-                </div>
-
-                <div className="space-y-2 mb-4">
+                <div className="space-y-1.5">
                     <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-4 w-3/4" />
                 </div>
-
-                <div className="flex items-center gap-4 mb-4">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-4 w-20" />
-                </div>
-
-                <div className="border-t pt-4 flex items-center justify-between">
-                    <Skeleton className="h-8 w-20" />
-                    <Skeleton className="h-9 w-28 rounded-md" />
+                <div className="flex items-center justify-between pt-2 border-t">
+                    <Skeleton className="h-5 w-14" />
+                    <Skeleton className="h-3 w-24" />
                 </div>
             </CardContent>
         </Card>
