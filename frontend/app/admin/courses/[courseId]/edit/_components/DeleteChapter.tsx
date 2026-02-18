@@ -1,19 +1,3 @@
-/**
- * DeleteChapter Component — Chapter delete karva mate confirmation AlertDialog
- * DeleteChapter Component — Confirmation AlertDialog for deleting a chapter
- *
- * Aa component chhe je CourseStructure ma chapter ni baaju ma Trash2 icon button provide kare chhe
- * This component provides a Trash2 icon button next to the chapter in CourseStructure
- *
- * Features:
- * - AlertDialog — "Are you absolutely sure?" confirmation popup
- * - deleteChapter server action — Backend API thi chapter permanently delete kare chhe
- *   deleteChapter server action — Permanently deletes chapter via backend API
- * - tryCatch wrapper — Server action error handling
- * - Loading state — "Deleting..." text while pending
- * - Toast feedback — Success/error messages
- * - Revalidates admin + mentor course edit paths
- */
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { tryCatch } from "@/hooks/try-catch";

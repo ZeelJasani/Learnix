@@ -55,7 +55,7 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8">
+    <div className="space-y-8">
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((stat) => (

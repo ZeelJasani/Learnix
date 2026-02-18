@@ -1,25 +1,3 @@
-/**
- * CourseStructure Component — Chapters ane lessons nu drag-and-drop reorderable tree view
- * CourseStructure Component — Drag-and-drop reorderable tree view of chapters and lessons
- *
- * Aa client component chhe je course ni chapter → lesson hierarchy manage kare chhe
- * This is a client component that manages the course chapter → lesson hierarchy
- *
- * Features:
- * - @dnd-kit — Drag-and-drop reordering (PointerSensor + KeyboardSensor)
- * - SortableContext — Chapters ane lessons independently sortable chhe
- *   SortableContext — Chapters and lessons are independently sortable
- * - Collapsible chapters — ChevronDown/Right toggle for each chapter
- * - GripVertical handle — Drag handle for chapters ane lessons
- *   GripVertical handle — Drag handle for chapters and lessons
- * - reorderChapters / reorderLesson server actions — Backend ma order persist kare chhe
- *   reorderChapters / reorderLesson server actions — Persists order in backend
- * - NewChapterModel / NewLessonModel — New items create karva mate dialogs
- *   NewChapterModel / NewLessonModel — Dialogs for creating new items
- * - DeleteChapter / DeleteLesson — Delete confirmation components
- * - Optimistic UI — Rollback on error with toast notifications
- * - Admin/Mentor path auto-detect — pathname based basePath for links
- */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

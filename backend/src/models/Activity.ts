@@ -18,7 +18,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 // Activity types / Activity types
-export type ActivityType = 'ASSIGNMENT' | 'QUIZ' | 'PROJECT' | 'READING' | 'VIDEO';
+export type ActivityType = 'ASSIGNMENT' | 'QUIZ' | 'PROJECT' | 'READING' | 'VIDEO' | 'LIVE_SESSION';
 
 /**
  * Activity document interface
@@ -33,6 +33,9 @@ export interface IActivity extends Document {
     startDate: Date | null;             // Start date (optional)
     dueDate: Date | null;               // Due date (optional)
     courseId: mongoose.Types.ObjectId;   // Associated course
+    fileKeys: string[];                 // S3 file keys (PDFs, docs, videos)
+    links: string[];                    // External links (blog URLs, etc.)
+    content: string | null;             // Rich text content (project details, etc.)
     createdAt: Date;
     updatedAt: Date;
 }
@@ -54,7 +57,7 @@ const activitySchema = new Schema<IActivity>(
         // Activity type - type of content
         type: {
             type: String,
-            enum: ['ASSIGNMENT', 'QUIZ', 'PROJECT', 'READING', 'VIDEO'],
+            enum: ['ASSIGNMENT', 'QUIZ', 'PROJECT', 'READING', 'VIDEO', 'LIVE_SESSION'],
             default: 'ASSIGNMENT',
         },
         // Start date - kyare activity visible thay chhe
@@ -67,6 +70,21 @@ const activitySchema = new Schema<IActivity>(
         // Due date - activity deadline
         dueDate: {
             type: Date,
+            default: null,
+        },
+        // S3 file keys for uploaded files (PDFs, docs, videos)
+        fileKeys: {
+            type: [String],
+            default: [],
+        },
+        // External links (blog URLs, etc.)
+        links: {
+            type: [String],
+            default: [],
+        },
+        // Rich text content (project details, etc.)
+        content: {
+            type: String,
             default: null,
         },
         // Associated course nu reference

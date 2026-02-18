@@ -1,16 +1,20 @@
 "use client"
 
 import { useEffect, useState, useMemo, useCallback } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, Loader2, Activity } from "lucide-react"
+import {
+    Plus, Search, Loader2, FileText, FileQuestion, Video,
+    BookOpen, Layout, Trash2, MoreHorizontal, ChevronDown, ChevronRight
+} from "lucide-react"
 import { toast } from "sonner"
+import { CreateActivityDialog } from "./_components/create-activity-dialog"
+import { cn } from "@/lib/utils"
 import { useConstructUrl } from "@/hooks/use-construct-url"
 import Image from "next/image"
-import { ActivityListItem } from "./_components/activity-list-item"
-import { CreateActivityDialog } from "./_components/create-activity-dialog"
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 
 interface CourseType {
     _id: string
@@ -28,43 +32,159 @@ interface ActivityType {
     courseId: string | { _id: string; title: string }
     dueDate?: string
     startDate?: string
-    completedCount?: number
 }
 
-function CourseCard({ course, isSelected, onClick }: { course: CourseType; isSelected: boolean; onClick: () => void }) {
+const typeIcons: Record<string, any> = {
+    assignment: FileText,
+    quiz: FileQuestion,
+    video: Video,
+    reading: BookOpen,
+    project: Layout,
+}
+
+const typeColors: Record<string, string> = {
+    assignment: "text-blue-400",
+    quiz: "text-amber-400",
+    video: "text-purple-400",
+    reading: "text-emerald-400",
+    project: "text-rose-400",
+}
+
+// Course card with its activities
+function CourseActivityCard({
+    course,
+    activities,
+    onAddActivity,
+    onDeleteActivity,
+    deletingId,
+}: {
+    course: CourseType
+    activities: ActivityType[]
+    onAddActivity: (courseId: string) => void
+    onDeleteActivity: (id: string) => void
+    deletingId: string | null
+}) {
     const imageUrl = useConstructUrl(course.fileKey || "")
+    const [expanded, setExpanded] = useState(true)
+
     return (
-        <button
-            onClick={onClick}
-            className={`w-full text-left rounded-lg border p-3 transition-all duration-150 ${isSelected ? "border-primary bg-primary/5" : "border-border/60 hover:border-border hover:bg-muted/30"
-                }`}
-        >
-            <div className="flex items-center gap-3">
+        <div className="border border-border/50 rounded-lg overflow-hidden hover:border-border/80 transition-colors">
+            {/* Course header */}
+            <div className="flex items-start gap-3 px-4 py-3">
+                <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="text-muted-foreground hover:text-foreground transition-colors shrink-0 mt-0.5"
+                >
+                    {expanded
+                        ? <ChevronDown className="h-4 w-4" />
+                        : <ChevronRight className="h-4 w-4" />
+                    }
+                </button>
+
                 {course.fileKey && (
-                    <Image src={imageUrl} alt="" width={40} height={28} className="rounded object-cover w-10 h-7 shrink-0" />
+                    <Image
+                        src={imageUrl}
+                        alt=""
+                        width={36}
+                        height={24}
+                        className="rounded object-cover w-9 h-6 shrink-0 mt-0.5"
+                    />
                 )}
-                <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{course.title}</p>
-                    {course.status && (
-                        <Badge variant="secondary" className="text-[9px] mt-0.5 h-4 px-1.5">{course.status}</Badge>
+
+                <div className="flex-1">
+                    <p className="text-sm font-medium break-words">{course.title}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                        {activities.length} {activities.length === 1 ? "activity" : "activities"}
+                    </p>
+                </div>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs gap-1 shrink-0"
+                    onClick={() => onAddActivity(course._id || course.id || "")}
+                >
+                    <Plus className="h-3 w-3" />
+                    Add Activity
+                </Button>
+            </div>
+
+            {/* Activities list */}
+            {expanded && (
+                <div className="border-t border-border/30">
+                    {activities.length === 0 ? (
+                        <div className="px-4 py-6 text-center">
+                            <p className="text-xs text-muted-foreground">No activities yet</p>
+                        </div>
+                    ) : (
+                        activities.map((activity, i) => {
+                            const Icon = typeIcons[activity.type?.toLowerCase()] || FileText
+                            const colorClass = typeColors[activity.type?.toLowerCase()] || "text-muted-foreground"
+
+                            return (
+                                <div
+                                    key={activity._id}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-2.5 pl-12 hover:bg-muted/20 transition-colors group",
+                                        i < activities.length - 1 && "border-b border-border/20"
+                                    )}
+                                >
+                                    <Icon className={cn("h-3.5 w-3.5 shrink-0", colorClass)} />
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-medium truncate">{activity.title}</p>
+                                    </div>
+                                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground shrink-0">
+                                        {activity.type?.toLowerCase()}
+                                    </span>
+                                    {activity.dueDate && (
+                                        <span className="text-[10px] text-muted-foreground shrink-0">
+                                            {new Date(activity.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                        </span>
+                                    )}
+
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                                            >
+                                                <MoreHorizontal className="h-3.5 w-3.5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-32">
+                                            <DropdownMenuItem
+                                                onClick={() => onDeleteActivity(activity._id)}
+                                                className="text-destructive focus:text-destructive text-xs"
+                                                disabled={deletingId === activity._id}
+                                            >
+                                                {deletingId === activity._id
+                                                    ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                                                    : <Trash2 className="h-3 w-3 mr-1.5" />
+                                                }
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            )
+                        })
                     )}
                 </div>
-            </div>
-        </button>
+            )}
+        </div>
     )
 }
-
-const activityTypes = ["All", "Assignment", "Quiz", "Project", "Reading", "Video"]
 
 export default function AdminActivitiesPage() {
     const [courses, setCourses] = useState<CourseType[]>([])
     const [activities, setActivities] = useState<ActivityType[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
-    const [selectedType, setSelectedType] = useState("All")
     const [searchQuery, setSearchQuery] = useState("")
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [dialogCourse, setDialogCourse] = useState<string | null>(null)
+    const [dialogCourseId, setDialogCourseId] = useState<string | null>(null)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
+    const [showAll, setShowAll] = useState(false)
 
     const fetchData = useCallback(async () => {
         setIsLoading(true)
@@ -78,7 +198,8 @@ export default function AdminActivitiesPage() {
 
             const coursesList = coursesData?.data?.courses || coursesData?.courses || []
             setCourses(coursesList)
-            setActivities(activitiesData?.activities || [])
+            const raw = activitiesData?.activities
+            setActivities(Array.isArray(raw) ? raw : [])
         } catch {
             toast.error("Failed to load data")
         } finally {
@@ -88,22 +209,31 @@ export default function AdminActivitiesPage() {
 
     useEffect(() => { fetchData() }, [fetchData])
 
-    const filteredActivities = useMemo(() => {
-        return activities.filter((a) => {
-            const courseId = typeof a.courseId === "object" ? a.courseId._id : a.courseId
-            if (selectedCourse && courseId !== selectedCourse) return false
-            if (selectedType !== "All" && a.type?.toLowerCase() !== selectedType.toLowerCase()) return false
-            if (searchQuery && !a.title.toLowerCase().includes(searchQuery.toLowerCase())) return false
-            return true
+    // Group activities by course
+    const courseActivitiesMap = useMemo(() => {
+        const map: Record<string, ActivityType[]> = {}
+        activities.forEach((a) => {
+            if (!a.courseId) return
+            const courseId = typeof a.courseId === "object" ? a.courseId?._id : a.courseId
+            if (!map[courseId]) map[courseId] = []
+            map[courseId].push(a)
         })
-    }, [activities, selectedCourse, selectedType, searchQuery])
+        return map
+    }, [activities])
 
-    const openCreateDialog = (courseId: string | null) => {
-        setDialogCourse(courseId)
-        setDialogOpen(true)
-    }
+    // Filter courses by search
+    const filteredCourses = useMemo(() => {
+        if (!searchQuery) return courses
+        const q = searchQuery.toLowerCase()
+        return courses.filter((c) => {
+            if (c.title.toLowerCase().includes(q)) return true
+            const acts = courseActivitiesMap[c._id || c.id || ""] || []
+            return acts.some(a => a.title.toLowerCase().includes(q))
+        })
+    }, [courses, searchQuery, courseActivitiesMap])
 
     const handleDelete = async (id: string) => {
+        setDeletingId(id)
         try {
             const res = await fetch(`/api/admin/activities/${id}`, { method: "DELETE" })
             if (!res.ok) throw new Error()
@@ -111,100 +241,83 @@ export default function AdminActivitiesPage() {
             fetchData()
         } catch {
             toast.error("Failed to delete activity")
+        } finally {
+            setDeletingId(null)
         }
     }
 
+    const openCreateDialog = (courseId: string | null) => {
+        setDialogCourseId(courseId)
+        setDialogOpen(true)
+    }
+
     return (
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-muted">
-                        <Activity className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-semibold tracking-tight">Activities</h1>
-                        <p className="text-sm text-muted-foreground">{activities.length} total</p>
-                    </div>
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-lg font-semibold">Activities</h1>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        {activities.length} activities across {courses.length} courses
+                    </p>
                 </div>
                 <Button size="sm" onClick={() => openCreateDialog(null)}>
-                    <Plus className="h-4 w-4 mr-1.5" />
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
                     Create Activity
                 </Button>
             </div>
 
+            {/* Search */}
+            <div className="mb-5">
+                <div className="relative max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                        placeholder="Search courses or activities..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 h-8 text-xs"
+                    />
+                </div>
+            </div>
+
             {isLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+            ) : filteredCourses.length === 0 ? (
+                <div className="text-center py-20">
+                    <p className="text-sm text-muted-foreground">No courses found</p>
                 </div>
             ) : (
-                <div className="flex gap-6">
-                    {/* Course Sidebar */}
-                    <div className="w-64 shrink-0 hidden lg:block space-y-2">
-                        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-1 mb-3">Courses</h3>
-                        <button
-                            onClick={() => setSelectedCourse(null)}
-                            className={`w-full text-left text-sm px-3 py-2 rounded-lg transition-colors ${!selectedCourse ? "bg-muted font-medium" : "hover:bg-muted/50 text-muted-foreground"
-                                }`}
-                        >
-                            All Courses
-                        </button>
-                        {courses.map((course) => (
-                            <CourseCard
-                                key={course._id || course.id}
+                <div className="space-y-3">
+                    {(showAll ? filteredCourses : filteredCourses.slice(0, 5)).map((course) => {
+                        const courseId = course._id || course.id || ""
+                        const courseActivities = courseActivitiesMap[courseId] || []
+
+                        return (
+                            <CourseActivityCard
+                                key={courseId}
                                 course={course}
-                                isSelected={selectedCourse === (course._id || course.id)}
-                                onClick={() => setSelectedCourse(course._id || course.id || null)}
+                                activities={courseActivities}
+                                onAddActivity={openCreateDialog}
+                                onDeleteActivity={handleDelete}
+                                deletingId={deletingId}
                             />
-                        ))}
-                    </div>
+                        )
+                    })}
 
-                    {/* Main Content */}
-                    <div className="flex-1 min-w-0 space-y-4">
-                        {/* Filters */}
-                        <div className="flex items-center gap-3">
-                            <div className="relative flex-1 max-w-xs">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search activities..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-9 h-9 text-sm"
-                                />
-                            </div>
-                            <div className="flex gap-1">
-                                {activityTypes.map((type) => (
-                                    <button
-                                        key={type}
-                                        onClick={() => setSelectedType(type)}
-                                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${selectedType === type
-                                                ? "bg-primary text-primary-foreground"
-                                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                            }`}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
+                    {filteredCourses.length > 5 && (
+                        <div className="flex justify-center pt-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() => setShowAll(!showAll)}
+                            >
+                                {showAll ? "Show Less" : `Show More (${filteredCourses.length - 5} more)`}
+                            </Button>
                         </div>
-
-                        {/* Activity List */}
-                        {filteredActivities.length === 0 ? (
-                            <div className="text-center py-16 text-sm text-muted-foreground">
-                                No activities found
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                {filteredActivities.map((activity) => (
-                                    <ActivityListItem
-                                        key={activity._id}
-                                        activity={activity}
-                                        onDelete={() => handleDelete(activity._id)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
             )}
 
@@ -212,7 +325,7 @@ export default function AdminActivitiesPage() {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 availableCourses={courses}
-                preSelectedCourseId={dialogCourse}
+                preSelectedCourseId={dialogCourseId}
                 onCreated={fetchData}
             />
         </div>

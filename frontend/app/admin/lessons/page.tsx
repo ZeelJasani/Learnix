@@ -10,7 +10,7 @@ export default async function AdminLessonsPage() {
     const courses = await adminGetCoursesWithContent();
 
     return (
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="space-y-6">
             <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-muted">
                     <FileText className="h-5 w-5 text-muted-foreground" />

@@ -25,6 +25,12 @@ const LeadershipMember: Member[] = [
         avatar: "/teamimage/loki.jpg",
         isVerified: true,
     },
+    {
+        name: "Sakshi Ghodasara",
+        role: "Co-Founder and CEO",
+        avatar: "/teamimage/loki.jpg",
+        isVerified: true,
+    },
 ];
 
 const EngineeringMember: Member[] = [

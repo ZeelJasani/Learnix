@@ -1,19 +1,4 @@
-/**
- * NewLessonModel Component — Chapter ma navo lesson create karva mate dialog
- * NewLessonModel Component — Dialog for creating new lesson in a chapter
- *
- * Aa component chhe je CourseStructure ma chapter ni ander "New Lesson" button par dialog open kare chhe
- * This component opens a dialog on "New Lesson" button inside a chapter in CourseStructure
- *
- * Features:
- * - react-hook-form + Zod validation — lessonSchema based form
- * - createLesson server action — Backend API thi lesson create kare chhe
- *   createLesson server action — Creates lesson via backend API
- * - Props: courseId + chapterId — Lesson kyaa chapter ma add thase te specify kare chhe
- *   Props: courseId + chapterId — Specifies which chapter to add lesson to
- * - Dialog state management — Open/close with form reset on close
- * - Loading state + Toast feedback
- */
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";

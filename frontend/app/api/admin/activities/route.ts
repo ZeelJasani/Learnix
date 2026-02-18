@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ activities: [] });
         }
 
-        return NextResponse.json({ activities: data.data });
+        return NextResponse.json({ activities: data.data?.activities || data.data || [] });
     } catch (error) {
         console.error("Error fetching activities:", error);
         return NextResponse.json({ error: "Failed to fetch activities" }, { status: 500 });

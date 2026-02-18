@@ -17,7 +17,7 @@ export default async function AdminMentorsPage() {
     const mentors = await adminGetMentors();
 
     return (
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="space-y-6">
             <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-muted">
                     <GraduationCap className="h-5 w-5 text-muted-foreground" />

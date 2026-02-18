@@ -26,7 +26,7 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
     const users = await getAllUsers(search);
 
     return (
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-muted">
