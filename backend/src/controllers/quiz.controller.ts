@@ -129,6 +129,31 @@ export class QuizController {
     }
 
     /**
+     * Quiz taking mate kadho (correct answers vagar)
+     * Get quiz for taking (without correct answers)
+     *
+     * Students mate - correct answers strip kare chhe.
+     * For students - strips correct answers from response.
+     *
+     * @route GET /api/quizzes/:id/for-taking
+     */
+    static async getForTaking(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const userId = req.user!.id;
+            const quiz = await QuizService.getQuizForTaking(id, userId);
+
+            if (!quiz) {
+                throw ApiError.notFound('Quiz not found');
+            }
+
+            ApiResponse.success(res, quiz);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * Course ni quizzes kadho / Get quizzes for a course
      *
      * Course ID dwara badha quiz records return kare chhe.
@@ -141,6 +166,22 @@ export class QuizController {
             const { courseId } = req.params;
             const quizzes = await QuizService.getQuizzesByCourse(courseId);
             ApiResponse.success(res, quizzes);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Navo quiz attempt start karo / Start a new quiz attempt
+     *
+     * @route POST /api/quizzes/:id/start
+     */
+    static async startAttempt(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const userId = req.user!.id;
+            const attempt = await QuizService.startQuizAttempt(id, userId);
+            ApiResponse.created(res, attempt);
         } catch (error) {
             next(error);
         }
@@ -168,6 +209,50 @@ export class QuizController {
             if (error instanceof z.ZodError) {
                 throw ApiError.badRequest(error.errors[0].message);
             }
+            next(error);
+        }
+    }
+
+    /**
+     * Attempt ID dwara quiz submit karo / Submit quiz by attempt ID
+     *
+     * Frontend pattern: POST /api/quizzes/attempts/:attemptId/submit
+     *
+     * @route POST /api/quizzes/attempts/:attemptId/submit
+     */
+    static async submitAttemptById(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { attemptId } = req.params;
+            const userId = req.user!.id;
+            const data = submitQuizSchema.parse(req.body);
+
+            const attempt = await QuizService.submitQuizAttempt(attemptId, userId, data);
+            ApiResponse.created(res, attempt);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                throw ApiError.badRequest(error.errors[0].message);
+            }
+            next(error);
+        }
+    }
+
+    /**
+     * Specific attempt kadho / Get a specific attempt by ID
+     *
+     * @route GET /api/quizzes/attempts/:attemptId
+     */
+    static async getAttemptById(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { attemptId } = req.params;
+            const userId = req.user!.id;
+            const attempt = await QuizService.getAttemptById(attemptId, userId);
+
+            if (!attempt) {
+                throw ApiError.notFound('Attempt not found');
+            }
+
+            ApiResponse.success(res, attempt);
+        } catch (error) {
             next(error);
         }
     }

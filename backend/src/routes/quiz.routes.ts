@@ -43,14 +43,26 @@ router.get('/course/:courseId', optionalVerifyClerkToken, optionalRequireUser, Q
 router.use(verifyClerkToken);
 router.use(requireUser);
 
+// Quiz taking mate kadho (correct answers vagar) / Get quiz for taking (without answers)
+router.get('/:id/for-taking', QuizController.getForTaking);
+
 // User quiz levi shake ke nahi check karo / Check if user can take quiz
 router.get('/:id/can-attempt', QuizController.canAttempt);
+
+// Navo quiz attempt start karo / Start a new quiz attempt
+router.post('/:id/start', QuizController.startAttempt);
 
 // Quiz attempt submit karo / Submit quiz attempt
 router.post('/:id/attempt', QuizController.submitAttempt);
 
 // Attempt history kadho / Get attempt history
 router.get('/:id/attempts', QuizController.getAttemptHistory);
+
+// Quiz attempt submit karo (frontend pattern) / Submit quiz attempt
+router.post('/attempts/:attemptId/submit', QuizController.submitAttemptById);
+
+// Specific attempt kadho / Get a specific attempt
+router.get('/attempts/:attemptId', QuizController.getAttemptById);
 
 // ===== Admin/Instructor Routes / એડમિન/ઇન્સ્ટ્રક્ટર રાઉટ્સ =====
 // Quiz CRUD - faqat admin access kari shake / Quiz CRUD - admin access only

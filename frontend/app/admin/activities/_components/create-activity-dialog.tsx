@@ -1,18 +1,21 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { useAuth } from "@clerk/nextjs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import {
     Loader2, FileText, FileQuestion, Video, BookOpen, Layout,
-    Upload, X, Plus, Link as LinkIcon, File, Radio
+    Upload, X, Plus, Link as LinkIcon, File, Radio, Clock, Target, Trash2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { QuizAPI, type Question } from "@/lib/quiz-api"
 
 const activityTypes = [
     { value: "assignment", label: "Assignment", icon: FileText, description: "Upload PDF with dates" },
@@ -209,6 +212,7 @@ function LinksInput({ links, onLinksChange }: { links: string[]; onLinksChange: 
 }
 
 export function CreateActivityDialog({ open, onOpenChange, availableCourses, preSelectedCourseId, onCreated }: CreateActivityDialogProps) {
+    const { getToken } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedCourseId, setSelectedCourseId] = useState(preSelectedCourseId || "")
     const [type, setType] = useState("assignment")
@@ -221,6 +225,14 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
     const [content, setContent] = useState("")
     const [sessionDuration, setSessionDuration] = useState("")
 
+    // Quiz-specific state
+    const [quizQuestions, setQuizQuestions] = useState<Question[]>([])
+    const [quizPassingScore, setQuizPassingScore] = useState(70)
+    const [quizTimeLimit, setQuizTimeLimit] = useState<string>("")
+    const [quizShuffleQuestions, setQuizShuffleQuestions] = useState(false)
+    const [quizShowCorrectAnswers, setQuizShowCorrectAnswers] = useState(true)
+    const [quizIsPublished, setQuizIsPublished] = useState(true)
+
     const resetForm = () => {
         setTitle("")
         setDescription("")
@@ -232,6 +244,40 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
         setLinks([])
         setContent("")
         setSessionDuration("")
+        setQuizQuestions([])
+        setQuizPassingScore(70)
+        setQuizTimeLimit("")
+        setQuizShuffleQuestions(false)
+        setQuizShowCorrectAnswers(true)
+        setQuizIsPublished(true)
+    }
+
+    // Quiz question helpers
+    const addQuizQuestion = () => {
+        setQuizQuestions([...quizQuestions, {
+            type: "multiple_choice",
+            question: "",
+            options: ["", "", "", ""],
+            correctAnswer: "",
+            explanation: "",
+            points: 1,
+        }])
+    }
+    const removeQuizQuestion = (index: number) => setQuizQuestions(quizQuestions.filter((_, i) => i !== index))
+    const updateQuizQuestion = (index: number, updates: Partial<Question>) => {
+        setQuizQuestions(quizQuestions.map((q, i) => i === index ? { ...q, ...updates } : q))
+    }
+    const addQuizOption = (qi: number) => {
+        const q = quizQuestions[qi]
+        if (q.options) updateQuizQuestion(qi, { options: [...q.options, ""] })
+    }
+    const removeQuizOption = (qi: number, oi: number) => {
+        const q = quizQuestions[qi]
+        if (q.options && q.options.length > 2) updateQuizQuestion(qi, { options: q.options.filter((_, i) => i !== oi) })
+    }
+    const updateQuizOption = (qi: number, oi: number, value: string) => {
+        const q = quizQuestions[qi]
+        if (q.options) updateQuizQuestion(qi, { options: q.options.map((o, i) => i === oi ? value : o) })
     }
 
     const handleSubmit = async () => {
@@ -245,12 +291,53 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
         if (type === "video" && files.length === 0) {
             return toast.error("Please upload a video")
         }
+        if (type === "quiz") {
+            if (quizQuestions.length === 0) return toast.error("Add at least one question")
+            for (let i = 0; i < quizQuestions.length; i++) {
+                const q = quizQuestions[i]
+                if (!q.question.trim()) return toast.error(`Question ${i + 1}: Text is required`)
+                if ((q.type === "multiple_choice" || q.type === "one_choice_answer") && (!q.options || q.options.length < 2)) {
+                    return toast.error(`Question ${i + 1}: At least 2 options required`)
+                }
+                if (q.type !== "true_false" && !q.correctAnswer) {
+                    return toast.error(`Question ${i + 1}: Select a correct answer`)
+                }
+            }
+        }
 
         const anyUploading = files.some(f => f.uploading)
         if (anyUploading) return toast.error("Please wait for uploads to complete")
 
         setIsSubmitting(true)
         try {
+            // For quiz type, create the quiz directly (no activity needed)
+            if (type === "quiz") {
+                const token = await getToken()
+                if (!token) return toast.error("Authentication required")
+                const quizData = {
+                    title: title.trim(),
+                    description: description.trim() || null,
+                    courseId: selectedCourseId,
+                    questions: quizQuestions,
+                    passingScore: quizPassingScore,
+                    timeLimit: quizTimeLimit ? Number(quizTimeLimit) : null,
+                    allowedAttempts: 0,
+                    shuffleQuestions: quizShuffleQuestions,
+                    showCorrectAnswers: quizShowCorrectAnswers,
+                    isPublished: quizIsPublished,
+                }
+                const response = await QuizAPI.createQuiz(quizData, token)
+                if (response.success) {
+                    toast.success("Quiz created successfully")
+                    resetForm()
+                    onOpenChange(false)
+                    onCreated()
+                } else {
+                    toast.error(response.message || "Failed to create quiz")
+                }
+                return
+            }
+
             const res = await fetch("/api/admin/activities", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -335,7 +422,7 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
                     {/* Common: Title */}
                     <div className="space-y-1.5">
                         <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Title</Label>
-                        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Activity title" className="h-9 text-sm" />
+                        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === "quiz" ? "Quiz title" : "Activity title"} className="h-9 text-sm" />
                     </div>
 
                     {/* Common: Description */}
@@ -371,12 +458,147 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
                     )}
 
                     {type === "quiz" && (
-                        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-center space-y-2">
-                            <FileQuestion className="h-6 w-6 mx-auto text-muted-foreground" />
-                            <p className="text-xs text-muted-foreground">
-                                After creating this activity, use the <strong>Create Quiz</strong> button to build your quiz with questions and answers.
-                            </p>
-                        </div>
+                        <>
+                            {/* Quiz Settings */}
+                            <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+                                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Quiz Settings</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                                            <Target className="h-3 w-3" /> Passing Score (%)
+                                        </Label>
+                                        <Input type="number" min={0} max={100} value={quizPassingScore} onChange={(e) => setQuizPassingScore(parseInt(e.target.value) || 70)} className="h-8 text-xs" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                                            <Clock className="h-3 w-3" /> Time Limit (min)
+                                        </Label>
+                                        <Input type="number" min={1} value={quizTimeLimit} onChange={(e) => setQuizTimeLimit(e.target.value)} placeholder="No limit" className="h-8 text-xs" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2 pt-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">Shuffle Questions</span>
+                                        <Switch checked={quizShuffleQuestions} onCheckedChange={setQuizShuffleQuestions} />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">Show Correct Answers</span>
+                                        <Switch checked={quizShowCorrectAnswers} onCheckedChange={setQuizShowCorrectAnswers} />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">Publish Immediately</span>
+                                        <Switch checked={quizIsPublished} onCheckedChange={setQuizIsPublished} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Questions Builder */}
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Questions ({quizQuestions.length})</p>
+                                </div>
+
+                                {quizQuestions.map((q, qi) => (
+                                    <div key={qi} className="rounded-lg border border-border/60 bg-muted/10 p-3 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-medium">Question {qi + 1}</span>
+                                            <button type="button" onClick={() => removeQuizQuestion(qi)} className="text-muted-foreground hover:text-destructive">
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+
+                                        {/* Question Type */}
+                                        <Select value={q.type} onValueChange={(val: Question["type"]) => {
+                                            const updates: Partial<Question> = { type: val }
+                                            if (val === "multiple_choice" || val === "one_choice_answer") {
+                                                updates.options = ["", "", "", ""]; updates.correctAnswer = ""
+                                            } else if (val === "true_false") {
+                                                updates.options = undefined; updates.correctAnswer = false
+                                            } else if (val === "fill_blank") {
+                                                updates.options = undefined; updates.correctAnswer = ""
+                                            }
+                                            updateQuizQuestion(qi, updates)
+                                        }}>
+                                            <SelectTrigger className="h-8 text-xs">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="one_choice_answer">One Choice Answer</SelectItem>
+                                                <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
+                                                <SelectItem value="true_false">True / False</SelectItem>
+                                                <SelectItem value="fill_blank">Fill in the Blank</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+
+                                        {/* Question Text */}
+                                        <Textarea value={q.question} onChange={(e) => updateQuizQuestion(qi, { question: e.target.value })} placeholder="Enter your question..." rows={2} className="text-xs resize-none" />
+
+                                        {/* Options for choice questions */}
+                                        {(q.type === "multiple_choice" || q.type === "one_choice_answer") && (
+                                            <div className="space-y-1.5">
+                                                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Options</Label>
+                                                {q.options?.map((opt, oi) => (
+                                                    <div key={oi} className="flex gap-1.5">
+                                                        <Input value={opt} onChange={(e) => updateQuizOption(qi, oi, e.target.value)} placeholder={`Option ${oi + 1}`} className="h-8 text-xs flex-1" />
+                                                        {q.options && q.options.length > 2 && (
+                                                            <button type="button" onClick={() => removeQuizOption(qi, oi)} className="text-muted-foreground hover:text-foreground px-1">
+                                                                <X className="h-3 w-3" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                                <Button type="button" variant="outline" size="sm" onClick={() => addQuizOption(qi)} className="h-7 text-[10px]">
+                                                    <Plus className="h-3 w-3 mr-1" /> Add Option
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {/* Correct Answer */}
+                                        <div className="space-y-1">
+                                            <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Correct Answer</Label>
+                                            {(q.type === "multiple_choice" || q.type === "one_choice_answer") && (
+                                                <Select value={q.correctAnswer as string} onValueChange={(val) => updateQuizQuestion(qi, { correctAnswer: val })}>
+                                                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select correct answer" /></SelectTrigger>
+                                                    <SelectContent>
+                                                        {q.options?.map((opt, i) => opt.trim() && (
+                                                            <SelectItem key={i} value={opt}>{opt}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                            {q.type === "true_false" && (
+                                                <Select value={String(q.correctAnswer)} onValueChange={(val) => updateQuizQuestion(qi, { correctAnswer: val === "true" })}>
+                                                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="true">True</SelectItem>
+                                                        <SelectItem value="false">False</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                            {q.type === "fill_blank" && (
+                                                <Input value={q.correctAnswer as string} onChange={(e) => updateQuizQuestion(qi, { correctAnswer: e.target.value })} placeholder="Enter correct answer" className="h-8 text-xs" />
+                                            )}
+                                        </div>
+
+                                        {/* Points & Explanation */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="space-y-1">
+                                                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Points</Label>
+                                                <Input type="number" min={1} value={q.points} onChange={(e) => updateQuizQuestion(qi, { points: parseInt(e.target.value) || 1 })} className="h-8 text-xs" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Explanation</Label>
+                                                <Input value={q.explanation || ""} onChange={(e) => updateQuizQuestion(qi, { explanation: e.target.value })} placeholder="Optional" className="h-8 text-xs" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <Button type="button" variant="outline" size="sm" onClick={addQuizQuestion} className="w-full h-8 text-xs">
+                                    <Plus className="h-3 w-3 mr-1.5" /> Add Question
+                                </Button>
+                            </div>
+                        </>
                     )}
 
                     {type === "project" && (
