@@ -129,15 +129,17 @@ export class LiveSessionService {
         try {
             const streamClient = getStreamClient();
             await streamClient.upsertUsers({
-                users: [{
-                    id: user.id, // Clerk ID
-                    name: user.name,
-                    image: user.image,
-                    role: user.role === 'admin' ? 'admin' : 'user',
-                    custom: {
-                        email: user.email,
+                users: {
+                    [user.id]: {
+                        id: user.id, // Clerk ID
+                        name: user.name,
+                        image: user.image,
+                        role: user.role === 'admin' ? 'admin' : 'user',
+                        custom: {
+                            email: user.email,
+                        }
                     }
-                }]
+                }
             });
         } catch (error) {
             console.error('Error syncing user to Stream:', error);
@@ -182,6 +184,25 @@ export class LiveSessionService {
             sessions: normalizedSessions as unknown as ILiveSession[],
             canManage,
             isEnrolled: enrollment.enrolled || canManage,
+        };
+    }
+
+    /**
+     * Mentor na sessions list karo / List sessions by mentor
+     */
+    static async listByMentor(userId: string): Promise<{ sessions: ILiveSession[] }> {
+        const sessions = await LiveSession.find({ hostUserId: new mongoose.Types.ObjectId(userId) })
+            .populate('courseId', 'title')
+            .sort({ startsAt: -1 })
+            .lean({ virtuals: true });
+
+        const normalizedSessions = sessions.map((session: any) => ({
+            ...session,
+            id: session.id || session._id?.toString(),
+        }));
+
+        return {
+            sessions: normalizedSessions as unknown as ILiveSession[],
         };
     }
 
@@ -237,7 +258,7 @@ export class LiveSessionService {
                 name: user.name,
                 email: user.email,
                 image: user.image || undefined,
-                role: user.role
+                role: user.role ?? undefined
             });
         }
 
