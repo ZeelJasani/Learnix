@@ -19,6 +19,7 @@ import { ActivityService } from '../services/activity.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
 import { logger } from '../utils/logger';
+import { OwnershipService } from '../utils/ownership';
 
 /**
  * ActivityController - એક્ટિવિટી સંબંધિત API endpoints
@@ -100,6 +101,8 @@ export class ActivityController {
                 throw new Error("Missing required fields: title or courseId");
             }
 
+            await OwnershipService.verifyCourseOwnership(courseId, req.user!.id, req.user!.role);
+
             logger.debug(`[ActivityController] Creating activity '${title}' for course '${courseId}'`);
 
             // Activity create karo / Create the activity
@@ -126,6 +129,7 @@ export class ActivityController {
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyActivityOwnership(id, req.user!.id, req.user!.role);
             const activity = await ActivityService.update(id, req.body);
 
             if (!activity) {
@@ -149,6 +153,7 @@ export class ActivityController {
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyActivityOwnership(id, req.user!.id, req.user!.role);
             const deleted = await ActivityService.delete(id);
 
             if (!deleted) {

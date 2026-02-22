@@ -17,6 +17,7 @@ import { UserRequest } from '../middleware/requireUser';
 import { ChapterService } from '../services/chapter.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
+import { OwnershipService } from '../utils/ownership';
 
 /**
  * ChapterController - ચેપ્ટર સંબંધિત API endpoints
@@ -63,6 +64,9 @@ export class ChapterController {
                 throw new Error("Missing required fields: name or courseId");
             }
 
+            // Verify ownership before creating chapter
+            await OwnershipService.verifyCourseOwnership(courseId, req.user!.id, req.user!.role);
+
             logger.debug(`[ChapterController] Creating chapter '${name}' for course '${courseId}'`);
 
             // Chapter create karo / Create the chapter
@@ -92,6 +96,7 @@ export class ChapterController {
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyChapterOwnership(id, req.user!.id, req.user!.role);
             const chapter = await ChapterService.update(id, req.body);
             ApiResponse.success(res, chapter);
         } catch (error) {
@@ -110,6 +115,7 @@ export class ChapterController {
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyChapterOwnership(id, req.user!.id, req.user!.role);
             await ChapterService.delete(id);
             ApiResponse.success(res, { deleted: true });
         } catch (error) {
@@ -134,6 +140,8 @@ export class ChapterController {
             if (!courseId || !items || !Array.isArray(items)) {
                 throw new Error("Invalid reorder payload: missing courseId or items array");
             }
+
+            await OwnershipService.verifyCourseOwnership(courseId, req.user!.id, req.user!.role);
 
             logger.debug(`[ChapterController] Reordering ${items.length} chapters for course ${courseId}`);
 

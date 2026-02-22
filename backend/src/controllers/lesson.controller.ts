@@ -19,6 +19,7 @@ import { UserRequest } from '../middleware/requireUser';
 import { LessonService } from '../services/lesson.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
+import { OwnershipService } from '../utils/ownership';
 
 /**
  * LessonController - લેસન સંબંધિત API endpoints
@@ -106,6 +107,8 @@ export class LessonController {
                 throw new Error("Missing required fields: name, chapterId or courseId");
             }
 
+            await OwnershipService.verifyChapterOwnership(chapterId, req.user!.id, req.user!.role);
+
             logger.debug(`[LessonController] Creating lesson '${name}' in chapter '${chapterId}'`);
 
             // Lesson create karo / Create the lesson
@@ -135,6 +138,7 @@ export class LessonController {
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyLessonOwnership(id, req.user!.id, req.user!.role);
             const lesson = await LessonService.update(id, req.body);
             ApiResponse.success(res, lesson);
         } catch (error) {
@@ -153,6 +157,7 @@ export class LessonController {
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+            await OwnershipService.verifyLessonOwnership(id, req.user!.id, req.user!.role);
             await LessonService.delete(id);
             ApiResponse.success(res, { deleted: true });
         } catch (error) {
@@ -171,6 +176,7 @@ export class LessonController {
     static async reorder(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { chapterId, items } = req.body;
+            await OwnershipService.verifyChapterOwnership(chapterId, req.user!.id, req.user!.role);
             await LessonService.reorder(chapterId, items);
             ApiResponse.success(res, { reordered: true });
         } catch (error) {

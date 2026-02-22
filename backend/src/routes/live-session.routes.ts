@@ -44,6 +44,9 @@ router.get('/course/:courseIdOrSlug', LiveSessionController.listByCourse);
 // Admins mate badha sessions list karo / List all sessions for admins
 router.get('/', requireAdmin, LiveSessionController.listAll);
 
+// Mentor na sessions kadho / List mentor's sessions
+router.get('/mentor', requireMentor, LiveSessionController.listByMentor);
+
 // Session create karo - Mentor only, validation sathe / Create session - Mentor only, with validation
 router.post('/', requireMentor, validateBody(createLiveSessionSchema), LiveSessionController.create);
 

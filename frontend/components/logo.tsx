@@ -7,11 +7,12 @@ export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center gap-2', className)}>
             <Image
-                src="/learnix.png"
+                src="/learnix.webp"
                 alt="Learnix Logo"
-                width={32}
-                height={32}
-                className="h-8 w-8"
+                width={128}
+                height={128}
+                className="h-8 w-8 object-contain"
+                unoptimized
             />
             <span className="font-bold text-lg">Learnix</span>
         </div>
@@ -21,11 +22,12 @@ export const Logo = ({ className }: { className?: string }) => {
 export const LogoIcon = ({ className }: { className?: string }) => {
     return (
         <Image
-            src="/learnix.png"
+            src="/learnix.webp"
             alt="Learnix Logo"
-            width={20}
-            height={20}
-            className={cn('size-5', className)}
+            width={128}
+            height={128}
+            className={cn('size-5 object-contain', className)}
+            unoptimized
         />
     )
 }
@@ -33,11 +35,12 @@ export const LogoIcon = ({ className }: { className?: string }) => {
 export const LogoStroke = ({ className }: { className?: string }) => {
     return (
         <Image
-            src="/learnix.png"
+            src="/learnix.webp"
             alt="Learnix Logo"
-            width={28}
-            height={28}
-            className={cn('size-7 w-7', className)}
+            width={128}
+            height={128}
+            className={cn('size-7 w-7 object-contain', className)}
+            unoptimized
         />
     )
 }

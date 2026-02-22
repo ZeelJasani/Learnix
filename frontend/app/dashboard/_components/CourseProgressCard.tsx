@@ -25,7 +25,7 @@ export function CourseProgressCard({ data }: iAppProps) {
                 <Image
                     width={600}
                     height={400}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover"
                     src={thumbnailUrl}
                     alt={data.Course.title}
                 />

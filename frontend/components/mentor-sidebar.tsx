@@ -1,7 +1,7 @@
 // Aa component mentor panel mate sidebar render kare chhe (Dashboard, My Courses, Students)
 // This component renders the mentor panel sidebar with teaching-related navigation and user footer
 import * as React from "react"
-import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen } from "lucide-react"
+import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen, Video } from "lucide-react"
 
 import { SearchForm } from "@/components/search-form"
 import {
@@ -35,6 +35,11 @@ const data = {
         {
             title: "Teaching",
             items: [
+                {
+                    title: "Live Sessions",
+                    url: "/mentor/live-sessions",
+                    icon: Video,
+                },
                 {
                     title: "My Courses",
                     url: "/mentor/courses",

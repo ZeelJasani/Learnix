@@ -70,7 +70,7 @@ export function AdminCourseCard({ data }: iAppProps) {
                 <Image
                     width={600}
                     height={400}
-                    className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    className="w-full aspect-video object-cover"
                     src={CourseImage}
                     alt={data.title}
                 />

@@ -85,6 +85,21 @@ export class LiveSessionController {
     }
 
     /**
+     * Mentor na potana sessions list karo / List mentor's own sessions
+     *
+     * @route GET /api/live-sessions/mentor
+     */
+    static async listByMentor(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = req.user!;
+            const result = await LiveSessionService.listByMentor(user.id);
+            ApiResponse.success(res, result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
      * Live session ma join thao / Join a live session
      *
      * Time-window validation thay chhe - session scheduled time ni aaspaas j join thai shakay.

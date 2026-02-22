@@ -16,7 +16,6 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ReactNode } from "react";
-import learnix from "@/public/learnix.png";
 import Image from "next/image";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -34,7 +33,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             <div className="flex w-full max-w-sm flex-col gap-6">
                 {/* THIS IS THE CORRECTED LINE */}
                 <Link className="flex items-center gap-2 self-center font-medium" href="/">
-                    <Image src={learnix} alt="logo" width={32} height={32} />
+                    <Image src="/learnix.webp" alt="logo" width={128} height={128} className="size-8 object-contain" unoptimized />
                     learnix</Link>
                 {children}
 

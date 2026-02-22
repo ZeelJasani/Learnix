@@ -4,10 +4,17 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Video, Calendar, User, BookOpen, Clock, Loader2, Play, Square, AlertCircle } from "lucide-react";
+import { Video, Calendar, User, BookOpen, Clock, Play, Square, Loader2, MoreVertical, AlertCircle, Layers, BarChart } from "lucide-react";
 import { format, addMinutes } from "date-fns";
 import { toast } from "sonner";
+import { CreateSessionDialog } from "./_components/create-session-dialog";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 interface LiveSession {
     _id: string;
@@ -31,17 +38,28 @@ interface Course {
     level?: string;
 }
 
-export default function AdminLiveSessionsPage() {
+export default function MentorLiveSessionsPage() {
     const [sessions, setSessions] = useState<LiveSession[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [showAllCourses, setShowAllCourses] = useState(false);
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const sessionsRes = await fetch("/api/admin/live-sessions");
+            const [sessionsRes, coursesRes] = await Promise.all([
+                fetch("/api/live-sessions/mentor"),
+                fetch("/api/mentor/courses")
+            ]);
             const sessionsData = await sessionsRes.json();
+            let coursesData = { courses: [] };
+            if (coursesRes.ok) {
+                const json = await coursesRes.json();
+                coursesData = json.data || json;
+            }
             if (sessionsData.sessions) setSessions(sessionsData.sessions);
+            if (coursesData.courses) setCourses(coursesData.courses);
         } catch {
             toast.error("Failed to load data");
         } finally {
@@ -100,6 +118,8 @@ export default function AdminLiveSessionsPage() {
         return new Date() >= addMinutes(start, -15);
     };
 
+    const displayedCourses = showAllCourses ? courses : courses.slice(0, 9);
+
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
@@ -112,7 +132,70 @@ export default function AdminLiveSessionsPage() {
                         <p className="text-sm text-muted-foreground">Manage your live teaching sessions</p>
                     </div>
                 </div>
+                <CreateSessionDialog courses={courses} onSessionCreated={fetchData} />
             </div>
+
+            {/* Schedule by Course Section */}
+            {!isLoading && courses.length > 0 && (
+                <div className="space-y-4">
+                    <h2 className="text-base font-semibold">Schedule by Course</h2>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {displayedCourses.map((course) => (
+                            <Card key={course._id} className="overflow-hidden border-border/60 hover:border-border transition-colors group flex flex-col">
+                                <CardHeader className="p-4 pb-3 flex-none space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <Badge variant="secondary" className="text-[10px] font-medium capitalize bg-muted text-muted-foreground border-transparent">
+                                            {course.status ? course.status.toLowerCase() : 'course'}
+                                        </Badge>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-base font-medium line-clamp-2 leading-snug" title={course.title}>{course.title}</h3>
+                                        <div className="text-[11px] text-muted-foreground mt-1.5 flex items-start gap-1.5 h-8" title={course.smallDescription || "Select to schedule a session"}>
+                                            <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                                            <span className="line-clamp-2 leading-tight">{course.smallDescription || "Select to schedule a session"}</span>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0 space-y-3 mt-auto">
+                                    <div className="space-y-1.5 text-xs text-muted-foreground">
+                                        <div className="flex items-center gap-2">
+                                            <Layers className="h-3 w-3" />
+                                            <span className="truncate">{course.category || "Any Category"}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-3 w-3" />
+                                            <span>{course.duration ? `${course.duration} hours` : "Flexible duration"}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart className="h-3 w-3" />
+                                            <span className="capitalize">{course.level ? course.level.toLowerCase() : "All levels"}</span>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-border/40 grid gap-2">
+                                        <CreateSessionDialog courses={courses} onSessionCreated={fetchData} defaultCourseId={course._id}>
+                                            <Button variant="secondary" className="w-full h-8 text-xs">
+                                                <Video className="h-3.5 w-3.5 mr-2" />
+                                                Schedule Session
+                                            </Button>
+                                        </CreateSessionDialog>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                    {courses.length > 9 && (
+                        <div className="flex justify-center pt-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowAllCourses(!showAllCourses)}
+                            >
+                                {showAllCourses ? "Show Less" : "Show More Courses"}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Existing Sessions Section */}
             <div className="space-y-4">
@@ -143,6 +226,18 @@ export default function AdminLiveSessionsPage() {
                                                 {session.status === "live" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse" />}
                                                 {session.status}
                                             </Badge>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <MoreVertical className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-40">
+                                                    <DropdownMenuItem className="text-destructive text-xs" onClick={() => handleEndSession(id)}>
+                                                        Cancel Session
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                         <div>
                                             <h3 className="text-sm font-medium line-clamp-2 leading-snug">{session.title}</h3>

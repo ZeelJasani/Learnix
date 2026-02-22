@@ -1,0 +1,18 @@
+feat(live-sessions): implement mentor panel live sessions & UI enhancements
+
+- **Backend (Live Sessions)**:
+  - Added `listByMentor` to `LiveSessionService` and `LiveSessionController` to allow mentors to fetch their own sessions.
+  - Exposed new `GET /api/live-sessions/mentor` route with `requireMentor` permissions.
+  - Updated API parameter typings to use `Promise<{ id: string }>` for Next.js 15 route dynamic parameters.
+- **Frontend (Mentor Panel)**:
+  - Copied the "Schedule by Course" grid functionality to the new `app/mentor/live-sessions/page.tsx`, mapped to mentor-specific APIs.
+  - Added "Live Sessions" to the `mentor-sidebar.tsx` navigation.
+- **Frontend (Admin Panel)**:
+  - Reverted the Admin Live Sessions page to solely act as a global session overview list, removing the course grid per user request.
+  - Refined course card UI aesthetics:
+    - Adjusted `smallDescription` text wrapping to consistently span up to 2 lines cleanly.
+    - Updated metadata icons: Replaced `Calendar` with `Layers` (for Category), and `User` with `BarChart` (for Level).
+  - Modified `CreateSessionDialog` to automatically lock-in and select the course when triggered directly from a course card (disabled input).
+- **Other UI Polish**:
+  - Updated SVGs and branding assets across navigations.
+  - Improved layout spacing and border consistencies across dashboard course cards.

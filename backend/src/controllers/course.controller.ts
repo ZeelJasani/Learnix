@@ -16,6 +16,7 @@ import { UserRequest } from '../middleware/requireUser';
 import { CourseService } from '../services/course.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
+import { OwnershipService } from '../utils/ownership';
 
 /**
  * CourseController - કોર્સ સંબંધિત API endpoints
@@ -161,6 +162,10 @@ export class CourseController {
     static async update(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+
+            // Verify ownership before updating / Update karva pahela maliki check karo
+            await OwnershipService.verifyCourseOwnership(id, req.user!.id, req.user!.role);
+
             const course = await CourseService.update(id, req.body);
 
             if (!course) {
@@ -184,6 +189,10 @@ export class CourseController {
     static async delete(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+
+            // Verify ownership before deleting / Delete karva pahela maliki check karo
+            await OwnershipService.verifyCourseOwnership(id, req.user!.id, req.user!.role);
+
             const deleted = await CourseService.delete(id);
 
             if (!deleted) {
