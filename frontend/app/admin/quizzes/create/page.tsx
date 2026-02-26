@@ -12,11 +12,11 @@ import { FileQuestion, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface CreateQuizPageProps {
-    searchParams: { courseId?: string };
+    searchParams: Promise<{ courseId?: string }>;
 }
 
-export default function CreateQuizPage({ searchParams }: CreateQuizPageProps) {
-    const courseId = searchParams.courseId;
+export default async function CreateQuizPage({ searchParams }: CreateQuizPageProps) {
+    const { courseId } = await searchParams;
 
     if (!courseId) {
         redirect("/admin/courses");

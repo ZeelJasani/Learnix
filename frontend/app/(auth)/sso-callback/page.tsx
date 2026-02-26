@@ -23,13 +23,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
+import { useSignIn, useSignUp, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 export default function SSOCallbackPage() {
     const { signIn, isLoaded: signInLoaded } = useSignIn();
     const { signUp, isLoaded: signUpLoaded } = useSignUp();
+    const { handleRedirectCallback } = useClerk();
     const router = useRouter();
 
     useEffect(() => {
@@ -47,17 +48,8 @@ export default function SSOCallbackPage() {
                 }
 
                 // Handle regular OAuth callback
-                const signInAttempt = await signIn?.handleRedirectCallback?.();
-                if (signInAttempt?.status === "complete") {
-                    router.push("/");
-                    return;
-                }
-
-                const signUpAttempt = await signUp?.handleRedirectCallback?.();
-                if (signUpAttempt?.status === "complete") {
-                    router.push("/");
-                    return;
-                }
+                await handleRedirectCallback({ redirectUrl: '/' });
+                return;
             } catch {
                 // On error, redirect to login
                 router.push("/login");
@@ -65,7 +57,7 @@ export default function SSOCallbackPage() {
         };
 
         handleCallback();
-    }, [signInLoaded, signUpLoaded, signIn, signUp, router]);
+    }, [signInLoaded, signUpLoaded, signIn, signUp, handleRedirectCallback, router]);
 
     return (
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">

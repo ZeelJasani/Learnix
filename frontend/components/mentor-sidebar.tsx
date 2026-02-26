@@ -1,7 +1,8 @@
 // Aa component mentor panel mate sidebar render kare chhe (Dashboard, My Courses, Students)
 // This component renders the mentor panel sidebar with teaching-related navigation and user footer
 import * as React from "react"
-import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen, Video } from "lucide-react"
+import { GalleryVerticalEnd, LayoutDashboard, Users, BookOpen, Video, ClipboardCheck, FileQuestion, ListTodo } from "lucide-react"
+import Image from "next/image"
 
 import { SearchForm } from "@/components/search-form"
 import {
@@ -46,6 +47,26 @@ const data = {
                     icon: BookOpen,
                 },
                 {
+                    title: "Quizzes",
+                    url: "/mentor/quizzes",
+                    icon: FileQuestion,
+                },
+                {
+                    title: "Activities",
+                    url: "/mentor/activities",
+                    icon: ListTodo,
+                },
+            ],
+        },
+        {
+            title: "Management",
+            items: [
+                {
+                    title: "Submissions",
+                    url: "/mentor/submissions",
+                    icon: ClipboardCheck,
+                },
+                {
                     title: "Students",
                     url: "/mentor/students",
                     icon: Users,
@@ -63,12 +84,9 @@ export function MentorSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <div className="flex items-center gap-2">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                    <GalleryVerticalEnd className="size-4" />
-                                </div>
+                                <Image src="/learnix.webp" alt="Logo" width={128} height={128} className="size-9 object-contain" />
                                 <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">Learnix Mentor</span>
-                                    <span className="">v1.0.0</span>
+                                    <span className="font-semibold text-lg tracking-tight">Learnix</span>
                                 </div>
                             </div>
                         </SidebarMenuButton>

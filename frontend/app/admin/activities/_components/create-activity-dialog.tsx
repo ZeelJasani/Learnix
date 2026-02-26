@@ -32,6 +32,7 @@ interface CreateActivityDialogProps {
     availableCourses: { _id?: string; id?: string; title: string }[]
     preSelectedCourseId: string | null
     onCreated: () => void
+    defaultType?: string
 }
 
 // Simple file upload component using S3 presigned URLs
@@ -211,11 +212,11 @@ function LinksInput({ links, onLinksChange }: { links: string[]; onLinksChange: 
     )
 }
 
-export function CreateActivityDialog({ open, onOpenChange, availableCourses, preSelectedCourseId, onCreated }: CreateActivityDialogProps) {
+export function CreateActivityDialog({ open, onOpenChange, availableCourses, preSelectedCourseId, onCreated, defaultType }: CreateActivityDialogProps) {
     const { getToken } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedCourseId, setSelectedCourseId] = useState(preSelectedCourseId || "")
-    const [type, setType] = useState("assignment")
+    const [type, setType] = useState(defaultType || "assignment")
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [startDate, setStartDate] = useState("")
@@ -236,7 +237,7 @@ export function CreateActivityDialog({ open, onOpenChange, availableCourses, pre
     const resetForm = () => {
         setTitle("")
         setDescription("")
-        setType("assignment")
+        setType(defaultType || "assignment")
         setStartDate("")
         setDueDate("")
         setSelectedCourseId(preSelectedCourseId || "")

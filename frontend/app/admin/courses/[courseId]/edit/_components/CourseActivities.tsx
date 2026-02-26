@@ -168,7 +168,7 @@ export function CourseActivities({ data }: { data: Course }) {
                                 {quizzes.map(quiz => (
                                     <QuizListItem
                                         key={quiz.id}
-                                        quiz={quiz}
+                                        quiz={quiz as any}
                                         basePath="/admin"
                                         onDelete={() => setItemToDelete({ id: quiz.id, type: 'quiz' })}
                                     />
@@ -187,7 +187,7 @@ export function CourseActivities({ data }: { data: Course }) {
                                 {activities.map(activity => (
                                     <ActivityListItem
                                         key={activity.id}
-                                        activity={activity}
+                                        activity={activity as any}
                                         onDelete={() => setItemToDelete({ id: activity.id, type: 'activity' })}
                                     />
                                 ))}

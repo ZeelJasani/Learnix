@@ -40,6 +40,21 @@ router.get('/courses', MentorController.getMyCourses);
 // Mentor na students kadho / Get mentor's students
 router.get('/students', MentorController.getMyStudents);
 
+// Student nu detailed progress kadho / Get student progress detail
+router.get('/students/:studentId/progress', MentorController.getStudentProgress);
+
+// Mentor na courses ni submissions kadho / Get submissions for mentor's courses
+router.get('/submissions', MentorController.getSubmissions);
+
+// Submission ne review (approve/reject) karo / Review (approve/reject) a submission
+router.put('/submissions/:id/review', MentorController.reviewSubmission);
+
+// Mentor na courses ni quizzes kadho / Get quizzes for mentor's courses
+router.get('/quizzes', MentorController.getMyQuizzes);
+
+// Mentor na courses ni activities kadho / Get activities for mentor's courses
+router.get('/activities', MentorController.getMyActivities);
+
 // ===== Public Mentor Profile Routes / Public Mentor Profile Routes =====
 // Auth jaruri nathi - koi pan mentor ni profile joi shake
 // No auth needed - anyone can view a mentor's profile

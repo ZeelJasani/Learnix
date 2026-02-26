@@ -18,6 +18,6 @@ import { env } from "./env";
 
 // Stripe client instance TypeScript mode sathe
 // Stripe client instance with TypeScript mode enabled
-export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY!, {
   typescript: true,
 });

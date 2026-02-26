@@ -25,14 +25,14 @@ export default async function AdminProfilePage() {
     const { user } = await requireAdmin();
     const stats = await adminGetDashboardStats();
 
-    const initials = user.name
+    const initials = ((user as any).name || "Admin")
         .split(" ")
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2);
 
-    const memberSince = new Date(user.createdAt).toLocaleDateString("en-US", {
+    const memberSince = new Date((user as any).createdAt || new Date()).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -54,7 +54,7 @@ export default async function AdminProfilePage() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                         <div className="relative">
                             <Avatar className="h-24 w-24 border-4 border-primary/20">
-                                <AvatarImage src={user.image || ""} alt={user.name} />
+                                <AvatarImage src={(user as any).image || ""} alt={(user as any).name} />
                                 <AvatarFallback className="text-2xl font-semibold bg-primary text-primary-foreground">
                                     {initials}
                                 </AvatarFallback>
@@ -65,7 +65,7 @@ export default async function AdminProfilePage() {
                         </div>
                         <div className="flex-1 space-y-2">
                             <div className="flex items-center gap-3">
-                                <CardTitle className="text-2xl">{user.name}</CardTitle>
+                                <CardTitle className="text-2xl">{(user as any).name || "Admin User"}</CardTitle>
                                 <Badge className="bg-primary/20 text-primary border-primary/30">
                                     <Shield className="h-3 w-3 mr-1" />
                                     Administrator
@@ -73,7 +73,7 @@ export default async function AdminProfilePage() {
                             </div>
                             <CardDescription className="flex items-center gap-2">
                                 <Mail className="h-4 w-4" />
-                                {user.email}
+                                {(user as any).email || "No email"}
                             </CardDescription>
                         </div>
                         <Button asChild variant="outline">
@@ -154,26 +154,26 @@ export default async function AdminProfilePage() {
                                 <label className="text-sm font-medium text-muted-foreground">
                                     Full Name
                                 </label>
-                                <p className="text-sm font-medium">{user.name}</p>
+                                <p className="text-sm font-medium">{(user as any).name || "Admin User"}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
                                     Email Address
                                 </label>
-                                <p className="text-sm font-medium">{user.email}</p>
+                                <p className="text-sm font-medium">{(user as any).email || "No email"}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
                                     Role
                                 </label>
-                                <p className="text-sm font-medium capitalize">{user.role}</p>
+                                <p className="text-sm font-medium capitalize">{(user as any).role || "admin"}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
                                     Email Verified
                                 </label>
                                 <p className="text-sm font-medium">
-                                    {user.emailVerified ? (
+                                    {(user as any).emailVerified ? (
                                         <span className="text-green-600">✓ Verified</span>
                                     ) : (
                                         <span className="text-yellow-600">Pending</span>

@@ -19,9 +19,9 @@ import { UserRequest } from '../middleware/requireUser';
 import { QuizService } from '../services/quiz.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { ApiError } from '../utils/apiError';
-// Validation schemas import karo - single source of truth
 // Import validation schemas - single source of truth
 import { createQuizSchema, updateQuizSchema, submitQuizSchema } from '../validations/quiz.validation';
+import { OwnershipService } from '../utils/ownership';
 
 /**
  * QuizController - ક્વિઝ સંબંધિત API endpoints
@@ -43,6 +43,10 @@ export class QuizController {
         try {
             // Input validate karo Zod schema thi / Validate input with Zod schema
             const data = createQuizSchema.parse(req.body);
+
+            // Check if the user is authorized to create a quiz for the course
+            await OwnershipService.verifyCourseOwnership(data.courseId, req.user!.id, req.user!.role);
+
             const quiz = await QuizService.createQuiz(data, req.user!.id);
             ApiResponse.created(res, quiz);
         } catch (error) {
@@ -67,6 +71,10 @@ export class QuizController {
             const { id } = req.params;
             // Partial validation karo / Validate partial data
             const data = updateQuizSchema.parse(req.body);
+
+            // Verify ownership of the quiz before updating
+            await OwnershipService.verifyQuizOwnership(id, req.user!.id, req.user!.role);
+
             const quiz = await QuizService.updateQuiz(id, data, req.user!.id);
 
             // Quiz na male to 404 / 404 if quiz not found
@@ -94,6 +102,10 @@ export class QuizController {
     static async deleteQuiz(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
+
+            // Verify ownership of the quiz before deleting
+            await OwnershipService.verifyQuizOwnership(id, req.user!.id, req.user!.role);
+
             // Quiz delete karo - service error throw kare chhe jo na male to
             // Delete quiz - service throws error if not found
             await QuizService.deleteQuiz(id, req.user!.id);

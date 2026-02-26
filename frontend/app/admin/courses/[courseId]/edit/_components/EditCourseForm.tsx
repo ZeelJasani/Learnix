@@ -34,11 +34,11 @@ export function EditCourseForm({ data }: iAppProps) {
             fileKey: data.fileKey,
             price: data.price,
             duration: data.duration,
-            level: data.level,
-            category: "Computer Science Fundamentals" as CourseSchemaType['category'],
+            level: data.level as any,
+            category: ((data as any).category || "Computer Science Fundamentals") as any,
             smallDescription: data.smallDescription,
             slug: data.slug,
-            status: data.status
+            status: data.status as any
         },
     });
 
