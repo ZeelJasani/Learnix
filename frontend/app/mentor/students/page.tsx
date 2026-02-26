@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { EmptyState } from "@/components/general/EmptyState";
+import { ClickableRow } from "./_components/clickable-row";
 
 interface Student {
     id: string;
@@ -80,7 +81,10 @@ export default async function MentorStudentsPage() {
                         </TableHeader>
                         <TableBody>
                             {students.map((enrollment) => (
-                                <TableRow key={enrollment.id}>
+                                <ClickableRow
+                                    key={enrollment.id}
+                                    href={`/mentor/students/${enrollment.student.id}`}
+                                >
                                     <TableCell>
                                         <Avatar>
                                             <AvatarImage src={enrollment.student.image || ""} />
@@ -102,7 +106,7 @@ export default async function MentorStudentsPage() {
                                     <TableCell className="text-right font-medium">
                                         ₹{(enrollment.amount / 100).toLocaleString()}
                                     </TableCell>
-                                </TableRow>
+                                </ClickableRow>
                             ))}
                         </TableBody>
                     </Table>

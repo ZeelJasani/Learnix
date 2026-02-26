@@ -4,11 +4,13 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Video, Calendar, User, BookOpen, Clock, Play, Square, Loader2, MoreVertical, AlertCircle, Layers, BarChart } from "lucide-react";
+import { Video, Calendar, User, BookOpen, Clock, Play, Square, Loader2, MoreVertical, AlertCircle, Layers, BarChart, ArrowLeft } from "lucide-react";
 import { format, addMinutes } from "date-fns";
 import { toast } from "sonner";
 import { CreateSessionDialog } from "./_components/create-session-dialog";
+import { SelectCourseCard } from "../_components/SelectCourseCard";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,33 +41,41 @@ interface Course {
 }
 
 export default function MentorLiveSessionsPage() {
+    const { getToken } = useAuth();
     const [sessions, setSessions] = useState<LiveSession[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
-    const [showAllCourses, setShowAllCourses] = useState(false);
+    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
+            const token = await getToken();
             const [sessionsRes, coursesRes] = await Promise.all([
-                fetch("/api/live-sessions/mentor"),
-                fetch("/api/mentor/courses")
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/live-sessions/mentor`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/mentor/courses`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
             ]);
             const sessionsData = await sessionsRes.json();
-            let coursesData = { courses: [] };
+            let coursesList = [];
             if (coursesRes.ok) {
                 const json = await coursesRes.json();
-                coursesData = json.data || json;
+                coursesList = Array.isArray(json.data) ? json.data : (Array.isArray(json) ? json : []);
             }
-            if (sessionsData.sessions) setSessions(sessionsData.sessions);
-            if (coursesData.courses) setCourses(coursesData.courses);
+            if (sessionsData.sessions && Array.isArray(sessionsData.sessions)) {
+                setSessions(sessionsData.sessions);
+            }
+            setCourses(coursesList);
         } catch {
             toast.error("Failed to load data");
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [getToken]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -118,184 +128,186 @@ export default function MentorLiveSessionsPage() {
         return new Date() >= addMinutes(start, -15);
     };
 
-    const displayedCourses = showAllCourses ? courses : courses.slice(0, 9);
+    if (selectedCourseId) {
+        const selectedCourse = courses.find(c => c._id === selectedCourseId)
+        const courseSessions = sessions.filter(s => {
+            const scId = typeof s.courseId === 'object' ? (s.courseId as any)._id : s.courseId;
+            return scId === selectedCourseId;
+        })
+
+        return (
+            <div className="flex flex-1 flex-col gap-6">
+                <div className="flex flex-col gap-4">
+                    <Button
+                        variant="ghost"
+                        className="w-fit -ml-4 text-muted-foreground hover:text-foreground"
+                        onClick={() => setSelectedCourseId(null)}
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back to Courses
+                    </Button>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-muted">
+                                <Video className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-semibold tracking-tight">Live Sessions for {selectedCourse?.title}</h1>
+                                <p className="text-sm text-muted-foreground">Manage live teaching sessions for this course</p>
+                            </div>
+                        </div>
+                        <CreateSessionDialog courses={courses} defaultCourseId={selectedCourseId} onSessionCreated={fetchData} />
+                    </div>
+
+                    <div className="space-y-4 mt-4">
+                        <h2 className="text-base font-semibold">
+                            Scheduled Sessions <span className="text-muted-foreground font-normal text-sm ml-2">({courseSessions.length})</span>
+                        </h2>
+
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : courseSessions.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-20 text-center border rounded-xl border-dashed">
+                                <div className="p-3 rounded-lg bg-muted mb-4">
+                                    <Video className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                                <h3 className="font-medium mb-1">No sessions yet</h3>
+                                <p className="text-sm text-muted-foreground mb-4">This course doesn&apos;t have any live sessions scheduled.</p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                                {courseSessions.map((session) => {
+                                    const id = getId(session);
+                                    return (
+                                        <Card key={id} className="overflow-hidden border-border/60 hover:border-border transition-colors group">
+                                            <CardHeader className="p-4 pb-3 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <Badge variant="secondary" className={cn("text-[10px] font-medium capitalize", getStatusStyle(session.status))}>
+                                                        {session.status === "live" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse" />}
+                                                        {session.status}
+                                                    </Badge>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <MoreVertical className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-40">
+                                                            <DropdownMenuItem className="text-destructive text-xs" onClick={() => handleEndSession(id)}>
+                                                                Cancel Session
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-medium line-clamp-2 leading-snug">{session.title}</h3>
+                                                    <span className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                                                        <BookOpen className="h-3 w-3" />
+                                                        {typeof session.courseId === 'object' ? session.courseId.title : 'Unknown'}
+                                                    </span>
+                                                </div>
+                                            </CardHeader>
+
+                                            <CardContent className="p-4 pt-0 space-y-3">
+                                                <div className="space-y-1.5 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="h-3 w-3" />
+                                                        <span>{format(new Date(session.startsAt), "EEE, MMM d, yyyy")}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="h-3 w-3" />
+                                                        <span>{format(new Date(session.startsAt), "h:mm a")} • {session.durationMinutes}m</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <User className="h-3 w-3" />
+                                                        <span className="truncate">{typeof session.hostUserId === 'object' ? session.hostUserId.name : 'Unknown'}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-2 border-t border-border/40 grid grid-cols-2 gap-2">
+                                                    <Button variant="outline" size="sm" className="text-xs h-8" asChild>
+                                                        <a href={`/live/${id}`} target="_blank" rel="noopener noreferrer">
+                                                            <Video className="h-3 w-3 mr-1" /> Join
+                                                        </a>
+                                                    </Button>
+                                                    {session.status === 'scheduled' && (
+                                                        <Button size="sm" className="text-xs h-8" onClick={() => handleStartSession(id)} disabled={!canStart(session) || processingId === id}>
+                                                            {processingId === id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Play className="h-3 w-3 mr-1" /> Start</>}
+                                                        </Button>
+                                                    )}
+                                                    {session.status === 'live' && (
+                                                        <Button variant="destructive" size="sm" className="text-xs h-8" onClick={() => handleEndSession(id)} disabled={processingId === id}>
+                                                            {processingId === id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Square className="h-3 w-3 mr-1" /> End</>}
+                                                        </Button>
+                                                    )}
+                                                    {session.status === 'ended' && (
+                                                        <Button variant="secondary" size="sm" className="text-xs h-8" disabled>Ended</Button>
+                                                    )}
+                                                </div>
+                                                {session.status === 'scheduled' && !canStart(session) && (
+                                                    <p className="text-[10px] text-center text-muted-foreground flex items-center justify-center gap-1">
+                                                        <AlertCircle className="h-3 w-3" /> Available 15 min before
+                                                    </p>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-muted">
-                        <Video className="h-5 w-5 text-muted-foreground" />
+                        <BookOpen className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-lg font-semibold tracking-tight">Live Sessions</h1>
-                        <p className="text-sm text-muted-foreground">Manage your live teaching sessions</p>
+                        <h1 className="text-lg font-semibold tracking-tight">Select a Course</h1>
+                        <p className="text-sm text-muted-foreground">Choose a course to manage its live sessions</p>
                     </div>
                 </div>
-                <CreateSessionDialog courses={courses} onSessionCreated={fetchData} />
             </div>
 
-            {/* Schedule by Course Section */}
-            {!isLoading && courses.length > 0 && (
-                <div className="space-y-4">
-                    <h2 className="text-base font-semibold">Schedule by Course</h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {displayedCourses.map((course) => (
-                            <Card key={course._id} className="overflow-hidden border-border/60 hover:border-border transition-colors group flex flex-col">
-                                <CardHeader className="p-4 pb-3 flex-none space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <Badge variant="secondary" className="text-[10px] font-medium capitalize bg-muted text-muted-foreground border-transparent">
-                                            {course.status ? course.status.toLowerCase() : 'course'}
-                                        </Badge>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-base font-medium line-clamp-2 leading-snug" title={course.title}>{course.title}</h3>
-                                        <div className="text-[11px] text-muted-foreground mt-1.5 flex items-start gap-1.5 h-8" title={course.smallDescription || "Select to schedule a session"}>
-                                            <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
-                                            <span className="line-clamp-2 leading-tight">{course.smallDescription || "Select to schedule a session"}</span>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0 space-y-3 mt-auto">
-                                    <div className="space-y-1.5 text-xs text-muted-foreground">
-                                        <div className="flex items-center gap-2">
-                                            <Layers className="h-3 w-3" />
-                                            <span className="truncate">{course.category || "Any Category"}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="h-3 w-3" />
-                                            <span>{course.duration ? `${course.duration} hours` : "Flexible duration"}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <BarChart className="h-3 w-3" />
-                                            <span className="capitalize">{course.level ? course.level.toLowerCase() : "All levels"}</span>
-                                        </div>
-                                    </div>
-                                    <div className="pt-2 border-t border-border/40 grid gap-2">
-                                        <CreateSessionDialog courses={courses} onSessionCreated={fetchData} defaultCourseId={course._id}>
-                                            <Button variant="secondary" className="w-full h-8 text-xs">
-                                                <Video className="h-3.5 w-3.5 mr-2" />
-                                                Schedule Session
-                                            </Button>
-                                        </CreateSessionDialog>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+            {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+            ) : courses.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center border rounded-xl border-dashed">
+                    <div className="p-3 rounded-lg bg-muted mb-4">
+                        <BookOpen className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    {courses.length > 9 && (
-                        <div className="flex justify-center pt-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowAllCourses(!showAllCourses)}
-                            >
-                                {showAllCourses ? "Show Less" : "Show More Courses"}
-                            </Button>
-                        </div>
-                    )}
+                    <h3 className="font-medium mb-1">No courses found</h3>
+                    <p className="text-sm text-muted-foreground mb-4">You need to create a course first before managing sessions</p>
+                </div>
+            ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {courses.map((course) => {
+                        const courseSessionsCount = sessions.filter(s => {
+                            const scId = typeof s.courseId === 'object' ? (s.courseId as any)._id : s.courseId;
+                            return scId === course._id;
+                        }).length;
+
+                        return (
+                            <SelectCourseCard
+                                key={course._id}
+                                data={course as any}
+                                onClick={() => setSelectedCourseId(course._id)}
+                                badgeText={`${courseSessionsCount} ${courseSessionsCount === 1 ? 'Session' : 'Sessions'}`}
+                            />
+                        )
+                    })}
                 </div>
             )}
-
-            {/* Existing Sessions Section */}
-            <div className="space-y-4">
-                <h2 className="text-base font-semibold">
-                    Scheduled Sessions <span className="text-muted-foreground font-normal text-sm ml-2">({sessions.length})</span>
-                </h2>
-                {isLoading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
-                ) : sessions.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center border rounded-xl border-dashed">
-                        <div className="p-3 rounded-lg bg-muted mb-4">
-                            <Video className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                        <h3 className="font-medium mb-1">No sessions yet</h3>
-                        <p className="text-sm text-muted-foreground mb-4">Select a course above to create your first session</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {sessions.map((session) => {
-                            const id = getId(session);
-                            return (
-                                <Card key={id} className="overflow-hidden border-border/60 hover:border-border transition-colors group">
-                                    <CardHeader className="p-4 pb-3 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="secondary" className={cn("text-[10px] font-medium capitalize", getStatusStyle(session.status))}>
-                                                {session.status === "live" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse" />}
-                                                {session.status}
-                                            </Badge>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <MoreVertical className="h-3.5 w-3.5" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-40">
-                                                    <DropdownMenuItem className="text-destructive text-xs" onClick={() => handleEndSession(id)}>
-                                                        Cancel Session
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-medium line-clamp-2 leading-snug">{session.title}</h3>
-                                            <span className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
-                                                <BookOpen className="h-3 w-3" />
-                                                {typeof session.courseId === 'object' ? session.courseId.title : 'Unknown'}
-                                            </span>
-                                        </div>
-                                    </CardHeader>
-
-                                    <CardContent className="p-4 pt-0 space-y-3">
-                                        <div className="space-y-1.5 text-xs text-muted-foreground">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-3 w-3" />
-                                                <span>{format(new Date(session.startsAt), "EEE, MMM d, yyyy")}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="h-3 w-3" />
-                                                <span>{format(new Date(session.startsAt), "h:mm a")} • {session.durationMinutes}m</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <User className="h-3 w-3" />
-                                                <span className="truncate">{typeof session.hostUserId === 'object' ? session.hostUserId.name : 'Unknown'}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-2 border-t border-border/40 grid grid-cols-2 gap-2">
-                                            <Button variant="outline" size="sm" className="text-xs h-8" asChild>
-                                                <a href={`/live/${id}`} target="_blank" rel="noopener noreferrer">
-                                                    <Video className="h-3 w-3 mr-1" /> Join
-                                                </a>
-                                            </Button>
-                                            {session.status === 'scheduled' && (
-                                                <Button size="sm" className="text-xs h-8" onClick={() => handleStartSession(id)} disabled={!canStart(session) || processingId === id}>
-                                                    {processingId === id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Play className="h-3 w-3 mr-1" /> Start</>}
-                                                </Button>
-                                            )}
-                                            {session.status === 'live' && (
-                                                <Button variant="destructive" size="sm" className="text-xs h-8" onClick={() => handleEndSession(id)} disabled={processingId === id}>
-                                                    {processingId === id ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Square className="h-3 w-3 mr-1" /> End</>}
-                                                </Button>
-                                            )}
-                                            {session.status === 'ended' && (
-                                                <Button variant="secondary" size="sm" className="text-xs h-8" disabled>Ended</Button>
-                                            )}
-                                        </div>
-                                        {session.status === 'scheduled' && !canStart(session) && (
-                                            <p className="text-[10px] text-center text-muted-foreground flex items-center justify-center gap-1">
-                                                <AlertCircle className="h-3 w-3" /> Available 15 min before
-                                            </p>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

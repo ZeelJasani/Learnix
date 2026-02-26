@@ -30,6 +30,7 @@ import { QuizController } from '../controllers/quiz.controller';
 import { verifyClerkToken, optionalVerifyClerkToken } from '../middleware/auth';
 import { requireUser, optionalRequireUser } from '../middleware/requireUser';
 import { requireAdmin } from '../middleware/requireAdmin';
+import { requireMentor } from '../middleware/requireMentor';
 
 const router = express.Router();
 
@@ -68,13 +69,13 @@ router.get('/attempts/:attemptId', QuizController.getAttemptById);
 // Quiz CRUD - faqat admin access kari shake / Quiz CRUD - admin access only
 
 // Quiz create karo / Create quiz
-router.post('/', requireAdmin, QuizController.create);
+router.post('/', requireMentor, QuizController.create);
 
 // Quiz update karo / Update quiz
-router.put('/:id', requireAdmin, QuizController.update);
+router.put('/:id', requireMentor, QuizController.update);
 
 // Quiz delete karo / Delete quiz
-router.delete('/:id', requireAdmin, QuizController.deleteQuiz);
+router.delete('/:id', requireMentor, QuizController.deleteQuiz);
 
 // Quiz kadho (admin mate answers sathe) / Get quiz (with answers for admin)
 router.get('/:id', QuizController.getById);

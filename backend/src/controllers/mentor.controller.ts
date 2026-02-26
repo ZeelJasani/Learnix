@@ -103,4 +103,84 @@ export class MentorController {
             next(error);
         }
     }
+
+    // ===== Submissions & Grading =====
+
+    /**
+     * Mentor na courses ni submissions kadho / Get submissions for mentor's courses
+     * @route GET /api/mentor/submissions
+     */
+    static async getSubmissions(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const { status } = req.query;
+            const submissions = await MentorService.getSubmissions(mentorId, status as string);
+            ApiResponse.success(res, submissions);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Submission ne approve ke reject karo / Approve or reject a submission
+     * @route PUT /api/mentor/submissions/:id/review
+     */
+    static async reviewSubmission(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const { id } = req.params;
+            const { status, feedback } = req.body;
+            const updated = await MentorService.reviewSubmission(mentorId, id, status, feedback);
+            ApiResponse.success(res, updated, 'Submission reviewed successfully');
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ===== Student Progress =====
+
+    /**
+     * Student nu detailed progress kadho / Get detailed student progress
+     * @route GET /api/mentor/students/:studentId/progress
+     */
+    static async getStudentProgress(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const { studentId } = req.params;
+            const progress = await MentorService.getStudentProgress(mentorId, studentId);
+            ApiResponse.success(res, progress);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // ===== Quiz & Activity Listing =====
+
+    /**
+     * Mentor na courses ni quizzes kadho / Get quizzes for mentor's courses
+     * @route GET /api/mentor/quizzes
+     */
+    static async getMyQuizzes(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const quizzes = await MentorService.getMyQuizzes(mentorId);
+            ApiResponse.success(res, quizzes);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * Mentor na courses ni activities kadho / Get activities for mentor's courses
+     * @route GET /api/mentor/activities
+     */
+    static async getMyActivities(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const activities = await MentorService.getMyActivities(mentorId);
+            ApiResponse.success(res, activities);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

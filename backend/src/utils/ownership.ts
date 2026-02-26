@@ -69,4 +69,20 @@ export class OwnershipService {
 
         await this.verifyCourseOwnership(activity.courseId.toString(), userId, role);
     }
+
+    /**
+     * Verifies if the user owns the quiz (by checking its parent course).
+     */
+    static async verifyQuizOwnership(quizId: string, userId: string, role: string | null): Promise<void> {
+        if (role === 'admin') return;
+
+        if (!mongoose.Types.ObjectId.isValid(quizId)) throw ApiError.badRequest('Invalid quiz ID');
+
+        const { Quiz } = await import('../models/Quiz');
+
+        const quiz = await Quiz.findById(quizId).select('courseId').lean();
+        if (!quiz) throw ApiError.notFound('Quiz not found');
+
+        await this.verifyCourseOwnership(quiz.courseId.toString(), userId, role);
+    }
 }

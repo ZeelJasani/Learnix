@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
+import { lessonSchema, lessonSchemaType } from "@/lib/zodSchemas";
 import { Plus, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -16,8 +16,8 @@ export function NewLessonModel({ courseId, chapterId }: { courseId: string; chap
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<LessonSchemaType>({
-    resolver: zodResolver(lessonSchema),
+  const form = useForm<lessonSchemaType>({
+    resolver: zodResolver(lessonSchema) as any,
     defaultValues: {
       name: "",
       courseId: courseId,
@@ -25,7 +25,7 @@ export function NewLessonModel({ courseId, chapterId }: { courseId: string; chap
     },
   });
 
-  async function onSubmit(values: LessonSchemaType) {
+  async function onSubmit(values: lessonSchemaType) {
     startTransition(async () => {
       try {
         const { data: result, error } = await tryCatch(createLesson({ ...values, courseId, chapterId }));

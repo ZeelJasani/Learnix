@@ -6,7 +6,7 @@
  * This is a client component that displays individual course cards in the public course grid
  *
  * Features:
- * - Course thumbnail (S3 URL) — Hover zoom effect (scale-105)
+ * - Course thumbnail (S3 URL)
  * - Level badge (BEGINNER/INTERMEDIATE/ADVANCED) — Color-coded overlay
  * - Category badge — Color-coded tag with dark mode support
  * - Mentor info — Avatar ane name display kare chhe (conditional)
@@ -65,7 +65,7 @@ export function PublicCourseCard({ data }: iAppProps) {
                     {data.level}
                 </Badge>
 
-                {/* Image with hover zoom */}
+                {/* Image */}
                 <div className="overflow-hidden">
                     <Image
                         width={600}

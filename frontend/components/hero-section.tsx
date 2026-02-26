@@ -8,7 +8,7 @@ import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
 
-const transitionVariants = {
+const transitionVariants: any = {
     item: {
         hidden: {
             opacity: 0,

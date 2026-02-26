@@ -15,14 +15,15 @@ import { UserActions } from "./_components/UserActions";
 import { Users } from "lucide-react";
 
 interface AdminUsersPageProps {
-    searchParams: {
+    searchParams: Promise<{
         search?: string;
         page?: string;
-    };
+    }>;
 }
 
 export default async function AdminUsersPage({ searchParams }: AdminUsersPageProps) {
-    const search = searchParams.search || "";
+    const sp = await searchParams;
+    const search = sp.search || "";
     const users = await getAllUsers(search);
 
     return (

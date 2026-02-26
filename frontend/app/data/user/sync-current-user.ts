@@ -13,14 +13,16 @@ export async function syncCurrentUser() {
 
         await getOrCreateDbUserFromClerkUser(user);
         return true;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        // During build time (static generation), accessing headers (cookies) throws a dynamic server usage error.
-        // We can safely ignore this as there is no user to sync during build.
-        if (error?.digest === 'DYNAMIC_SERVER_USAGE') {
+        // During build time (static generation) or dynamic server render, 
+        // accessing headers (cookies) throws a dynamic server usage error.
+        // We can safely ignore this as there is no user to sync during build,
+        // and our client-side `useUserRole` hook acts as a reliable fallback sync.
+        if (error?.digest === 'DYNAMIC_SERVER_USAGE' || (error?.message && error.message.includes('Server Components render'))) {
             return false;
         }
         console.error("Error syncing current user:", error);
+        // Soft fail to prevent crashing the entire layout
         return false;
     }
 }

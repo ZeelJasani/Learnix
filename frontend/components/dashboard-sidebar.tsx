@@ -3,6 +3,7 @@
 import * as React from "react"
 import { LayoutDashboard, Compass, BookOpen } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
@@ -33,11 +34,9 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
             <SidebarHeader className="border-b border-border/40 px-4 py-4">
                 <div className="flex items-center justify-between">
                     <Link href="/dashboard" className="flex items-center gap-2.5">
-                        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-                            L
-                        </div>
+                        <Image src="/learnix.webp" alt="Logo" width={128} height={128} className="size-9 object-contain" />
                         <div className="flex flex-col">
-                            <span className="text-sm font-semibold tracking-tight">Learnix</span>
+                            <span className="text-[17px] font-semibold tracking-tight">Learnix</span>
                             <span className="text-[10px] text-muted-foreground">Student</span>
                         </div>
                     </Link>

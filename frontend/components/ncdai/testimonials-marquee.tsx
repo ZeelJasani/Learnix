@@ -24,8 +24,8 @@ Testimonial.displayName = "Testimonial";
 
 // Quote Section
 const TestimonialQuote = React.forwardRef<
-    HTMLBlockquoteElement,
-    React.HTMLAttributes<HTMLBlockquoteElement>
+    HTMLQuoteElement,
+    React.HTMLAttributes<HTMLQuoteElement>
 >(({ className, children, ...props }, ref) => (
     <blockquote
         ref={ref}

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         event = stripe.webhooks.constructEvent(
             body,
             signature,
-            env.STRIPE_WEBHOOK_SECRET
+            env.STRIPE_WEBHOOK_SECRET!
         );
         console.log(`[Stripe Webhook] Received event: ${event.type}`);
     } catch (error) {

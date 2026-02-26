@@ -109,8 +109,8 @@ export default async function SlugPage({ params }: { params: Params }) {
                             Course Curriculum
                         </h2>
                         <div>
-                            {course.chapter.length} chapter | {" "}
-                            {course.chapter.reduce(
+                            {course.chapter?.length || 0} chapter | {" "}
+                            {course.chapter?.reduce(
                                 (total, chapter) => total + chapter.lessons.length,
                                 0
                             ) || 0}{" "}
@@ -120,7 +120,7 @@ export default async function SlugPage({ params }: { params: Params }) {
 
 
                     <div className="space-y-4">
-                        {course.chapter.map((chapter, index) => (
+                        {course.chapter?.map((chapter, index) => (
                             <Collapsible key={chapter.id} defaultOpen={index === 0}>
                                 <Card className="p-0 overflow-hidden border-2 transition-all duration-200 hover:shadow-md gap-0">
                                     <CollapsibleTrigger className="p-6 hover:bg-muted/50">
@@ -243,7 +243,7 @@ export default async function SlugPage({ params }: { params: Params }) {
                                         <div>
                                             <p className="text-sm font-medium">Total Lessons</p>
                                             <p className="text-sm text-muted-foreground">
-                                                {course.chapter.reduce(
+                                                {course.chapter?.reduce(
                                                     (total, chapter) => total + chapter.lessons.length,
                                                     0
                                                 ) || 0} lessons
@@ -292,7 +292,7 @@ export default async function SlugPage({ params }: { params: Params }) {
                                 <Link className={buttonVariants({ className: "mt-6 w-full" })}
                                     href="/dashboard">Watch Course</Link>
                             ) : course.price === 0 ? (
-                                <FreeEnrollModal courseId={course.id} courseTitle={course.title} courseSlug={course.slug}>
+                                <FreeEnrollModal courseId={course.id} courseTitle={course.title} courseSlug={(course as any).slug}>
                                     <Button className="mt-6 w-full">Enroll for Free</Button>
                                 </FreeEnrollModal>
                             ) : (

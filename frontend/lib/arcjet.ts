@@ -46,7 +46,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 // Arcjet instance create karo default shield protection sathe
 // Create Arcjet instance with default shield protection
 export default arcjet({
-    key: env.ARCJET_KEY,
+    key: env.ARCJET_KEY!,
     // Fingerprint thi request identify karo / Identify requests by fingerprint
     characteristics: ["fingerprint"],
     rules: [
