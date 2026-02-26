@@ -16,8 +16,26 @@ import "server-only";
 import Stripe from "stripe";
 import { env } from "./env";
 
-// Stripe client instance TypeScript mode sathe
-// Stripe client instance with TypeScript mode enabled
-export const stripe = new Stripe(env.STRIPE_SECRET_KEY!, {
-  typescript: true,
+// Lazy-loaded Stripe client - build time par instantiate nahi thay jyare env var present na hoy
+// Lazy-loaded Stripe client - not instantiated at build time when env var may not be present
+let _stripe: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    if (!env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    _stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+      typescript: true,
+    });
+  }
+  return _stripe;
+}
+
+// Backward-compatible named export using a Proxy so existing `stripe.xyz` call sites work unchanged.
+// This avoids touching every call site while still deferring initialization to request time.
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    return getStripe()[prop as keyof Stripe];
+  },
 });
