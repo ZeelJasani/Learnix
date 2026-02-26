@@ -27,40 +27,40 @@ export const env = createEnv({
 
     // Clerk authentication secret key - user authentication mate
     // Clerk authentication secret key - for user authentication
-    CLERK_SECRET_KEY: z.string().min(1).optional(),
+    CLERK_SECRET_KEY: z.string().optional(),
 
     // Clerk webhook secret - webhook signature verify karva mate
     // Clerk webhook secret - for verifying webhook signatures
-    CLERK_WEBHOOK_SECRET: z.string().min(1).optional(),
+    CLERK_WEBHOOK_SECRET: z.string().optional(),
 
     // Admin emails - comma-separated list of admin email addresses
     ADMIN_EMAILS: z.string().optional(),
 
     // Arcjet security key - rate limiting ane bot protection mate
     // Arcjet security key - for rate limiting and bot protection
-    ARCJET_KEY: z.string().min(1).optional(),
+    ARCJET_KEY: z.string().optional(),
 
     // AWS S3 credentials - file upload mate
     // AWS S3 credentials - for file uploads
-    AWS_ACCESS_KEY_ID: z.string().min(1).optional(),
-    AWS_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-    AWS_ENDPOINT_URL_S3: z.string().min(1).optional(),
-    AWS_ENDPOINT_URL_IAM: z.string().min(1).optional(),
-    AWS_REGION: z.string().min(1).optional(),
+    AWS_ACCESS_KEY_ID: z.string().optional(),
+    AWS_SECRET_ACCESS_KEY: z.string().optional(),
+    AWS_ENDPOINT_URL_S3: z.string().optional(),
+    AWS_ENDPOINT_URL_IAM: z.string().optional(),
+    AWS_REGION: z.string().optional(),
 
     // Stripe payment keys - course purchase mate
     // Stripe payment keys - for course purchases
-    STRIPE_SECRET_KEY: z.string().min(1).optional(),
-    STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
     // Resend email API key - email notifications mate
     // Resend email API key - for email notifications
-    RESEND_API_KEY: z.string().min(1).optional(),
+    RESEND_API_KEY: z.string().optional(),
 
     // Stream.io keys - live video sessions mate (server-side token generation)
     // Stream.io keys - for live video sessions (server-side token generation)
-    STREAM_API_KEY: z.string().min(1).optional(),
-    STREAM_API_SECRET: z.string().min(1).optional(),
+    STREAM_API_KEY: z.string().optional(),
+    STREAM_API_SECRET: z.string().optional(),
   },
 
   /**
