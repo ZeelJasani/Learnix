@@ -17,7 +17,7 @@
 // ============================================================================
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Space_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,16 +25,24 @@ import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { UserSync } from "@/components/auth/user-sync";
 
-// Primary sans-serif font / Primary sans-serif font
+// Primary sans-serif font (Body & UI)
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-// Monospace font (code blocks mate) / Monospace font (for code blocks)
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Serif font for headings (technical aesthetic)
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+// Monospace font for code and data
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 // Force dynamic rendering - ClerkProvider requires NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -58,7 +66,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+        <body className={`${geistSans.variable} ${spaceMono.variable} ${jetbrainsMono.variable} antialiased`} suppressHydrationWarning>
           <ThemeProvider>
             {/* Clerk user ne DB sathe background sync karo / Background sync Clerk user to DB */}
             <UserSync />

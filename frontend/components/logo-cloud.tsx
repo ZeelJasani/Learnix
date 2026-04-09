@@ -1,122 +1,49 @@
-// Aa component partner logos nu infinite slider display kare chhe (fade edges sathe)
-// This component displays an infinite scrolling partner logo cloud with progressive blur edges
-import { InfiniteSlider } from '@/components/ui/infinite-slider'
-import { ProgressiveBlur } from '@/components/ui/progressive-blur'
-import Image from 'next/image'
+// Logo cloud section displaying tech giants with improved scaling and fixed containers
+// Ensures uniform visibility for all logo types (square, wide, or tall)
+import Image from "next/image";
 
+const partners = [
+    { name: "Google", src: "https://cdn.simpleicons.org/google" },
+    { name: "Meta", src: "https://cdn.simpleicons.org/meta" },
+    { name: "Amazon", src: "https://cdn.simpleicons.org/amazon" },
+    { name: "Microsoft", src: "https://cdn.simpleicons.org/microsoft" },
+    { name: "Apple", src: "https://cdn.simpleicons.org/apple/000000" },
+    { name: "Nvidia", src: "https://cdn.simpleicons.org/nvidia" },
+    { name: "GitHub", src: "https://cdn.simpleicons.org/github/181717" },
+    { name: "Vercel", src: "https://cdn.simpleicons.org/vercel/000000" },
+    { name: "Supabase", src: "https://cdn.simpleicons.org/supabase" },
+    { name: "Figma", src: "https://cdn.simpleicons.org/figma" },
+    { name: "Claude", src: "https://cdn.simpleicons.org/anthropic" },
+    { name: "ChatGPT", src: "https://cdn.simpleicons.org/openai" },
+];
 
 export default function LogoCloud() {
     return (
-        <section className="bg-background overflow-hidden py-16">
-            <div className="group relative m-auto max-w-7xl px-6">
-                <div className="flex flex-col items-center md:flex-row">
-                    <div className="md:max-w-44 md:border-r md:pr-6">
-                        <p className="text-end text-sm">Our Valued Partners</p>
-                    </div>
-                    <div className="relative py-6 md:w-[calc(100%-11rem)]">
-                        <InfiniteSlider
-                            speedOnHover={20}
-                            speed={40}
-                            gap={112}>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/nvidia/000000"
-                                    alt="Nvidia Logo"
-                                    height={20}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/googlecloud/000000"
-                                    alt="Column Logo"
-                                    height={16}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/github/000000"
-                                    alt="GitHub Logo"
-                                    height={16}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/nike/000000"
-                                    alt="Nike Logo"
-                                    height={20}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/lemonsqueezy/000000"
-                                    alt="Lemon Squeezy Logo"
-                                    height={20}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/laravel/000000"
-                                    alt="Laravel Logo"
-                                    height={16}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-7 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/vercel/000000"
-                                    alt="Lilly Logo"
-                                    height={28}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-
-                            <div className="flex">
-                                <Image
-                                    className="mx-auto h-6 w-fit dark:invert"
-                                    src="https://cdn.simpleicons.org/openai/000000"
-                                    alt="OpenAI Logo"
-                                    height={24}
-                                    width={100}
-                                    style={{ width: 'auto' }}
-                                />
-                            </div>
-                        </InfiniteSlider>
-
-                        <div className="bg-linear-to-r from-background absolute inset-y-0 left-0 w-20"></div>
-                        <div className="bg-linear-to-l from-background absolute inset-y-0 right-0 w-20"></div>
-                        <ProgressiveBlur
-                            className="pointer-events-none absolute left-0 top-0 h-full w-20"
-                            direction="left"
-                            blurIntensity={1}
-                        />
-                        <ProgressiveBlur
-                            className="pointer-events-none absolute right-0 top-0 h-full w-20"
-                            direction="right"
-                            blurIntensity={1}
-                        />
-                    </div>
+        <section className="bg-background py-16">
+            <div className="mx-auto max-w-5xl px-6">
+                <h2 className="text-center text-lg font-medium tracking-tight text-foreground/80">
+                    Trusted by students at leading tech companies
+                </h2>
+                
+                {/* Fixed-size container grid to prevent oversized logos */}
+                <div className="mx-auto mt-16 flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-12 sm:gap-x-16 sm:gap-y-16">
+                    {partners.map((partner, index) => (
+                        <div 
+                            key={partner.name}
+                            className="group relative flex h-9 w-28 items-center justify-center transition-all duration-300 hover:scale-110 sm:h-10 sm:w-36"
+                        >
+                            <Image
+                                src={partner.src}
+                                alt={`${partner.name} logo`}
+                                fill
+                                // object-contain is the secret sauce to fix the "GIGANTIC" issue
+                                className="object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-100 dark:brightness-110"
+                                priority={index < 4}
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>
-    )
+    );
 }

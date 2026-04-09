@@ -1,93 +1,152 @@
-// Aa component platform ni key features display kare chhe (Courses, Analytics, Community)
-// This component displays the key platform features section with icon cards
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { BookOpen, BarChart3, Users } from 'lucide-react'
-import { ReactNode } from 'react'
+// Key features of the Learnix platform
+// Redesigned using the "veil-features-2" modern layout
+import { Card } from '@/components/ui/card'
+import { Shield, GraduationCap } from 'lucide-react'
+import { Vercel } from '@/components/ui/svgs/vercel'
+import { Supabase } from '@/components/ui/svgs/supabase'
+import { Linear } from '@/components/ui/svgs/linear'
+import { Slack } from '@/components/ui/svgs/slack'
+import { Firebase } from '@/components/ui/svgs/firebase'
+import { ClerkIconDark as Clerk } from '@/components/ui/svgs/clerk'
 
 export default function Features() {
     return (
-        <section className="bg-zinc-50 py-16 md:py-32 dark:bg-transparent">
-            <div className="@container mx-auto max-w-5xl px-6">
-                <div className="text-center">
-                    <h2 className="text-balance text-4xl font-semibold lg:text-5xl">Everything you need to learn</h2>
-                    <p className="mt-4 text-muted-foreground">Comprehensive tools and features designed to accelerate your learning journey.</p>
+        <section className="bg-background @container py-24">
+            <div className="mx-auto max-w-2xl px-6">
+                <div className="text-center md:text-left">
+                    <h2 className="text-balance font-serif text-4xl font-medium tracking-tight lg:text-5xl">
+                        Powering Your Future in Tech
+                    </h2>
+                    <p className="text-muted-foreground mt-4 text-balance">
+                        Advanced tools and curated curricula designed to help you master new skills and build a standout portfolio.
+                    </p>
                 </div>
-                <div className="@min-4xl:max-w-full @min-4xl:grid-cols-3 mx-auto mt-8 grid max-w-sm gap-6 *:text-center md:mt-16">
-                    <Card className="group shadow-zinc-950/5">
-                        <CardHeader className="pb-3">
-                            <CardDecorator>
-                                <BookOpen
-                                    className="size-6"
-                                    aria-hidden
-                                />
-                            </CardDecorator>
-
-                            <h3 className="mt-6 font-medium">Expert Led Courses</h3>
-                            {/* Subtle Tag */}
-                            <span className="mx-auto mt-2 inline-block rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400">
-                                Learning
-                            </span>
-                        </CardHeader>
-
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">Learn from industry experts with carefully curated courses designed for real world skills.</p>
-                        </CardContent>
+                <div className="@xl:grid-cols-2 mt-12 grid gap-6 *:p-6">
+                    {/* Feature 1: Industry-Standard Stack (Integration Visual) */}
+                    <Card
+                        variant="mixed"
+                        className="row-span-2 grid grid-rows-subgrid"
+                    >
+                        <div className="space-y-2">
+                            <h3 className="text-foreground font-medium">Industry-Led Mentorship</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Master tools like React, Next.js, and Supabase with courses crafted by senior practitioners.
+                            </p>
+                        </div>
+                        <div
+                            aria-hidden
+                            className="**:fill-foreground flex h-44 flex-col justify-between pt-8"
+                        >
+                            <div className="relative flex h-10 items-center gap-12 px-6">
+                                <div className="bg-border absolute inset-0 my-auto h-px"></div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Vercel className="size-3.5" />
+                                </div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Slack className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="pl-17 relative flex h-10 items-center justify-between gap-12 pr-6">
+                                <div className="bg-border absolute inset-0 my-auto h-px"></div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Clerk className="size-3.5" />
+                                </div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Linear className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="relative flex h-10 items-center gap-20 px-8">
+                                <div className="bg-border absolute inset-0 my-auto h-px"></div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Supabase className="size-3.5" />
+                                </div>
+                                <div className="bg-card shadow-black/6.5 ring-border relative flex h-8 items-center rounded-full px-3 shadow-sm ring transition-transform hover:scale-110">
+                                    <Firebase className="size-3.5" />
+                                </div>
+                            </div>
+                        </div>
                     </Card>
 
-                    <Card className="group shadow-zinc-950/5">
-                        <CardHeader className="pb-3">
-                            <CardDecorator>
-                                <BarChart3
-                                    className="size-6"
-                                    aria-hidden
-                                />
-                            </CardDecorator>
-
-                            <h3 className="mt-6 font-medium">Track Your Progress</h3>
-                            {/* Subtle Tag */}
-                            <span className="mx-auto mt-2 inline-block rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                Analytics
-                            </span>
-                        </CardHeader>
-
-                        <CardContent>
-                            <p className="mt-3 text-sm text-muted-foreground">Monitor your learning journey with detailed analytics and personalized dashboards.</p>
-                        </CardContent>
+                    {/* Feature 2: Real-time Analytics (Sync Visual) */}
+                    <Card
+                        variant="mixed"
+                        className="row-span-2 grid grid-rows-subgrid overflow-hidden"
+                    >
+                        <div className="space-y-2">
+                            <h3 className="text-foreground font-medium">Real-time Skill Tracking</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Visualize your progress with data-driven dashboards that highlight your strengths and growth.
+                            </p>
+                        </div>
+                        <div
+                            aria-hidden
+                            className="relative h-44 translate-y-6"
+                        >
+                            <div className="bg-foreground/15 absolute inset-0 mx-auto w-px"></div>
+                            <div className="absolute -inset-x-16 top-6 aspect-square rounded-full border border-border/50"></div>
+                            <div className="border-primary mask-l-from-50% mask-l-to-90% mask-r-from-50% mask-r-to-50% absolute -inset-x-16 top-6 aspect-square rounded-full border-2"></div>
+                            <div className="absolute -inset-x-8 top-24 aspect-square rounded-full border border-border/50"></div>
+                            <div className="mask-r-from-50% mask-r-to-90% mask-l-from-50% mask-l-to-50% absolute -inset-x-8 top-24 aspect-square rounded-full border-2 border-primary"></div>
+                        </div>
                     </Card>
 
-                    <Card className="group shadow-zinc-950/5">
-                        <CardHeader className="pb-3">
-                            <CardDecorator>
-                                <Users
-                                    className="size-6"
-                                    aria-hidden
-                                />
-                            </CardDecorator>
+                    {/* Feature 3: Project-First (Developer visual) */}
+                    <Card
+                        variant="mixed"
+                        className="row-span-2 grid grid-rows-subgrid overflow-hidden"
+                    >
+                        <div className="space-y-2">
+                            <h3 className="text-foreground font-medium">Project-First Methodology</h3>
+                            <p className="text-muted-foreground mt-2 text-sm">
+                                Gain practical experience by building real-world applications that demonstrate your technical proficiency.
+                            </p>
+                        </div>
+                        <div
+                            aria-hidden
+                            className="*:bg-foreground/15 flex h-44 justify-between pb-6 pt-12 *:h-full *:w-px"
+                        >
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div className="bg-primary!"></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div className="bg-primary!"></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div className="bg-primary!"></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div className="bg-primary!"></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div className="bg-primary!"></div>
+                        </div>
+                    </Card>
 
-                            <h3 className="mt-6 font-medium">Community Support</h3>
-                            {/* Subtle Tag */}
-                            <span className="mx-auto mt-2 inline-block rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-600 dark:border-violet-900 dark:bg-violet-950/50 dark:text-violet-400">
-                                Community
-                            </span>
-                        </CardHeader>
+                    {/* Feature 4: Verified Achievement (Shield visual) */}
+                    <Card
+                        variant="mixed"
+                        className="row-span-2 grid grid-rows-subgrid"
+                    >
+                        <div className="space-y-2">
+                            <h3 className="font-medium">Global Dev Community</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Connect with a global network of ambitious learners and collaborate on meaningful challenges.
+                            </p>
+                        </div>
 
-                        <CardContent>
-                            <p className="mt-3 text-sm text-muted-foreground">Join a vibrant community of learners and instructors to collaborate and grow together.</p>
-                        </CardContent>
+                        <div className="pointer-events-none relative -ml-7 flex size-44 items-center justify-center pt-5">
+                            <Shield className="absolute inset-0 top-2.5 size-full stroke-[0.1px] opacity-15" />
+                            <GraduationCap className="size-24 stroke-[1px] text-primary" />
+                        </div>
                     </Card>
                 </div>
             </div>
         </section>
     )
 }
-
-const CardDecorator = ({ children }: { children: ReactNode }) => (
-    <div className="mask-radial-from-40% mask-radial-to-60% relative mx-auto size-36 duration-200 [--color-border:color-mix(in_oklab,var(--color-zinc-950)10%,transparent)] group-hover:[--color-border:color-mix(in_oklab,var(--color-zinc-950)20%,transparent)] dark:[--color-border:color-mix(in_oklab,var(--color-white)15%,transparent)] dark:group-hover:[--color-border:color-mix(in_oklab,var(--color-white)20%,transparent)]">
-        <div
-            aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-[size:24px_24px] dark:opacity-50"
-        />
-
-        <div className="bg-background absolute inset-0 m-auto flex size-12 items-center justify-center border-l border-t">{children}</div>
-    </div>
-)
