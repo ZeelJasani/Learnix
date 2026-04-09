@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: learnix-mongo
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: learnix-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017/learnix
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3000}
+    depends_on:
+      - mongo
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: learnix-frontend
+    env_file:
+      - ./frontend/.env
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-5000}/api
+      INTERNAL_API_URL: http://backend:5000/api
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  mongo-data:

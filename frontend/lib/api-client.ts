@@ -14,7 +14,9 @@
 
 // API base URL environment variable mathi ley chhe, default localhost:5000 rakhe chhe
 // Reads API base URL from environment variable, defaults to localhost:5000
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = typeof window === 'undefined'
+    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 /**
  * Standard API response format / Standard API response format
