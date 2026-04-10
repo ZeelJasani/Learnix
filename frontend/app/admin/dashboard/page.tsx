@@ -5,6 +5,7 @@ import { AdminCourseCard } from "../courses/_components/AdminCourseCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, ShoppingCart, Users, AlignLeft, ArrowRight } from "lucide-react";
 import { DashboardMonthFilter } from "./_components/MonthFilter";
+import { AdminOverviewCharts } from "./_components/admin-overview-charts";
 import Link from "next/link";
 
 type Props = {
@@ -71,6 +72,18 @@ export default async function AdminDashboardPage({ searchParams }: Props) {
             </Card>
           </Link>
         ))}
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Platform Analytics</h2>
+        </div>
+        <AdminOverviewCharts
+          growthData={stats.statsByDate}
+          categoryPerformance={stats.categoryPerformance}
+          revenueTrend={stats.monthlyRevenueTrend}
+        />
       </div>
 
       {/* Recent Courses */}

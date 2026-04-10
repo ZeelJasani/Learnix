@@ -138,4 +138,19 @@ export class UserController {
             next(error);
         }
     }
+
+    /**
+     * User ni activity streak kadho / Get activity streak for current user
+     *
+     * @route GET /api/users/me/activity-streak
+     */
+    static async getActivityStreak(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = (req.user as any)._id?.toString() || req.user!.id;
+            const streakData = await UserService.getActivityStreak(userId);
+            ApiResponse.success(res, streakData);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

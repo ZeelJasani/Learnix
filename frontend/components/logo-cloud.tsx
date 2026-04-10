@@ -1,45 +1,57 @@
 // Logo cloud section displaying tech giants with improved scaling and fixed containers
 // Ensures uniform visibility for all logo types (square, wide, or tall)
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 const partners = [
-    { name: "Google", src: "https://cdn.simpleicons.org/google" },
-    { name: "Meta", src: "https://cdn.simpleicons.org/meta" },
-    { name: "Amazon", src: "https://cdn.simpleicons.org/amazon" },
-    { name: "Microsoft", src: "https://cdn.simpleicons.org/microsoft" },
-    { name: "Apple", src: "https://cdn.simpleicons.org/apple/000000" },
-    { name: "Nvidia", src: "https://cdn.simpleicons.org/nvidia" },
-    { name: "GitHub", src: "https://cdn.simpleicons.org/github/181717" },
-    { name: "Vercel", src: "https://cdn.simpleicons.org/vercel/000000" },
-    { name: "Supabase", src: "https://cdn.simpleicons.org/supabase" },
-    { name: "Figma", src: "https://cdn.simpleicons.org/figma" },
-    { name: "Claude", src: "https://cdn.simpleicons.org/anthropic" },
-    { name: "ChatGPT", src: "https://cdn.simpleicons.org/openai" },
+    { name: "Netflix", src: "https://cdn.simpleicons.org/netflix" },
+    { name: "Tesla", src: "https://cdn.simpleicons.org/tesla" },
+    { name: "Spotify", src: "https://cdn.simpleicons.org/spotify" },
+    { name: "Notion", src: "https://cdn.simpleicons.org/notion" },
+    { name: "Slack", src: "https://cdn.simpleicons.org/slack" },
+    { name: "Discord", src: "https://cdn.simpleicons.org/discord" },
+    { name: "Cloudflare", src: "https://cdn.simpleicons.org/cloudflare" },
+    { name: "DigitalOcean", src: "https://cdn.simpleicons.org/digitalocean" },
+    { name: "Docker", src: "https://cdn.simpleicons.org/docker" },
+    { name: "Stripe", src: "https://cdn.simpleicons.org/stripe" },
+    { name: "PayPal", src: "https://cdn.simpleicons.org/paypal" },
+    { name: "Shopify", src: "https://cdn.simpleicons.org/shopify" }
 ];
 
 export default function LogoCloud() {
     return (
-        <section className="bg-background py-16">
+        <section className="bg-background py-20">
             <div className="mx-auto max-w-5xl px-6">
-                <h2 className="text-center text-lg font-medium tracking-tight text-foreground/80">
+                <h2 className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground/60">
                     Trusted by students at leading tech companies
                 </h2>
                 
-                {/* Fixed-size container grid to prevent oversized logos */}
-                <div className="mx-auto mt-16 flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-12 sm:gap-x-16 sm:gap-y-16">
+                <div className="mx-auto mt-20 grid max-w-5xl grid-cols-2 gap-x-12 gap-y-16 sm:grid-cols-10 sm:gap-x-8 sm:gap-y-24">
                     {partners.map((partner, index) => (
                         <div 
                             key={partner.name}
-                            className="group relative flex h-9 w-28 items-center justify-center transition-all duration-300 hover:scale-110 sm:h-10 sm:w-36"
+                            className={cn(
+                                "group relative flex items-center justify-center transition-all duration-300 hover:scale-110",
+                                "col-span-1 sm:col-span-2",
+                                // 5-5-2 Alignment: Center the last 2 items on Desktop
+                                index === 10 && "sm:col-start-4",
+                                index === 11 && "sm:col-start-6"
+                            )}
                         >
-                            <Image
-                                src={partner.src}
-                                alt={`${partner.name} logo`}
-                                fill
-                                // object-contain is the secret sauce to fix the "GIGANTIC" issue
-                                className="object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-100 dark:brightness-110"
-                                priority={index < 4}
-                            />
+                            <div className="relative h-9 w-28 sm:h-10 sm:w-36">
+                                <Image
+                                    src={partner.src}
+                                    alt={`${partner.name} logo`}
+                                    fill
+                                    className="object-contain opacity-70 transition-all duration-300 group-hover:opacity-100 dark:brightness-110"
+                                    priority={index < 4}
+                                />
+                            </div>
+                            
+                            {/* Hover Reveal Name */}
+                            <span className="pointer-events-none absolute -bottom-8 translate-y-2 text-[10px] font-bold uppercase tracking-[0.25em] text-foreground/0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-foreground/40">
+                                {partner.name}
+                            </span>
                         </div>
                     ))}
                 </div>

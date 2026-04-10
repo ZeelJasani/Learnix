@@ -45,11 +45,6 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "700"],
 });
 
-// Force dynamic rendering - ClerkProvider requires NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-// which is a NEXT_PUBLIC_ var embedded at build time; without it static prerendering
-// of built-in pages (/_not-found etc.) crashes the Vercel build.
-export const dynamic = 'force-dynamic';
-
 // SEO metadata / SEO metadata
 export const metadata: Metadata = {
   title: "Learnix",

@@ -183,4 +183,19 @@ export class MentorController {
             next(error);
         }
     }
+
+    /**
+     * Course na drop-off rates kadho / Get course drop-off rates
+     * @route GET /api/mentor/courses/:courseId/analytics/drop-off
+     */
+    static async getCourseDropOff(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const mentorId = req.user!.id;
+            const { courseId } = req.params;
+            const analytics = await MentorService.getCourseDropOff(mentorId, courseId);
+            ApiResponse.success(res, analytics);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

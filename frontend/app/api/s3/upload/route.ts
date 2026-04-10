@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 // Aa file S3 presigned upload URL generate karva mate API route provide kare chhe (Arcjet + Zod validation sathe)
 // This file provides an API route to generate S3 presigned upload URLs with Arcjet protection and Zod validation
 import { env } from "@/lib/env";

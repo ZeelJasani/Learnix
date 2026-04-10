@@ -29,10 +29,19 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { getOrCreateDbUserFromClerkUser } from "@/lib/clerk-db";
 
+async function getBaseUrl(): Promise<string> {
+  const { headers } = await import("next/headers");
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = headersList.get('x-forwarded-proto') || 'http';
+  return `${protocol}://${host}`;
+}
+
 export const requireUser = cache(async () => {
   const user = await currentUser();
   if (!user) {
-    return redirect("/login");
+    const baseUrl = await getBaseUrl();
+    return redirect(`${baseUrl}/login`);
   }
 
   return getOrCreateDbUserFromClerkUser(user);

@@ -63,10 +63,72 @@ export class MentorService {
 
         const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
 
+        // --- Monthly Revenue Trend (Last 6 Months) ---
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const monthlyRevenue = await Enrollment.aggregate([
+            {
+                $match: {
+                    courseId: { $in: courseIds },
+                    status: 'Active',
+                    createdAt: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' }
+                    },
+                    revenue: { $sum: '$amount' }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        // Format for frontend (e.g., "Jan 24")
+        const formattedMonthlyRevenue = monthlyRevenue.map(item => {
+            const date = new Date(item._id.year, item._id.month - 1);
+            return {
+                month: date.toLocaleString('en-US', { month: 'short', year: '2-digit' }),
+                revenue: item.revenue / 100 // Convert to main currency unit
+            };
+        });
+
+        // --- Top Courses by Enrollment ---
+        const topCoursesData = await Enrollment.aggregate([
+            {
+                $match: {
+                    courseId: { $in: courseIds },
+                    status: 'Active'
+                }
+            },
+            {
+                $group: {
+                    _id: '$courseId',
+                    studentCount: { $sum: 1 }
+                }
+            },
+            { $sort: { studentCount: -1 } },
+            { $limit: 5 }
+        ]);
+
+        // Populate course titles
+        const coursePerformance = await Promise.all(topCoursesData.map(async (item) => {
+            const course = await Course.findById(item._id).select('title').lean();
+            return {
+                title: course?.title || 'Unknown',
+                students: item.studentCount
+            };
+        }));
+
         return {
             courseCount,
             studentCount,
             totalRevenue,
+            monthlyRevenue: formattedMonthlyRevenue,
+            coursePerformance
         };
     }
 
@@ -443,5 +505,55 @@ export class MentorService {
             startDate: act.startDate,
             createdAt: act.createdAt,
         }));
+    }
+
+    /**
+     * Course analytics kadho (Drop-off rates per lesson)
+     * Get course analytics (Drop-off rates per lesson)
+     */
+    static async getCourseDropOff(mentorId: string, courseId: string) {
+        const course = await Course.findById(courseId).select('_id userId title').lean();
+        if (!course) throw ApiError.notFound('Course not found');
+
+        // Check ownership
+        if (course.userId.toString() !== mentorId) {
+            throw ApiError.forbidden('You only have access to your own course analytics');
+        }
+
+        const totalEnrolled = await Enrollment.countDocuments({ courseId: course._id, status: 'Active' });
+
+        // Get chapters and lessons sorted
+        const chapters = await Chapter.find({ courseId: course._id }).sort({ position: 1 }).lean();
+        const chapterIds = chapters.map(ch => ch._id);
+        const lessons = await Lesson.find({ chapterId: { $in: chapterIds } }).sort({ chapterId: 1, position: 1 }).lean();
+
+        const dropOffData = [];
+        let prevCompletionCount = totalEnrolled;
+
+        for (const lesson of lessons) {
+            const completionCount = await LessonProgress.countDocuments({
+                lessonId: lesson._id,
+                completed: true
+            });
+
+            const completionRate = totalEnrolled > 0 ? Math.round((completionCount / totalEnrolled) * 100) : 0;
+            const dropOffFromPrev = prevCompletionCount > 0 ? Math.round(((prevCompletionCount - completionCount) / prevCompletionCount) * 100) : 0;
+
+            dropOffData.push({
+                lessonId: lesson._id.toString(),
+                lessonTitle: lesson.title,
+                completions: completionCount,
+                completionRate,
+                dropOffRate: Math.max(0, dropOffFromPrev)
+            });
+
+            prevCompletionCount = completionCount;
+        }
+
+        return {
+            courseTitle: course.title,
+            totalEnrolled,
+            lessons: dropOffData
+        };
     }
 }

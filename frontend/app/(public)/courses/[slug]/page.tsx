@@ -35,10 +35,54 @@ import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
 import { EnrollmentButton } from "./_components/EnrollmentButton";
 import { FreeEnrollModal } from "@/components/modals/FreeEnrollModal";
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
+import { getAllCourses } from "@/app/data/course/get-all-courses";
 
+export const revalidate = 3600; // Revalidate every hour
 
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+    const { slug } = await params;
+    try {
+        const course = await getIndividualCourse(slug);
+        const imageUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.t3.storageapi.dev/${course.fileKey}`;
 
+        return {
+            title: `${course.title} | Learnix`,
+            description: course.smallDescription,
+            openGraph: {
+                title: course.title,
+                description: course.smallDescription,
+                images: [
+                    {
+                        url: imageUrl,
+                        width: 1200,
+                        height: 630,
+                        alt: course.title,
+                    },
+                ],
+                type: "website",
+            },
+            twitter: {
+                card: "summary_large_image",
+                title: course.title,
+                description: course.smallDescription,
+                images: [imageUrl],
+            },
+        };
+    } catch (e) {
+        return {
+            title: "Course | Learnix",
+            description: "Learn from the best",
+        };
+    }
+}
 
+export async function generateStaticParams() {
+    const courses = await getAllCourses();
+    return courses.map((course) => ({
+        slug: course.slug,
+    }));
+}
 
 type Params = Promise<{ slug: string }>;
 

@@ -32,6 +32,14 @@ interface DashboardStats {
         signups: number;
         enrollments: number;
     }>;
+    monthlyRevenueTrend: Array<{
+        month: string;
+        revenue: number;
+    }>;
+    categoryPerformance: Array<{
+        category: string;
+        revenue: number;
+    }>;
 }
 
 export class AdminService {
@@ -70,7 +78,7 @@ export class AdminService {
         ]);
 
         // Get daily stats for the month
-        const dailySignups = await User.aggregate([
+        const dailySignupsData = await User.aggregate([
             {
                 $match: {
                     createdAt: { $gte: startDate, $lte: endDate },
@@ -87,10 +95,11 @@ export class AdminService {
             },
         ]);
 
-        const dailyEnrollments = await Enrollment.aggregate([
+        const dailyEnrollmentsData = await Enrollment.aggregate([
             {
                 $match: {
                     createdAt: { $gte: startDate, $lte: endDate },
+                    status: 'Active'
                 },
             },
             {
@@ -104,8 +113,8 @@ export class AdminService {
         ]);
 
         // Create maps for quick lookup
-        const signupsMap = new Map(dailySignups.map(s => [s._id, s.count]));
-        const enrollmentsMap = new Map(dailyEnrollments.map(e => [e._id, e.count]));
+        const signupsMap = new Map(dailySignupsData.map(s => [s._id, s.count]));
+        const enrollmentsMap = new Map(dailyEnrollmentsData.map(e => [e._id, e.count]));
 
         // Build formatted stats for each day
         const statsByDate: Array<{ date: string; signups: number; enrollments: number }> = [];
@@ -122,14 +131,74 @@ export class AdminService {
             });
         }
 
+        // --- Platform-wide Monthly Revenue Trend (Last 6 Months) ---
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const monthlyRevenue = await Enrollment.aggregate([
+            {
+                $match: {
+                    status: 'Active',
+                    createdAt: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' }
+                    },
+                    revenue: { $sum: '$amount' }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        const monthlyRevenueTrend = monthlyRevenue.map(item => {
+            const date = new Date(item._id.year, item._id.month - 1);
+            return {
+                month: date.toLocaleString('en-US', { month: 'short', year: '2-digit' }),
+                revenue: item.revenue / 100
+            };
+        });
+
+        // --- Category Performance (Top 5 Categories by Revenue) ---
+        const categoryStats = await Enrollment.aggregate([
+            { $match: { status: 'Active' } },
+            {
+                $lookup: {
+                    from: 'courses',
+                    localField: 'courseId',
+                    foreignField: '_id',
+                    as: 'course'
+                }
+            },
+            { $unwind: '$course' },
+            {
+                $group: {
+                    _id: '$course.category',
+                    revenue: { $sum: '$amount' }
+                }
+            },
+            { $sort: { revenue: -1 } },
+            { $limit: 5 }
+        ]);
+
+        const categoryPerformance = categoryStats.map(item => ({
+            category: item._id || 'Uncategorized',
+            revenue: item.revenue / 100
+        }));
+
         return {
             totalSignups,
             totalCustomers,
             totalCourses,
             totalLessons,
             recentSignups: monthlySignups,
-            activeUsers: monthlySignups, // Simplified
+            activeUsers: monthlySignups,
             statsByDate,
+            monthlyRevenueTrend,
+            categoryPerformance
         };
     }
 

@@ -7,11 +7,14 @@ export const dynamic = 'force-dynamic';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MentorOverviewCharts } from "@/components/dashboard/mentor-overview-charts";
 
 interface MentorStats {
     courseCount: number;
     studentCount: number;
     totalRevenue: number;
+    monthlyRevenue: { month: string; revenue: number }[];
+    coursePerformance: { title: string; students: number }[];
 }
 
 export default async function MentorDashboard() {
@@ -32,6 +35,8 @@ export default async function MentorDashboard() {
         courseCount: 0,
         studentCount: 0,
         totalRevenue: 0,
+        monthlyRevenue: [],
+        coursePerformance: [],
     };
 
     return (
@@ -66,6 +71,19 @@ export default async function MentorDashboard() {
                     value={`₹${(stats.totalRevenue / 100).toLocaleString()}`}
                     description="Total earnings from your courses"
                     icon={DollarSign}
+                />
+            </div>
+
+            <Separator />
+
+            {/* Charts Section */}
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium tracking-tight">Analytics Overview</h3>
+                </div>
+                <MentorOverviewCharts 
+                    revenueTrend={stats.monthlyRevenue}
+                    coursePerformance={stats.coursePerformance}
                 />
             </div>
         </div>

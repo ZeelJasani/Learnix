@@ -55,6 +55,9 @@ router.get('/quizzes', MentorController.getMyQuizzes);
 // Mentor na courses ni activities kadho / Get activities for mentor's courses
 router.get('/activities', MentorController.getMyActivities);
 
+// Course na analytics kadho / Get course analytics
+router.get('/courses/:courseId/analytics/drop-off', MentorController.getCourseDropOff);
+
 // ===== Public Mentor Profile Routes / Public Mentor Profile Routes =====
 // Auth jaruri nathi - koi pan mentor ni profile joi shake
 // No auth needed - anyone can view a mentor's profile

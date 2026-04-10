@@ -17,6 +17,14 @@ type DashboardStats = {
     signups: number;
     enrollments: number;
   }>;
+  monthlyRevenueTrend: Array<{
+    month: string;
+    revenue: number;
+  }>;
+  categoryPerformance: Array<{
+    category: string;
+    revenue: number;
+  }>;
 };
 
 const defaultStats: DashboardStats = {
@@ -27,6 +35,8 @@ const defaultStats: DashboardStats = {
   recentSignups: 0,
   activeUsers: 0,
   statsByDate: [],
+  monthlyRevenueTrend: [],
+  categoryPerformance: [],
 };
 
 export async function adminGetDashboardStats(

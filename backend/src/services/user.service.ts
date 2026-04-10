@@ -22,6 +22,10 @@ import { env } from '../config/env';
 import { ApiError } from '../utils/apiError';
 import { logger } from '../utils/logger';
 import { LiveSessionService } from './live-session.service';
+import { LessonProgress } from '../models/LessonProgress';
+import { QuizAttempt } from '../models/QuizAttempt';
+import { ActivityCompletion } from '../models/ActivityCompletion';
+import mongoose from 'mongoose';
 
 interface ClerkUserData {
     id: string;
@@ -257,5 +261,86 @@ export class UserService {
             },
             { new: true }
         );
+    }
+
+    /**
+     * User ni activity streak calculate karo / Calculate user's activity streak
+     *
+     * Aa method lesson progress, quiz attempts, ane activity completions check kare chhe.
+     * This method checks lesson progress, quiz attempts, and activity completions.
+     */
+    static async getActivityStreak(userId: string) {
+        const userObjectId = new mongoose.Types.ObjectId(userId);
+
+        // Fetch all activity dates / Fetch all activity dates
+        const [lessonDates, quizDates, activityDates] = await Promise.all([
+            LessonProgress.find({ userId: userObjectId, completed: true }).select('updatedAt').lean(),
+            QuizAttempt.find({ userId: userObjectId }).select('createdAt').lean(),
+            ActivityCompletion.find({ userId: userObjectId }).select('completedAt').lean(),
+        ]);
+
+        // Combine and normalize dates (YYYY-MM-DD)
+        const allDatesSet = new Set<string>();
+
+        lessonDates.forEach(d => allDatesSet.add(new Date((d as any).updatedAt).toISOString().split('T')[0]));
+        quizDates.forEach(d => allDatesSet.add(new Date((d as any).createdAt).toISOString().split('T')[0]));
+        activityDates.forEach(d => allDatesSet.add(new Date((d as any).completedAt).toISOString().split('T')[0]));
+
+        // Sort dates descending for streak calculation
+        const sortedDates = Array.from(allDatesSet).sort((a, b) => b.localeCompare(a));
+
+        let currentStreak = 0;
+        let longestStreak = 0;
+
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+        // Current Streak Calculation
+        if (sortedDates.length > 0) {
+            const lastDate = sortedDates[0];
+            
+            // Streak breaks if no activity today AND no activity yesterday
+            if (lastDate === today || lastDate === yesterday) {
+                currentStreak = 1;
+                for (let i = 1; i < sortedDates.length; i++) {
+                    const prevDate = new Date(sortedDates[i - 1]);
+                    const currDate = new Date(sortedDates[i]);
+                    const diffTime = Math.abs(prevDate.getTime() - currDate.getTime());
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 1) {
+                        currentStreak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Longest Streak Calculation
+        if (sortedDates.length > 0) {
+            let tempStreak = 1;
+            longestStreak = 1;
+            for (let i = 1; i < sortedDates.length; i++) {
+                const prevDate = new Date(sortedDates[i - 1]);
+                const currDate = new Date(sortedDates[i]);
+                const diffTime = Math.abs(prevDate.getTime() - currDate.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    tempStreak++;
+                } else {
+                    tempStreak = 1;
+                }
+                longestStreak = Math.max(longestStreak, tempStreak);
+            }
+        }
+
+        return {
+            currentStreak,
+            longestStreak,
+            totalActiveDays: allDatesSet.size,
+            heatmap: Array.from(allDatesSet)
+        };
     }
 }

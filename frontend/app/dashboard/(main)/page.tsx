@@ -1,12 +1,18 @@
 import { getEnrolledCourses } from "../../data/user/get-enrolled-courses";
 import { EmptyState } from "@/components/general/EmptyState";
 import { CourseProgressCard } from "../_components/CourseProgressCard";
+import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
 
 export default async function DashboardPage() {
   const enrolledCourses = await getEnrolledCourses();
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-8 py-8 max-w-7xl mx-auto">
+      {/* Activity Streaks & Heatmap / Activity Streaks & Heatmap */}
+      <div className="mb-10">
+        <ActivityHeatmap />
+      </div>
+
       <div className="mb-6">
         <h1 className="text-lg font-semibold">My Courses</h1>
         <p className="text-xs text-muted-foreground mt-0.5">
