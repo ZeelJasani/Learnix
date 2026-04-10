@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { ReactNode } from "react";
 import { MentorSidebar } from "@/components/mentor-sidebar";
 import {

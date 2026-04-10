@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import { MoreVertical, Pencil, Eye, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Eye, Trash2, BarChart3 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,6 +56,14 @@ export function AdminCourseCard({ data }: iAppProps) {
                                     Preview
                                 </Link>
                             </DropdownMenuItem>
+                            {isMentor && (
+                                <DropdownMenuItem asChild className="cursor-pointer">
+                                    <Link href={`${basePath}/courses/${data.id}/analytics`}>
+                                        <BarChart3 className="size-3.5 mr-2" />
+                                        Analytics
+                                    </Link>
+                                </DropdownMenuItem>
+                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
                                 <Link href={`${basePath}/courses/${data.id}/delete`}>
@@ -94,11 +102,22 @@ export function AdminCourseCard({ data }: iAppProps) {
                 </div>
 
                 {/* Title */}
-                <Link href={editLink} className="block">
-                    <h3 className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors leading-snug">
+                <Link href={editLink} className="block group/title">
+                    <h3 className="font-medium text-sm line-clamp-2 group-hover/title:text-primary transition-colors leading-snug">
                         {data.title}
                     </h3>
                 </Link>
+
+                {/* Edit Button for Mentors */}
+                {isMentor && (
+                    <Link 
+                        href={editLink}
+                        className={buttonVariants({ variant: "outline", size: "sm", className: "w-full text-xs font-semibold py-1 h-8" })}
+                    >
+                        <Pencil className="size-3 mr-2" />
+                        Edit Course
+                    </Link>
+                )}
 
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-2 border-t border-border/40">

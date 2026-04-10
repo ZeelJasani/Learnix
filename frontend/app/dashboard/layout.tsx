@@ -10,6 +10,8 @@
  * - Children render thay chhe main content area ma
  *   Children render in the main content area
  */
+export const dynamic = "force-dynamic";
+
 import { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {

@@ -28,6 +28,7 @@ router.post('/sync', verifyClerkToken, UserController.syncCurrentUser);
 
 // Aa routes mate user DB ma hovo jaruri chhe / These routes require user to exist in DB
 router.get('/me', verifyClerkToken, requireUser, UserController.getProfile);
+router.get('/me/activity-streak', verifyClerkToken, requireUser, UserController.getActivityStreak);
 router.get('/enrolled-courses', verifyClerkToken, requireUser, UserController.getEnrolledCourses);
 
 export default router;

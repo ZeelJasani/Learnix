@@ -10,8 +10,14 @@
  */
 import { redirect } from "next/navigation";
 
-export default function AdminPage() {
-  redirect("/admin/dashboard");
+export default async function AdminPage() {
+  const { headers } = await import("next/headers");
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = headersList.get('x-forwarded-proto') || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  
+  redirect(`${baseUrl}/admin/dashboard`);
 }
 
 

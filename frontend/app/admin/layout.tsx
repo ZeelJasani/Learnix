@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { ReactNode } from "react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import {
