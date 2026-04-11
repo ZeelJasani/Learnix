@@ -135,7 +135,7 @@ export class MentorService {
     /**
      * Mentor na badha courses return karo / Get all courses created by a mentor
      */
-    static async getMyCourses(mentorId: string) {
+    static async getMyCourses(mentorId: string): Promise<any[]> {
         const mentorObjectId = new mongoose.Types.ObjectId(mentorId);
 
         const courses = await Course.find({ userId: mentorObjectId })
@@ -191,7 +191,7 @@ export class MentorService {
      * Mentor nu complete profile stats ane courses sathe return karo
      * Get mentor's complete profile with stats and courses
      */
-    static async getMentorProfile(mentorId: string) {
+    static async getMentorProfile(mentorId: string): Promise<any> {
         const mentor = await User.findById(mentorId)
             .select('name email image role createdAt')
             .lean();
