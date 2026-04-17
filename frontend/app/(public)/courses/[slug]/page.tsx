@@ -77,12 +77,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 }
 
-export async function generateStaticParams() {
-    const courses = await getAllCourses();
-    return courses.map((course) => ({
-        slug: course.slug,
-    }));
-}
+
 
 type Params = Promise<{ slug: string }>;
 
