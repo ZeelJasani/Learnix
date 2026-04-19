@@ -38,13 +38,39 @@ app.use(helmet());
 
 // CORS: Frontend ne backend sathe communicate karva dey chhe
 // CORS: Allows frontend to communicate with the backend
-// Fakat FRONTEND_URL thi requests allow thay chhe
-// Only requests from FRONTEND_URL are allowed
+// Requests are allowed only from configured trusted frontend URLs
+const allowedOrigins = [
+    env.FRONTEND_URL,
+    ...(env.FRONTEND_URLS?.split(',').map((url) => url.trim()).filter(Boolean) ?? []),
+];
+
 app.use(cors({
-    origin: env.FRONTEND_URL,
+    origin: (origin, callback) => {
+        // Allow requests without origin (server-to-server, tools, or same-site internal requests)
+        if (!origin) {
+            callback(null, true);
+            return;
+        }
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, origin);
+            return;
+        }
+
+        callback(new Error(`CORS origin denied: ${origin}`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+        'Referer',
+        'User-Agent',
+    ],
+    exposedHeaders: ['Authorization'],
 }));
 
 // Rate Limiting: Ek IP thi vadhare requests prevent kare chhe

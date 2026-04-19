@@ -88,7 +88,9 @@ const envSchema = z.object({
     // CORS ane redirect mate frontend nu URL
     // Frontend URL for CORS and redirects
     FRONTEND_URL: z.string().default('http://localhost:3000'),
-});
+    // Additional frontend origins, comma-separated
+    // Use this to allow multiple deployment URLs (preview, staging, production)
+    FRONTEND_URLS: z.string().optional(),});
 
 // Environment variables parse karo ane validate karo
 // Parse and validate environment variables
