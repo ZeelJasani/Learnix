@@ -323,11 +323,12 @@ export class QuizService {
             case 'true_false':
                 return userAnswer === question.correctAnswer;
 
-            case 'fill_blank':
+            case 'fill_blank': {
                 // Case-insensitive, trim whitespace
                 const userAnswerStr = String(userAnswer).trim().toLowerCase();
                 const correctAnswerStr = String(question.correctAnswer).trim().toLowerCase();
                 return userAnswerStr === correctAnswerStr;
+            }
 
             default:
                 return false;
