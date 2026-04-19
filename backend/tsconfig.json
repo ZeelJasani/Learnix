@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ES2022",
         "module": "CommonJS",
-        "moduleResolution": "Node",
+        "moduleResolution": "node",
         "lib": [
             "ES2022"
         ],
@@ -22,12 +22,7 @@
         "noUnusedParameters": false,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": "./src",
-        "paths": {
-            "@/*": [
-                "./*"
-            ]
-        }
+        "ignoreDeprecations": "5.0"
     },
     "include": [
         "src/**/*"
